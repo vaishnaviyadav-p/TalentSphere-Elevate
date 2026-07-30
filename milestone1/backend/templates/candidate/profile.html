@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+
+{% block title %}Candidate Profile{% endblock %}
+
+{% block content %}
+
+<div class="card shadow-lg border-0 p-4">
+
+    <div class="text-center">
+
+        {% if profile.profile_image %}
+            <img src="{{ profile.profile_image.url }}"
+                 class="profile-image mb-3">
+        {% else %}
+            <img src="https://ui-avatars.com/api/?name={{ profile.full_name|default:'Candidate' }}&background=0D6EFD&color=fff&size=200"
+                 class="profile-image mb-3">
+        {% endif %}
+
+        <h2 class="fw-bold">
+            {{ profile.full_name }}
+        </h2>
+
+        <p class="text-muted fs-5">
+            {{ profile.education }}
+        </p>
+
+    </div>
+
+    <hr>
+
+    <div class="row">
+
+        <div class="col-md-6">
+            <p><strong>📞 Phone:</strong> {{ profile.phone }}</p>
+            <p><strong>📍 Location:</strong> {{ profile.location }}</p>
+        </div>
+
+        <div class="col-md-6">
+            <p><strong>🎓 Education:</strong> {{ profile.education }}</p>
+            <p><strong>💼 Experience:</strong> {{ profile.experience }}</p>
+        </div>
+
+    </div>
+
+    <hr>
+
+    <h4>🛠 Skills</h4>
+
+    <p>{{ profile.skills }}</p>
+
+    <h4>📝 About Me</h4>
+
+    <p>{{ profile.bio }}</p>
+
+    <div class="text-center mt-4">
+
+        <a href="{% url 'edit_candidate_profile' %}"
+           class="btn btn-primary btn-lg px-5">
+            Edit Profile
+        </a>
+
+    </div>
+
+</div>
+
+{% endblock %}
