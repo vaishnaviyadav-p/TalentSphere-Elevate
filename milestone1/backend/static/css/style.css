@@ -1,0 +1,20 @@
+body{
+    background:#f5f5f5;
+}
+
+.card{
+    border-radius:15px;
+    box-shadow:0px 5px 15px rgba(0,0,0,0.1);
+}
+
+.profile-image{
+    width:150px;
+    height:150px;
+    border-radius:50%;
+    object-fit:cover;
+}
+
+.profile-title{
+    font-weight:bold;
+    font-size:28px;
+}
