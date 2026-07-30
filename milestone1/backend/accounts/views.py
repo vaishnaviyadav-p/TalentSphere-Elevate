@@ -32,7 +32,6 @@ def login_view(request):
 
     return render(request, "accounts/login.html")
 
-
 def register_view(request):
     if request.method == "POST":
         form = RegisterForm(request.POST)
@@ -54,9 +53,13 @@ def register_view(request):
                 role=role
             )
 
+            print("Registration Successful")
             return redirect("/login/")
+        else:
+            print(form.errors)
 
     else:
         form = RegisterForm()
 
     return render(request, "accounts/register.html", {"form": form})
+    

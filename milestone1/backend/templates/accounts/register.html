@@ -63,8 +63,14 @@
 <div class="col-md-6 left">
 
 <h2 class="fw-bold mb-4">Create Account</h2>
+{% if form.errors %}
 
-<form method="POST">
+<div class="alert alert-danger">  
+    {{ form.errors }}  
+</div>  
+{% endif %} 
+
+<form method="POST" action="">
 
 {% csrf_token %}
 
@@ -87,12 +93,12 @@
 <label class="form-label">Role</label>
 
 <select class="form-select" name="role">
-<option>Candidate</option>
-<option>Recruiter</option>
+<option value="candidate">Candidate</option>
+<option value="recruiter">Recruiter</option>
 </select>
 </div>
 
-<button class="btn btn-custom">
+<button type="submit" class="btn btn-custom">
 Register
 </button>
 
