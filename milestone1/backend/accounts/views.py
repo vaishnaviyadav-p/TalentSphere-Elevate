@@ -29,7 +29,7 @@ def login_view(request):
                     return redirect("/candidate/profile/")
 
                 elif profile.role == "recruiter":
-                    return redirect("/recruiter/dashboard/")
+                    return redirect("/recruiter/profile/")
 
             except UserProfile.DoesNotExist:
                 return redirect("/")
