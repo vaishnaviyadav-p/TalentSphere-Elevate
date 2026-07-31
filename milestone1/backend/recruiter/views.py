@@ -28,5 +28,9 @@ def edit_recruiter_profile(request):
     return render(
         request,
         "recruiter/edit_profile.html",
-        {"form": form},
+        {"form": form}
     )
+
+
+def dashboard(request):
+    return render(request, "recruiter/dashboard.html")

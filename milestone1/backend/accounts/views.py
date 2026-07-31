@@ -19,12 +19,20 @@ def login_view(request):
         if user is not None:
             login(request, user)
 
-            profile = UserProfile.objects.get(user=user)
+            if user.is_superuser:
+                return redirect("/recruiter/dashboard/")
 
-            if profile.role == "candidate":
-                return redirect("/candidate/profile/")
-            elif profile.role == "recruiter":
-                return redirect("/recruiter/profile/")
+            try:
+                profile = UserProfile.objects.get(user=user)
+
+                if profile.role == "candidate":
+                    return redirect("/candidate/profile/")
+
+                elif profile.role == "recruiter":
+                    return redirect("/recruiter/dashboard/")
+
+            except UserProfile.DoesNotExist:
+                return redirect("/")
 
         return render(request, "accounts/login.html", {
             "error": "Invalid username or password"

@@ -1,0 +1,338 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<style>
+
+body{
+    background:#f4f7fb;
+    font-family: 'Segoe UI', sans-serif;
+}
+
+/* Header */
+
+.dashboard-header{
+    background:linear-gradient(135deg,#2563eb,#1e40af);
+    color:white;
+    padding:35px;
+    border-radius:18px;
+    margin-bottom:30px;
+    box-shadow:0 15px 35px rgba(0,0,0,.12);
+}
+
+.dashboard-header h2{
+    font-weight:700;
+}
+
+.dashboard-header p{
+    opacity:.9;
+    margin:0;
+}
+
+/* Cards */
+
+.stats-card{
+
+    background:white;
+    border:none;
+    border-radius:18px;
+    transition:.3s;
+    box-shadow:0 8px 25px rgba(0,0,0,.08);
+
+}
+
+.stats-card:hover{
+
+    transform:translateY(-6px);
+
+}
+
+.stats-card .card-body{
+
+    text-align:center;
+    padding:30px;
+
+}
+
+.stats-card h2{
+
+    font-size:34px;
+    color:#2563eb;
+    font-weight:bold;
+
+}
+
+.stats-card h6{
+
+    color:#64748b;
+
+}
+
+/* Quick Buttons */
+
+.quick-btn{
+
+    border-radius:12px;
+    padding:12px 22px;
+    font-weight:600;
+    margin-right:10px;
+
+}
+
+/* Table */
+
+.table-card{
+
+    background:white;
+    border-radius:18px;
+    overflow:hidden;
+    box-shadow:0 8px 25px rgba(0,0,0,.08);
+
+}
+
+.table thead{
+
+    background:#2563eb;
+    color:white;
+
+}
+
+.badge{
+
+    padding:8px 12px;
+    border-radius:20px;
+    font-weight:500;
+
+}
+
+.badge.pending{
+
+    background:#fff3cd;
+    color:#856404;
+
+}
+
+.badge.shortlisted{
+
+    background:#d1fae5;
+    color:#047857;
+
+}
+
+</style>
+
+<div class="container mt-4">
+
+<div class="dashboard-header">
+
+<h2>Recruiter Dashboard</h2>
+
+<p>Manage job postings and applicants from one place.</p>
+
+</div>
+
+<div class="mb-4">
+
+<a href="#" class="btn btn-primary quick-btn">
+➕ Post Job
+</a>
+
+<a href="#" class="btn btn-outline-primary quick-btn">
+📄 Applications
+</a>
+
+</div>
+
+<div class="row g-4">
+
+<div class="col-md-3">
+
+<div class="card stats-card">
+
+<div class="card-body">
+
+<h6>Active Jobs</h6>
+
+<h2>12</h2>
+
+</div>
+
+</div>
+
+</div>
+
+<div class="col-md-3">
+
+<div class="card stats-card">
+
+<div class="card-body">
+
+<h6>Total Applications</h6>
+
+<h2>156</h2>
+
+</div>
+
+</div>
+
+</div>
+
+<div class="col-md-3">
+
+<div class="card stats-card">
+
+<div class="card-body">
+
+<h6>Shortlisted</h6>
+
+<h2>24</h2>
+
+</div>
+
+</div>
+
+</div>
+
+<div class="col-md-3">
+
+<div class="card stats-card">
+
+<div class="card-body">
+
+<h6>Interviews</h6>
+
+<h2>8</h2>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<div class="table-card mt-5">
+
+<div class="p-3">
+
+<h5 class="mb-3">Recent Applications</h5>
+
+<table class="table table-hover align-middle">
+
+<thead>
+
+<tr>
+
+<th>Candidate</th>
+
+<th>Role</th>
+
+<th>Experience</th>
+
+<th>Status</th>
+
+<th>Resume</th>
+
+<th>Action</th>
+
+</tr>
+
+</thead>
+
+<tbody>
+
+<tr>
+
+<td>Rahul Sharma</td>
+
+<td>AI Engineer</td>
+
+<td>Fresher</td>
+
+<td><span class="badge pending">Pending</span></td>
+
+<td>
+
+<button class="btn btn-sm btn-outline-primary">
+View
+</button>
+
+</td>
+
+<td>
+
+<button class="btn btn-success btn-sm">
+Review
+</button>
+
+</td>
+
+</tr>
+
+<tr>
+
+<td>Priya Singh</td>
+
+<td>Backend Developer</td>
+
+<td>2 Years</td>
+
+<td><span class="badge shortlisted">Shortlisted</span></td>
+
+<td>
+
+<button class="btn btn-sm btn-outline-primary">
+View
+</button>
+
+</td>
+
+<td>
+
+<button class="btn btn-primary btn-sm">
+Interview
+</button>
+
+</td>
+
+</tr>
+
+<tr>
+
+<td>Naveen Kumar</td>
+
+<td>Frontend Developer</td>
+
+<td>1 Year</td>
+
+<td><span class="badge pending">Pending</span></td>
+
+<td>
+
+<button class="btn btn-sm btn-outline-primary">
+View
+</button>
+
+</td>
+
+<td>
+
+<button class="btn btn-warning btn-sm">
+Review
+</button>
+
+</td>
+
+</tr>
+
+</tbody>
+
+</table>
+
+</div>
+
+</div>
+
+</div>
+
+{% endblock %}
