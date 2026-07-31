@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% block title %}
+My Applications
+{% endblock %}
+
+{% block content %}
+
+<h2 class="mb-4">My Applications</h2>
+
+{% if messages %}
+    {% for message in messages %}
+        <div class="alert alert-success">
+            {{ message }}
+        </div>
+    {% endfor %}
+{% endif %}
+
+{% if applications %}
+
+<table class="table table-bordered">
+
+    <thead class="table-dark">
+        <tr>
+            <th>Job</th>
+            <th>Company</th>
+            <th>Location</th>
+            <th>Salary</th>
+            <th>Status</th>
+        </tr>
+    </thead>
+
+    <tbody>
+
+    {% for job in applications %}
+
+    <tr>
+        <td>{{ job.title }}</td>
+        <td>{{ job.company }}</td>
+        <td>{{ job.location }}</td>
+        <td>{{ job.salary }}</td>
+        <td>
+            <span class="badge bg-primary">
+                Applied
+            </span>
+        </td>
+    </tr>
+
+    {% endfor %}
+
+    </tbody>
+
+</table>
+
+{% else %}
+
+<div class="alert alert-info">
+    You haven't applied for any jobs yet.
+</div>
+
+{% endif %}
+
+{% endblock %}

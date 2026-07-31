@@ -4,14 +4,13 @@ from django.conf import settings
 from django.conf.urls.static import static
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    path("admin/", admin.site.urls),
 
-    # Your module
-    path('', include('accounts.urls')),
+    path("", include("accounts.urls")),
 
-    # Your teammate's modules
-    path('candidate/', include('candidate.urls')),
-    path('recruiter/', include('recruiter.urls')),
+    path("candidate/", include("candidate.urls")),
+
+    path("recruiter/", include("recruiter.urls")),
 ]
 
 if settings.DEBUG:

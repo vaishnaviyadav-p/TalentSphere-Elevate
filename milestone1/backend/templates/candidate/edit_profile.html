@@ -1,53 +1,78 @@
 {% extends 'base.html' %}
 {% load static %}
 
+{% block title %}Edit Candidate Profile{% endblock %}
+
 {% block content %}
 
 <div class="container mt-5">
-    <div class="card p-4">
-        <h2 class="text-center mb-4">Edit Candidate Profile</h2>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-success">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <div class="card shadow p-4">
+
+        <h2 class="text-center mb-4">
+            Edit Candidate Profile
+        </h2>
 
         <form method="POST" enctype="multipart/form-data">
+
             {% csrf_token %}
+
+            {{ form.non_field_errors }}
 
             <div class="mb-3">
                 <label class="form-label">Full Name</label>
                 {{ form.full_name }}
+                <div class="text-danger">{{ form.full_name.errors }}</div>
             </div>
 
             <div class="mb-3">
                 <label class="form-label">Phone</label>
                 {{ form.phone }}
+                <div class="text-danger">{{ form.phone.errors }}</div>
             </div>
 
             <div class="mb-3">
                 <label class="form-label">Location</label>
                 {{ form.location }}
+                <div class="text-danger">{{ form.location.errors }}</div>
             </div>
 
             <div class="mb-3">
                 <label class="form-label">Education</label>
                 {{ form.education }}
+                <div class="text-danger">{{ form.education.errors }}</div>
             </div>
 
             <div class="mb-3">
                 <label class="form-label">Skills</label>
                 {{ form.skills }}
+                <div class="text-danger">{{ form.skills.errors }}</div>
             </div>
 
             <div class="mb-3">
                 <label class="form-label">Experience</label>
                 {{ form.experience }}
+                <div class="text-danger">{{ form.experience.errors }}</div>
             </div>
 
             <div class="mb-3">
                 <label class="form-label">Bio</label>
                 {{ form.bio }}
+                <div class="text-danger">{{ form.bio.errors }}</div>
             </div>
 
             <div class="mb-3">
                 <label class="form-label">Profile Image</label>
                 {{ form.profile_image }}
+                <div class="text-danger">{{ form.profile_image.errors }}</div>
             </div>
 
             <button type="submit" class="btn btn-primary">
@@ -57,8 +82,11 @@
             <a href="{% url 'candidate_profile' %}" class="btn btn-secondary">
                 Cancel
             </a>
+
         </form>
+
     </div>
+
 </div>
 
 {% endblock %}
