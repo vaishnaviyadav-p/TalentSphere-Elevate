@@ -60,15 +60,13 @@
 
                     <p class="salary">₹ {{ job.salary }}</p>
 
-                    <a href="/candidate/jobs/{{ job.id }}/"
-                       class="btn btn-primary">
-                        View Details
-                    </a>
+                    <a href="{% url 'job_detail' job.id %}" class="btn btn-outline-primary">
+    View Details
+</a>
 
-                    <button class="btn btn-success">
-                        Apply
-                    </button>
-
+                    <a href="{% url 'apply_job' job.id %}" class="btn btn-primary">
+    Apply Now
+</a>
                 </div>
 
             </div>

@@ -1,149 +1,100 @@
-from django.shortcuts import render, redirect
-from .models import CandidateProfile
-from .forms import CandidateProfileForm
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
+
+from .models import CandidateProfile, JobApplication
+from .forms import CandidateProfileForm
+from recruiter.models import Job
 
 
 # ---------------- Dashboard ----------------
 
 def candidate_dashboard(request):
-    return render(request, "candidate/dashboard.html")
+
+    applications = JobApplication.objects.filter(candidate=request.user)
+
+    context = {
+        "total": applications.count(),
+        "applied": applications.filter(status="Applied").count(),
+        "shortlisted": applications.filter(status="Shortlisted").count(),
+        "interview": applications.filter(status="Interview").count(),
+        "rejected": applications.filter(status="Rejected").count(),
+    }
+
+    return render(
+        request,
+        "candidate/dashboard.html",
+        context
+    )
 
 
 # ---------------- Browse Jobs ----------------
 
 def browse_jobs(request):
 
-    jobs = [
-        {
-            "id": 1,
-            "title": "Software Engineer",
-            "company": "Google",
-            "location": "Hyderabad",
-            "salary": "12 LPA",
-            "description": "Develop scalable software applications."
-        },
-        {
-            "id": 2,
-            "title": "Python Developer",
-            "company": "Infosys",
-            "location": "Bangalore",
-            "salary": "8 LPA",
-            "description": "Develop backend applications using Python."
-        },
-        {
-            "id": 3,
-            "title": "Frontend Developer",
-            "company": "TCS",
-            "location": "Pune",
-            "salary": "7 LPA",
-            "description": "Build responsive user interfaces."
-        },
-    ]
+    jobs = Job.objects.filter(is_active=True)
 
-    return render(request, "candidate/jobs.html", {"jobs": jobs})
+    return render(
+        request,
+        "candidate/jobs.html",
+        {
+            "jobs": jobs
+        }
+    )
 
 
 # ---------------- Job Detail ----------------
 
 def job_detail(request, job_id):
 
-    jobs = [
-        {
-            "id": 1,
-            "title": "Software Engineer",
-            "company": "Google",
-            "location": "Hyderabad",
-            "salary": "12 LPA",
-            "description": "Develop scalable software applications."
-        },
-        {
-            "id": 2,
-            "title": "Python Developer",
-            "company": "Infosys",
-            "location": "Bangalore",
-            "salary": "8 LPA",
-            "description": "Develop backend applications using Python."
-        },
-        {
-            "id": 3,
-            "title": "Frontend Developer",
-            "company": "TCS",
-            "location": "Pune",
-            "salary": "7 LPA",
-            "description": "Build responsive user interfaces."
-        },
-    ]
+    job = get_object_or_404(
+        Job,
+        id=job_id
+    )
 
-    job = None
-
-    for j in jobs:
-        if j["id"] == job_id:
-            job = j
-            break
-
-    return render(request, "candidate/job_detail.html", {"job": job})
+    return render(
+        request,
+        "candidate/job_detail.html",
+        {
+            "job": job
+        }
+    )
 
 
 # ---------------- Apply Job ----------------
 
-from django.contrib import messages
-
 def apply_job(request, job_id):
 
-    jobs = [
-        {
-            "id": 1,
-            "title": "Software Engineer",
-            "company": "Google",
-            "location": "Hyderabad",
-            "salary": "12 LPA",
-        },
-        {
-            "id": 2,
-            "title": "Python Developer",
-            "company": "Infosys",
-            "location": "Bangalore",
-            "salary": "8 LPA",
-        },
-        {
-            "id": 3,
-            "title": "Frontend Developer",
-            "company": "TCS",
-            "location": "Pune",
-            "salary": "7 LPA",
-        },
-    ]
+    job = get_object_or_404(
+        Job,
+        id=job_id
+    )
 
-    job = None
+    application, created = JobApplication.objects.get_or_create(
+        candidate=request.user,
+        job=job
+    )
 
-    for j in jobs:
-        if j["id"] == job_id:
-            job = j
-            break
-
-    if job is None:
-        messages.error(request, "Job not found.")
-        return redirect("browse_jobs")
-
-    applications = request.session.get("applications", [])
-
-    already_applied = any(app["id"] == job_id for app in applications)
-
-    if already_applied:
-        messages.warning(request, "You have already applied for this job.")
+    if created:
+        messages.success(
+            request,
+            "Application submitted successfully!"
+        )
     else:
-        applications.append(job)
-        request.session["applications"] = applications
-        messages.success(request, "Application submitted successfully!")
+        messages.warning(
+            request,
+            "You have already applied for this job."
+        )
 
     return redirect("my_applications")
+
 
 # ---------------- My Applications ----------------
 
 def my_applications(request):
 
-    applications = request.session.get("applications", [])
+    applications = JobApplication.objects.filter(
+        candidate=request.user
+    ).select_related("job")
 
     return render(
         request,
@@ -153,16 +104,30 @@ def my_applications(request):
         }
     )
 
+
 # ---------------- Candidate Profile ----------------
 
 def candidate_profile(request):
 
-    profile = CandidateProfile.objects.first()
+    profile, created = CandidateProfile.objects.get_or_create(
+        user=request.user,
+        defaults={
+            "full_name": request.user.get_full_name() or request.user.username,
+            "phone": "",
+            "location": "",
+            "education": "",
+            "skills": "",
+            "experience": "",
+            "bio": "",
+        }
+    )
 
     return render(
         request,
         "candidate/profile.html",
-        {"profile": profile},
+        {
+            "profile": profile
+        }
     )
 
 
@@ -170,14 +135,25 @@ def candidate_profile(request):
 
 def edit_candidate_profile(request):
 
-    profile = CandidateProfile.objects.first()
+    profile, created = CandidateProfile.objects.get_or_create(
+        user=request.user,
+        defaults={
+            "full_name": request.user.get_full_name() or request.user.username,
+            "phone": "",
+            "location": "",
+            "education": "",
+            "skills": "",
+            "experience": "",
+            "bio": "",
+        }
+    )
 
     if request.method == "POST":
 
         form = CandidateProfileForm(
             request.POST,
             request.FILES,
-            instance=profile,
+            instance=profile
         )
 
         if form.is_valid():
@@ -191,10 +167,13 @@ def edit_candidate_profile(request):
             return redirect("candidate_profile")
 
     else:
+
         form = CandidateProfileForm(instance=profile)
 
     return render(
         request,
         "candidate/edit_profile.html",
-        {"form": form},
+        {
+            "form": form
+        }
     )

@@ -18,7 +18,7 @@ My Applications
 
 {% if applications %}
 
-<table class="table table-bordered">
+<table class="table table-bordered table-hover">
 
     <thead class="table-dark">
         <tr>
@@ -26,24 +26,46 @@ My Applications
             <th>Company</th>
             <th>Location</th>
             <th>Salary</th>
+            <th>Applied On</th>
             <th>Status</th>
         </tr>
     </thead>
 
     <tbody>
 
-    {% for job in applications %}
+    {% for application in applications %}
 
     <tr>
-        <td>{{ job.title }}</td>
-        <td>{{ job.company }}</td>
-        <td>{{ job.location }}</td>
-        <td>{{ job.salary }}</td>
+        <td>{{ application.job.title }}</td>
+        <td>{{ application.job.company }}</td>
+        <td>{{ application.job.location }}</td>
+        <td>₹ {{ application.job.salary }}</td>
+        <td>{{ application.applied_at|date:"d M Y" }}</td>
+
         <td>
-            <span class="badge bg-primary">
-                Applied
-            </span>
+            {% if application.status == "Applied" %}
+                <span class="badge bg-primary">
+                    {{ application.status }}
+                </span>
+
+            {% elif application.status == "Shortlisted" %}
+                <span class="badge bg-success">
+                    {{ application.status }}
+                </span>
+
+            {% elif application.status == "Interview" %}
+                <span class="badge bg-warning text-dark">
+                    {{ application.status }}
+                </span>
+
+            {% elif application.status == "Rejected" %}
+                <span class="badge bg-danger">
+                    {{ application.status }}
+                </span>
+
+            {% endif %}
         </td>
+
     </tr>
 
     {% endfor %}
@@ -60,4 +82,9 @@ My Applications
 
 {% endif %}
 
+<div class="mt-4">
+    <a href="{% url 'candidate_dashboard' %}" class="btn btn-secondary">
+        ← Back 
+    </a>
+</div>
 {% endblock %}

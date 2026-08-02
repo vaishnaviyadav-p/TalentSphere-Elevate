@@ -17,18 +17,34 @@
         <a class="navbar-brand" href="#">TalentSphere</a>
 
         <div class="ms-auto">
-            <a href="{% url 'recruiter_dashboard' %}" class="btn btn-light btn-sm">
-    Dashboard
-</a>
 
-<a href="{% url 'recruiter_profile' %}" class="btn btn-warning btn-sm">
-    Profile
-</a>
+    {% if user.profile.role == "candidate" %}
 
-<a href="{% url 'logout' %}" class="btn btn-danger btn-sm">
-    Logout
-</a>
-        </div>
+        <a href="{% url 'candidate_dashboard' %}" class="btn btn-light btn-sm">
+            Dashboard
+        </a>
+
+        <a href="{% url 'candidate_profile' %}" class="btn btn-warning btn-sm">
+            Profile
+        </a>
+
+    {% elif user.profile.role == "recruiter" %}
+
+        <a href="{% url 'recruiter_dashboard' %}" class="btn btn-light btn-sm">
+            Dashboard
+        </a>
+
+        <a href="{% url 'recruiter_profile' %}" class="btn btn-warning btn-sm">
+            Profile
+        </a>
+
+    {% endif %}
+
+    <a href="{% url 'logout' %}" class="btn btn-danger btn-sm">
+        Logout
+    </a>
+
+</div>
     </div>
 </nav>
 
