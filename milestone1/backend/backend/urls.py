@@ -4,15 +4,20 @@ from django.conf import settings
 from django.conf.urls.static import static
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    path("admin/", admin.site.urls),
 
-    # Your module
-    path('', include('accounts.urls')),
+    # Accounts
+    path("", include("accounts.urls")),
 
-    # Your teammate's modules
-    path('candidate/', include('candidate.urls')),
-    path('recruiter/', include('recruiter.urls')),
+    # Candidate
+    path("candidate/", include("candidate.urls")),
+
+    # Recruiter
+    path("recruiter/", include("recruiter.urls")),
 ]
 
 if settings.DEBUG:
-    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    urlpatterns += static(
+        settings.MEDIA_URL,
+        document_root=settings.MEDIA_ROOT,
+    )
