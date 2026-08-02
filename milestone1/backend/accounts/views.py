@@ -3,8 +3,12 @@ from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login
 from .models import UserProfile
 from .forms import RegisterForm
+from django.contrib.auth import logout
 
-
+def logout_view(request):
+    logout(request)
+    return redirect("login")
+    
 def home(request):
     return render(request, "accounts/home.html")
 

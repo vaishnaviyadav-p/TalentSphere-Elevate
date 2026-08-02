@@ -1,18 +1,31 @@
 from django import forms
-from .models import RecruiterProfile
+from .models import RecruiterProfile, Job
 
 
 class RecruiterProfileForm(forms.ModelForm):
     class Meta:
         model = RecruiterProfile
-        exclude = ['user']
+        fields = "__all__"
+
+
+class JobForm(forms.ModelForm):
+    class Meta:
+        model = Job
+
+        fields = [
+            "title",
+            "company",
+            "location",
+            "salary",
+            "job_type",
+            "description",
+            "requirements",
+            "deadline",
+            "is_active",
+        ]
 
         widgets = {
-            'recruiter_name': forms.TextInput(attrs={'class': 'form-control'}),
-            'company_name': forms.TextInput(attrs={'class': 'form-control'}),
-            'email': forms.EmailInput(attrs={'class': 'form-control'}),
-            'phone': forms.TextInput(attrs={'class': 'form-control'}),
-            'location': forms.TextInput(attrs={'class': 'form-control'}),
-            'company_description': forms.Textarea(attrs={'class': 'form-control', 'rows': 5}),
-            'company_logo': forms.ClearableFileInput(attrs={'class': 'form-control'}),
+            "deadline": forms.DateInput(attrs={"type": "date"}),
+            "description": forms.Textarea(attrs={"rows": 5}),
+            "requirements": forms.Textarea(attrs={"rows": 5}),
         }
