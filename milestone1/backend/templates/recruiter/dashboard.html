@@ -129,17 +129,15 @@ body{
 
 <p>Manage job postings and applicants from one place.</p>
 
-</div>
-
 <div class="mb-4">
 
-<a href="#" class="btn btn-primary quick-btn">
-➕ Post Job
-</a>
+    <a href="{% url 'post_job' %}" class="btn btn-primary quick-btn">
+        ➕ Post Job
+    </a>
 
-<a href="#" class="btn btn-outline-primary quick-btn">
-📄 Applications
-</a>
+    <button class="btn btn-outline-primary quick-btn" disabled>
+        📄 Applications
+    </button>
 
 </div>
 
@@ -153,7 +151,7 @@ body{
 
 <h6>Active Jobs</h6>
 
-<h2>12</h2>
+<h2>{{ active_jobs }}</h2>
 
 </div>
 
@@ -215,7 +213,7 @@ body{
 
 <div class="p-3">
 
-<h5 class="mb-3">Recent Applications</h5>
+<h5 class="mb-3">My Job Listings</h5>
 
 <table class="table table-hover align-middle">
 
@@ -223,15 +221,15 @@ body{
 
 <tr>
 
-<th>Candidate</th>
+<th>Job Title</th>
 
-<th>Role</th>
+<th>Company</th>
 
-<th>Experience</th>
+<th>Location</th>
 
 <th>Status</th>
 
-<th>Resume</th>
+<th>Deadline</th>
 
 <th>Action</th>
 
@@ -241,89 +239,75 @@ body{
 
 <tbody>
 
-<tr>
-
-<td>Rahul Sharma</td>
-
-<td>AI Engineer</td>
-
-<td>Fresher</td>
-
-<td><span class="badge pending">Pending</span></td>
-
-<td>
-
-<button class="btn btn-sm btn-outline-primary">
-View
-</button>
-
-</td>
-
-<td>
-
-<button class="btn btn-success btn-sm">
-Review
-</button>
-
-</td>
-
-</tr>
+{% for job in jobs %}
 
 <tr>
 
-<td>Priya Singh</td>
+    <td>{{ job.title }}</td>
 
-<td>Backend Developer</td>
+    <td>{{ job.company }}</td>
 
-<td>2 Years</td>
+    <td>{{ job.location }}</td>
 
-<td><span class="badge shortlisted">Shortlisted</span></td>
+    <td>
 
-<td>
+        {% if job.is_active %}
 
-<button class="btn btn-sm btn-outline-primary">
-View
-</button>
+            <span class="badge bg-success">
+                Active
+            </span>
 
-</td>
+        {% else %}
 
-<td>
+            <span class="badge bg-danger">
+                Closed
+            </span>
 
-<button class="btn btn-primary btn-sm">
-Interview
-</button>
+        {% endif %}
 
-</td>
+    </td>
+
+    <td>
+
+        {{ job.deadline }}
+
+    </td>
+
+    <td>
+
+        <a
+href="{% url 'edit_job' job.id %}"
+class="btn btn-warning btn-sm">
+
+Edit
+
+</a>
+
+<a
+href="{% url 'delete_job' job.id %}"
+class="btn btn-danger btn-sm">
+
+Delete
+
+</a>
+
+    </td>
 
 </tr>
+
+{% empty %}
 
 <tr>
 
-<td>Naveen Kumar</td>
+    <td colspan="6" class="text-center">
 
-<td>Frontend Developer</td>
+        No jobs posted yet.
 
-<td>1 Year</td>
-
-<td><span class="badge pending">Pending</span></td>
-
-<td>
-
-<button class="btn btn-sm btn-outline-primary">
-View
-</button>
-
-</td>
-
-<td>
-
-<button class="btn btn-warning btn-sm">
-Review
-</button>
-
-</td>
+    </td>
 
 </tr>
+
+{% endfor %}
 
 </tbody>
 
