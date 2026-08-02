@@ -18,6 +18,7 @@ class JobForm(forms.ModelForm):
             "location",
             "salary",
             "job_type",
+            "experience",
             "description",
             "requirements",
             "deadline",

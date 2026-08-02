@@ -47,6 +47,8 @@ class Job(models.Model):
 
     job_type = models.CharField(max_length=50)
 
+    experience = models.CharField(max_length=50)
+
     description = models.TextField()
 
     requirements = models.TextField()
