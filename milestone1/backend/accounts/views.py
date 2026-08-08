@@ -30,10 +30,10 @@ def login_view(request):
                 profile = UserProfile.objects.get(user=user)
 
                 if profile.role == "candidate":
-                    return redirect("candidate_dashboard")
+                    return redirect("candidate_profile")
 
                 elif profile.role == "recruiter":
-                    return redirect("recruiter_dashboard")
+                    return redirect("recruiter_profile")
 
             except UserProfile.DoesNotExist:
                 return redirect("/")

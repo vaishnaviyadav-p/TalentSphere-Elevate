@@ -18,7 +18,7 @@
 
         <div class="ms-auto">
 
-    {% if user.profile.role == "candidate" %}
+    {% if  user.userprofile.role == "candidate" %}
 
         <a href="{% url 'candidate_dashboard' %}" class="btn btn-light btn-sm">
             Dashboard
@@ -28,7 +28,7 @@
             Profile
         </a>
 
-    {% elif user.profile.role == "recruiter" %}
+    {% elif user.userprofile.role == "recruiter" %}
 
         <a href="{% url 'recruiter_dashboard' %}" class="btn btn-light btn-sm">
             Dashboard
