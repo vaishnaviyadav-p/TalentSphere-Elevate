@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container mt-5">
+
+    <div class="card shadow p-4">
+
+        <h2 class="mb-4">
+            Upload Resume
+        </h2>
+
+        <p class="text-muted">
+            Upload your resume in PDF or DOCX format.
+            Maximum file size: 5 MB.
+        </p>
+
+        <form method="POST" enctype="multipart/form-data">
+
+            {% csrf_token %}
+
+            <div class="mb-3">
+
+                <label for="{{ form.resume_file.id_for_label }}"
+                       class="form-label">
+                    Resume
+                </label>
+
+                {{ form.resume_file }}
+
+                {% if form.resume_file.errors %}
+                    <div class="text-danger mt-2">
+                        {{ form.resume_file.errors }}
+                    </div>
+                {% endif %}
+
+            </div>
+
+            <button
+                type="submit"
+                class="btn btn-primary">
+                Upload & Parse Resume
+            </button>
+
+            <a
+                href="{% url 'candidate_profile' %}"
+                class="btn btn-secondary">
+                Cancel
+            </a>
+
+        </form>
+
+    </div>
+
+</div>
+
+{% endblock %}
