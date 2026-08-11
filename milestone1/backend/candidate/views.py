@@ -1,8 +1,10 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 
-from .models import CandidateProfile, JobApplication
-from .forms import CandidateProfileForm
+
+from .models import CandidateProfile, ResumeData, JobApplication
+from .forms import CandidateProfileForm, ResumeUploadForm
+from .services.resume_parser import parse_resume
 from recruiter.models import Job
 
 from .skill_matching import (

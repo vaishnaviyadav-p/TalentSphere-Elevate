@@ -216,4 +216,8 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
-.DS_Store
+# Uploaded resumes
+milestone1/backend/media/resumes/
+
+# Local resume parser test file
+milestone1/backend/candidate/sample_resume.pdf.DS_Store
