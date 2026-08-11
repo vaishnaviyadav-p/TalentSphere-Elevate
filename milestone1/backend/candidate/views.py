@@ -5,12 +5,19 @@ from .models import CandidateProfile, JobApplication
 from .forms import CandidateProfileForm
 from recruiter.models import Job
 
+from .skill_matching import (
+    extract_required_skills,
+    calculate_skill_match,
+)
+
 
 # ---------------- Dashboard ----------------
 
 def candidate_dashboard(request):
 
-    applications = JobApplication.objects.filter(candidate=request.user)
+    applications = JobApplication.objects.filter(
+        candidate=request.user
+    )
 
     context = {
         "total": applications.count(),
@@ -31,7 +38,9 @@ def candidate_dashboard(request):
 
 def browse_jobs(request):
 
-    jobs = Job.objects.filter(is_active=True)
+    jobs = Job.objects.filter(
+        is_active=True
+    ).order_by("-created_at")
 
     return render(
         request,
@@ -48,14 +57,42 @@ def job_detail(request, job_id):
 
     job = get_object_or_404(
         Job,
-        id=job_id
+        id=job_id,
+        is_active=True
+    )
+
+    profile = CandidateProfile.objects.filter(
+        user=request.user
+    ).first()
+
+    candidate_skills = []
+
+    if profile and profile.skills:
+        candidate_skills = [
+            skill.strip()
+            for skill in profile.skills.split(",")
+            if skill.strip()
+        ]
+
+    # Extract required skills from job requirements
+    required_skills = extract_required_skills(
+        job.requirements
+    )
+
+    # Calculate ATS / Fit Score
+    result = calculate_skill_match(
+        candidate_skills,
+        required_skills
     )
 
     return render(
         request,
         "candidate/job_detail.html",
         {
-            "job": job
+            "job": job,
+            "fit_score": result["score"],
+            "matched_skills": result["matched_skills"],
+            "missing_skills": result["missing_skills"],
         }
     )
 
@@ -96,6 +133,45 @@ def my_applications(request):
         candidate=request.user
     ).select_related("job")
 
+    candidate_profile = CandidateProfile.objects.filter(
+        user=request.user
+    ).first()
+
+    candidate_skills = []
+
+    if candidate_profile and candidate_profile.skills:
+        candidate_skills = [
+            skill.strip()
+            for skill in candidate_profile.skills.split(",")
+            if skill.strip()
+        ]
+
+    for application in applications:
+
+        required_skills = extract_required_skills(
+            application.job.requirements
+        )
+
+        result = calculate_skill_match(
+            candidate_skills,
+            required_skills
+        )
+
+        application.fit_score = result["score"]
+        application.matched_skills = result["matched_skills"]
+        application.missing_skills = result["missing_skills"]
+
+        print(
+            "JOB:",
+            application.job.title,
+            "REQUIRED:",
+            required_skills,
+            "CANDIDATE:",
+            candidate_skills,
+            "SCORE:",
+            application.fit_score
+        )
+
     return render(
         request,
         "candidate/my_applications.html",
@@ -105,6 +181,7 @@ def my_applications(request):
     )
 
 
+
 # ---------------- Candidate Profile ----------------
 
 def candidate_profile(request):
@@ -112,7 +189,8 @@ def candidate_profile(request):
     profile, created = CandidateProfile.objects.get_or_create(
         user=request.user,
         defaults={
-            "full_name": request.user.get_full_name() or request.user.username,
+            "full_name": request.user.get_full_name()
+            or request.user.username,
             "phone": "",
             "location": "",
             "education": "",
@@ -138,7 +216,8 @@ def edit_candidate_profile(request):
     profile, created = CandidateProfile.objects.get_or_create(
         user=request.user,
         defaults={
-            "full_name": request.user.get_full_name() or request.user.username,
+            "full_name": request.user.get_full_name()
+            or request.user.username,
             "phone": "",
             "location": "",
             "education": "",
@@ -157,6 +236,7 @@ def edit_candidate_profile(request):
         )
 
         if form.is_valid():
+
             form.save()
 
             messages.success(
@@ -168,7 +248,9 @@ def edit_candidate_profile(request):
 
     else:
 
-        form = CandidateProfileForm(instance=profile)
+        form = CandidateProfileForm(
+            instance=profile
+        )
 
     return render(
         request,
@@ -177,3 +259,38 @@ def edit_candidate_profile(request):
             "form": form
         }
     )
+
+# ---------------- Candidate Dashboard ----------------
+
+def candidate_dashboard(request):
+
+    applications = JobApplication.objects.filter(
+        candidate=request.user
+    )
+
+    context = {
+        "total": applications.count(),
+
+        "applied": applications.filter(
+            status="Applied"
+        ).count(),
+
+        "under_review": applications.filter(
+            status="Shortlisted"
+        ).count(),
+
+        "interview": applications.filter(
+            status="Interview"
+        ).count(),
+
+        "rejected": applications.filter(
+            status="Rejected"
+        ).count(),
+    }
+
+    return render(
+        request,
+        "candidate/dashboard.html",
+        context
+    )
+

@@ -40,37 +40,59 @@
 
     <p>Welcome Candidate!</p>
 
-    <div class="row mt-4">
 
-        <div class="col-md-3">
-            <div class="card-box bg-primary">
-                <h3>4</h3>
-                Applications
-            </div>
+<div class="row mt-4">
+
+    <!-- Total Applications -->
+    <div class="col-md-3">
+        <div class="card-box bg-primary">
+
+            <h3>{{ total }}</h3>
+
+            Applications
+
         </div>
-
-        <div class="col-md-3">
-            <div class="card-box bg-warning">
-                <h3>2</h3>
-                Under Review
-            </div>
-        </div>
-
-        <div class="col-md-3">
-            <div class="card-box bg-success">
-                <h3>1</h3>
-                Interviews
-            </div>
-        </div>
-
-        <div class="col-md-3">
-            <div class="card-box bg-danger">
-                <h3>1</h3>
-                Rejected
-            </div>
-        </div>
-
     </div>
+
+
+    <!-- Under Review -->
+    <div class="col-md-3">
+        <div class="card-box bg-warning">
+
+            <h3>{{ under_review }}</h3>
+
+            Under Review
+
+        </div>
+    </div>
+
+
+    <!-- Interviews -->
+    <div class="col-md-3">
+        <div class="card-box bg-success">
+
+            <h3>{{ interview }}</h3>
+
+            Interviews
+
+        </div>
+    </div>
+
+
+    <!-- Rejected -->
+    <div class="col-md-3">
+        <div class="card-box bg-danger">
+
+            <h3>{{ rejected }}</h3>
+
+            Rejected
+
+        </div>
+    </div>
+
+</div>
+
+
 
     <h4 class="mt-5">Quick Actions</h4>
 

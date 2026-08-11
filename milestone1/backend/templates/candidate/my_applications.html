@@ -27,6 +27,7 @@ My Applications
             <th>Location</th>
             <th>Salary</th>
             <th>Applied On</th>
+            <th>ATS / Fit Score</th>
             <th>Status</th>
         </tr>
     </thead>
@@ -41,7 +42,9 @@ My Applications
         <td>{{ application.job.location }}</td>
         <td>₹ {{ application.job.salary }}</td>
         <td>{{ application.applied_at|date:"d M Y" }}</td>
-
+         <td> <strong> {{ application.fit_score }}% </strong> 
+            
+                </td>
         <td>
             {% if application.status == "Applied" %}
                 <span class="badge bg-primary">
