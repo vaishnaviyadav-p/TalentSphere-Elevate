@@ -1,0 +1,173 @@
+{% extends "base.html" %}
+
+{% block title %}{{ job.title }}{% endblock %}
+
+{% block content %}
+
+<div class="card shadow-lg p-4">
+
+<h2 class="mb-3">{{ job.title }}</h2>
+
+<h4 class="text-primary">{{ job.company }}</h4>
+
+<div class="row mt-4">
+
+    <div class="col-md-6">
+
+        <p>
+            <strong>📍 Location:</strong>
+            {{ job.location }}
+        </p>
+
+        <p>
+            <strong>💼 Job Type:</strong>
+            {{ job.job_type }}
+        </p>
+
+        <p>
+            <strong>👨‍💻 Experience:</strong>
+            {{ job.experience }}
+        </p>
+
+    </div>
+
+    <div class="col-md-6">
+
+        <p>
+            <strong>💰 Salary:</strong>
+            {{ job.salary }}
+        </p>
+
+        <p>
+            <strong>📅 Deadline:</strong>
+            {{ job.deadline }}
+        </p>
+
+        {% if job.is_active %}
+            <span class="badge bg-success">
+                Open
+            </span>
+        {% else %}
+            <span class="badge bg-danger">
+                Closed
+            </span>
+        {% endif %}
+
+    </div>
+
+</div>
+
+<hr>
+
+<h4>Job Description</h4>
+
+<p>
+    {{ job.description }}
+</p>
+
+<hr>
+
+<h4>Requirements</h4>
+
+<p style="white-space: pre-line;">
+    {{ job.requirements }}
+</p>
+
+<hr>
+
+<h4>ATS / Fit Score</h4>
+
+<div class="progress mb-3" style="height: 30px;">
+
+    <div
+        class="progress-bar bg-success"
+        role="progressbar"
+        style="width: {{ fit_score }}%;"
+        aria-valuenow="{{ fit_score }}"
+        aria-valuemin="0"
+        aria-valuemax="100">
+        {{ fit_score }}%
+    </div>
+
+</div>
+
+<p>
+    <strong>Matching Percentage:</strong>
+    {{ fit_score }}%
+</p>
+
+<h5 class="mt-4">
+    Matched Skills
+</h5>
+
+{% if matched_skills %}
+
+    {% for skill in matched_skills %}
+
+        <span class="badge bg-success me-1 mb-1">
+            ✓ {{ skill|title }}
+        </span>
+
+    {% endfor %}
+
+{% else %}
+
+    <p class="text-muted">
+        No matching skills found.
+    </p>
+
+{% endif %}
+
+<h5 class="mt-4">
+    Missing Skills
+</h5>
+
+{% if missing_skills %}
+
+    {% for skill in missing_skills %}
+
+        <span class="badge bg-danger me-1 mb-1">
+            ✗ {{ skill|title }}
+        </span>
+
+    {% endfor %}
+
+{% else %}
+
+    <div class="alert alert-success">
+        You have all the required skills for this job!
+    </div>
+
+{% endif %}
+
+<div class="mt-4">
+
+    {% if job.is_active %}
+
+        <a
+            href="{% url 'apply_job' job.id %}"
+            class="btn btn-success">
+            Apply Now
+        </a>
+
+    {% else %}
+
+        <button
+            class="btn btn-secondary"
+            disabled>
+            Job Closed
+        </button>
+
+    {% endif %}
+
+    <a
+        href="{% url 'browse_jobs' %}"
+        class="btn btn-outline-secondary">
+        Back
+    </a>
+
+</div>
+
+</div>
+
+{% endblock %}

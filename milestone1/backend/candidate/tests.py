@@ -34,6 +34,7 @@ class ResumeUploadTests(TestCase):
             experience="2 years",
             bio="Software engineer"
         )
+        self.client.force_login(self.user)
 
     def test_resume_upload_form_valid_pdf(self):
         """Test ResumeUploadForm accepts valid PDF file."""

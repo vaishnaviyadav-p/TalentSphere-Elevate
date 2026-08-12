@@ -1,0 +1,421 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<style>
+
+body{
+    background:#f4f7fb;
+    font-family: 'Segoe UI', sans-serif;
+}
+
+/* Header */
+
+.dashboard-header{
+    background:linear-gradient(135deg,#2563eb,#1e40af);
+    color:white;
+    padding:35px;
+    border-radius:18px;
+    margin-bottom:30px;
+    box-shadow:0 15px 35px rgba(0,0,0,.12);
+}
+
+.dashboard-header h2{
+    font-weight:700;
+}
+
+.dashboard-header p{
+    opacity:.9;
+    margin:0;
+}
+
+/* Cards */
+
+.stats-card{
+
+    background:white;
+    border:none;
+    border-radius:18px;
+    transition:.3s;
+    box-shadow:0 8px 25px rgba(0,0,0,.08);
+
+}
+
+.stats-card:hover{
+
+    transform:translateY(-6px);
+
+}
+
+.stats-card .card-body{
+
+    text-align:center;
+    padding:30px;
+
+}
+
+.stats-card h2{
+
+    font-size:34px;
+    color:#2563eb;
+    font-weight:bold;
+
+}
+
+.stats-card h6{
+
+    color:#64748b;
+
+}
+
+/* Quick Buttons */
+
+.quick-btn{
+
+    border-radius:12px;
+    padding:12px 18px;
+    font-weight:600;
+    margin-right:10px;
+    transition:transform .2s ease, box-shadow .2s ease, background-color .2s ease, border-color .2s ease;
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    min-height:44px;
+    line-height:1;
+
+}
+
+.quick-btn-icon{
+
+    width:16px;
+
+    height:16px;
+
+    flex:0 0 auto;
+
+}
+
+.post-job-btn,
+.applications-btn,
+.candidate-ranking-btn{
+
+    background:#2563eb;
+
+    border-color:#2563eb;
+
+    color:#fff;
+
+}
+
+.post-job-btn:hover,
+.post-job-btn:focus,
+.applications-btn:hover,
+.applications-btn:focus,
+.candidate-ranking-btn:hover,
+.candidate-ranking-btn:focus{
+
+    background:#1d4ed8;
+
+    border-color:#1d4ed8;
+
+    color:#fff;
+
+    transform:translateY(-1px);
+
+    box-shadow:0 10px 22px rgba(37,99,235,.18);
+
+}
+
+.applications-btn{
+
+    background:#1e40af;
+
+    border-color:#1e40af;
+
+    color:#fff;
+
+}
+
+.applications-btn:hover,
+.applications-btn:focus{
+
+    background:#1d4ed8;
+
+    border-color:#1d4ed8;
+
+    color:#fff;
+
+}
+
+.post-job-btn{
+
+    background:#2563eb;
+
+    border-color:#2563eb;
+
+    color:#fff;
+
+}
+
+/* Table */
+
+.table-card{
+
+    background:white;
+    border-radius:18px;
+    overflow:hidden;
+    box-shadow:0 8px 25px rgba(0,0,0,.08);
+
+}
+
+.table thead{
+
+    background:#2563eb;
+    color:white;
+
+}
+
+.badge{
+
+    padding:8px 12px;
+    border-radius:20px;
+    font-weight:500;
+
+}
+
+.badge.pending{
+
+    background:#fff3cd;
+    color:#856404;
+
+}
+
+.badge.shortlisted{
+
+    background:#d1fae5;
+    color:#047857;
+
+}
+
+</style>
+
+<div class="container mt-4">
+
+<div class="dashboard-header">
+
+<h2>Recruiter Dashboard</h2>
+
+<p>Manage job postings and applicants from one place.</p>
+
+<div class="mb-4">
+
+    <a href="{% url 'post_job' %}" class="btn quick-btn post-job-btn">
+        <svg class="quick-btn-icon" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+            <path d="M4 6.5C4 5.12 5.12 4 6.5 4H13.5L16 6.5V13.5C16 14.88 14.88 16 13.5 16H6.5C5.12 16 4 14.88 4 13.5V6.5Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
+            <path d="M10 7V13" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+            <path d="M7 10H13" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+        </svg>
+        Post Job
+    </a>
+
+    <button class="btn quick-btn applications-btn" disabled>
+        <svg class="quick-btn-icon" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+            <path d="M6 4.75H14C14.69 4.75 15.25 5.31 15.25 6V14C15.25 14.69 14.69 15.25 14 15.25H6C5.31 15.25 4.75 14.69 4.75 14V6C4.75 5.31 5.31 4.75 6 4.75Z" stroke="currentColor" stroke-width="1.5"/>
+            <path d="M7.5 8.25H12.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            <path d="M7.5 10.5H12.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            <path d="M7.5 12.75H10.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+        Applications
+    </button>
+
+    <a href="{% url 'priority_candidates' %}" class="btn quick-btn candidate-ranking-btn">
+        <svg class="quick-btn-icon" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+            <path d="M5 15.25V11.25" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+            <path d="M9.5 15.25V7.75" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+            <path d="M14 15.25V4.75" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+            <path d="M4 15.75H16" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+        </svg>
+        Candidate Ranking
+    </a>
+
+</div>
+
+<div class="row g-4">
+
+<div class="col-md-3">
+
+<div class="card stats-card">
+
+<div class="card-body">
+
+<h6>Active Jobs</h6>
+
+<h2>{{ active_jobs }}</h2>
+
+</div>
+
+</div>
+
+</div>
+
+<div class="col-md-3">
+
+<div class="card stats-card">
+
+<div class="card-body">
+
+<h6>Total Applications</h6>
+
+<h2>156</h2>
+
+</div>
+
+</div>
+
+</div>
+
+<div class="col-md-3">
+
+<div class="card stats-card">
+
+<div class="card-body">
+
+<h6>Shortlisted</h6>
+
+<h2>24</h2>
+
+</div>
+
+</div>
+
+</div>
+
+<div class="col-md-3">
+
+<div class="card stats-card">
+
+<div class="card-body">
+
+<h6>Interviews</h6>
+
+<h2>8</h2>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<div class="table-card mt-5">
+
+<div class="p-3">
+
+<h5 class="mb-3">My Job Listings</h5>
+
+<table class="table table-hover align-middle">
+
+<thead>
+
+<tr>
+
+<th>Job Title</th>
+
+<th>Company</th>
+
+<th>Location</th>
+
+<th>Status</th>
+
+<th>Deadline</th>
+
+<th>Action</th>
+
+</tr>
+
+</thead>
+
+<tbody>
+
+{% for job in jobs %}
+
+<tr>
+
+    <td>{{ job.title }}</td>
+
+    <td>{{ job.company }}</td>
+
+    <td>{{ job.location }}</td>
+
+    <td>
+
+        {% if job.is_active %}
+
+            <span class="badge bg-success">
+                Active
+            </span>
+
+        {% else %}
+
+            <span class="badge bg-danger">
+                Closed
+            </span>
+
+        {% endif %}
+
+    </td>
+
+    <td>
+
+        {{ job.deadline }}
+
+    </td>
+
+    <td>
+
+        <a
+href="{% url 'edit_job' job.id %}"
+class="btn btn-warning btn-sm">
+
+Edit
+
+</a>
+
+<a
+href="{% url 'delete_job' job.id %}"
+class="btn btn-danger btn-sm">
+
+Delete
+
+</a>
+
+    </td>
+
+</tr>
+
+{% empty %}
+
+<tr>
+
+    <td colspan="6" class="text-center">
+
+        No jobs posted yet.
+
+    </td>
+
+</tr>
+
+{% endfor %}
+
+</tbody>
+
+</table>
+
+</div>
+
+</div>
+
+</div>
+
+{% endblock %}

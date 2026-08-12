@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+
+{% block title %}
+My Applications
+{% endblock %}
+
+{% block content %}
+
+<h2 class="mb-4">My Applications</h2>
+
+{% if messages %}
+    {% for message in messages %}
+        <div class="alert alert-success">
+            {{ message }}
+        </div>
+    {% endfor %}
+{% endif %}
+
+{% if applications %}
+
+<table class="table table-bordered table-hover">
+
+    <thead class="table-dark">
+        <tr>
+            <th>Job</th>
+            <th>Company</th>
+            <th>Location</th>
+            <th>Salary</th>
+            <th>Applied On</th>
+            <th>ATS / Fit Score</th>
+            <th>Status</th>
+        </tr>
+    </thead>
+
+    <tbody>
+
+    {% for application in applications %}
+
+    <tr>
+        <td>{{ application.job.title }}</td>
+        <td>{{ application.job.company }}</td>
+        <td>{{ application.job.location }}</td>
+        <td>₹ {{ application.job.salary }}</td>
+        <td>{{ application.applied_at|date:"d M Y" }}</td>
+         <td> <strong> {{ application.fit_score }}% </strong> 
+            
+                </td>
+        <td>
+            {% if application.status == "Applied" %}
+                <span class="badge bg-primary">
+                    {{ application.status }}
+                </span>
+
+            {% elif application.status == "Shortlisted" %}
+                <span class="badge bg-success">
+                    {{ application.status }}
+                </span>
+
+            {% elif application.status == "Interview" %}
+                <span class="badge bg-warning text-dark">
+                    {{ application.status }}
+                </span>
+
+            {% elif application.status == "Rejected" %}
+                <span class="badge bg-danger">
+                    {{ application.status }}
+                </span>
+
+            {% endif %}
+        </td>
+
+    </tr>
+
+    {% endfor %}
+
+    </tbody>
+
+</table>
+
+{% else %}
+
+<div class="alert alert-info">
+    You haven't applied for any jobs yet.
+</div>
+
+{% endif %}
+
+<div class="mt-4">
+    <a href="{% url 'candidate_dashboard' %}" class="btn btn-secondary">
+        ← Back 
+    </a>
+</div>
+{% endblock %}

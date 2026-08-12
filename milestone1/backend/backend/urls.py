@@ -7,23 +7,31 @@ from accounts.views import home
 
 
 urlpatterns = [
-    path('', home, name='home'),
-    path('admin/', admin.site.urls),
+    path("admin/", admin.site.urls),
 
+    # Accounts
+    path("", include("accounts.urls")),
+
+    # Candidate
     path(
-        'candidate/',
-        include('candidate.urls')
+        "candidate/",
+        include("candidate.urls")
     ),
 
+
+    # Recruiter
     path(
-        'recruiter/',
-        include('recruiter.urls')
+        "recruiter/",
+        include("recruiter.urls")
     ),
 ]
 
 
 if settings.DEBUG:
     urlpatterns += static(
+        
         settings.MEDIA_URL,
+       
         document_root=settings.MEDIA_ROOT
+    ,
     )

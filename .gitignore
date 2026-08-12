@@ -220,4 +220,4 @@ __marimo__/
 milestone1/backend/media/resumes/
 
 # Local resume parser test file
-milestone1/backend/candidate/sample_resume.pdf
+milestone1/backend/candidate/sample_resume.pdf.DS_Store
