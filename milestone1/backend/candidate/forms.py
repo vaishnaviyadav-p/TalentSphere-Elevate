@@ -62,6 +62,12 @@ class ResumeUploadForm(forms.ModelForm):
             )
         }
 
+        error_messages = {
+            'resume_file': {
+                'required': 'Please select a resume.'
+            }
+        }
+
     def clean_resume_file(self):
         resume = self.cleaned_data.get('resume_file')
 
