@@ -52,7 +52,6 @@ def browse_jobs(request):
         }
     )
 
-
 # ---------------- Job Detail ----------------
 
 def job_detail(request, job_id):
@@ -69,12 +68,17 @@ def job_detail(request, job_id):
 
     candidate_skills = []
 
-    if profile and profile.skills:
-        candidate_skills = [
-            skill.strip()
-            for skill in profile.skills.split(",")
-            if skill.strip()
-        ]
+    if profile:
+        resume = ResumeData.objects.filter(
+            candidate=profile
+        ).first()
+
+        if resume and resume.parsed_skills:
+            candidate_skills = [
+                skill.strip()
+                for skill in resume.parsed_skills
+                if skill.strip()
+            ]
 
     # Extract required skills from job requirements
     required_skills = extract_required_skills(
@@ -97,6 +101,9 @@ def job_detail(request, job_id):
             "missing_skills": result["missing_skills"],
         }
     )
+
+
+
 
 
 # ---------------- Apply Job ----------------
@@ -126,8 +133,8 @@ def apply_job(request, job_id):
 
     return redirect("my_applications")
 
-
 # ---------------- My Applications ----------------
+
 def my_applications(request):
 
     applications = JobApplication.objects.filter(
@@ -138,21 +145,23 @@ def my_applications(request):
         user=request.user
     ).first()
 
-    print("LOGGED IN USER:", request.user)
-    print("PROFILE:", candidate_profile)
-
-    if candidate_profile:
-        print("PROFILE SKILLS:", candidate_profile.skills)
-
     candidate_skills = []
 
-    if candidate_profile and candidate_profile.skills:
+    if candidate_profile:
 
-        candidate_skills = [
-            skill.strip()
-            for skill in candidate_profile.skills.replace(",", " ").split()
-            if skill.strip()
-        ]
+        resume = ResumeData.objects.filter(
+            candidate=candidate_profile
+        ).first()
+
+        if resume and resume.parsed_skills:
+
+            candidate_skills = [
+                skill.strip()
+                for skill in resume.parsed_skills
+                if skill.strip()
+            ]
+
+            print("RESUME SKILLS:", candidate_skills)
 
     for application in applications:
 
