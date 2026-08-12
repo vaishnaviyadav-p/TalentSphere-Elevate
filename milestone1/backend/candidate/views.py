@@ -296,3 +296,74 @@ def candidate_dashboard(request):
         context
     )
 
+# ---------------- Upload Resume ----------------
+
+def upload_resume(request):
+
+    profile = CandidateProfile.objects.first()
+
+    # Make sure a candidate profile exists
+    if not profile:
+        messages.error(
+            request,
+            "Candidate profile not found. Please create a profile first."
+        )
+        return redirect("candidate_profile")
+
+    if request.method == "POST":
+
+        form = ResumeUploadForm(
+            request.POST,
+            request.FILES
+        )
+
+        if form.is_valid():
+
+            resume_data, created = ResumeData.objects.get_or_create(
+                candidate=profile
+            )
+
+            resume_data.resume_file = form.cleaned_data["resume_file"]
+            resume_data.save()
+
+            try:
+
+                parsed_data = parse_resume(
+                    resume_data.resume_file.path
+                )
+
+                resume_data.extracted_text = parsed_data["extracted_text"]
+                resume_data.parsed_name = parsed_data["name"]
+                resume_data.parsed_email = parsed_data["email"]
+                resume_data.parsed_phone = parsed_data["phone"]
+                resume_data.parsed_skills = parsed_data["skills"]
+                resume_data.parsed_experience = parsed_data["experience"]
+                resume_data.parsed_projects = parsed_data["projects"]
+                resume_data.parsed_keywords = parsed_data["keywords"]
+
+                resume_data.save()
+
+                messages.success(
+                    request,
+                    "Resume uploaded and parsed successfully!"
+                )
+
+            except Exception as error:
+
+                messages.error(
+                    request,
+                    f"Resume parsing failed: {error}"
+                )
+
+            return redirect("candidate_profile")
+
+    else:
+        form = ResumeUploadForm()
+
+    return render(
+        request,
+        "candidate/upload_resume.html",
+        {
+            "form": form
+        }
+    )
