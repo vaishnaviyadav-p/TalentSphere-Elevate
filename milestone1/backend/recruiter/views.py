@@ -1,11 +1,9 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.core.exceptions import PermissionDenied
 from django.contrib.auth.decorators import login_required
 
 from accounts.models import UserProfile
-
-from candidate.models import JobApplication
-
+from candidate.models import JobApplication, CandidateProfile, ResumeData
 from .models import RecruiterProfile, Job
 from .forms import RecruiterProfileForm, JobForm
 from .ranking import (
@@ -241,6 +239,7 @@ def priority_candidates(request):
         context,
     )
 
+
 @login_required
 def edit_job(request, job_id):
 
@@ -286,3 +285,20 @@ def delete_job(request, job_id):
     job.delete()
 
     return redirect("recruiter_dashboard")
+
+
+@login_required
+def view_candidate_detail(request, candidate_id):
+    recruiter_profile_obj = RecruiterProfile.objects.first()
+    candidate = get_object_or_404(CandidateProfile, id=candidate_id)
+    resume_data = ResumeData.objects.filter(candidate=candidate).first()
+
+    return render(
+        request,
+        "recruiter/candidate_detail.html",
+        {
+            "recruiter_profile": recruiter_profile_obj,
+            "candidate": candidate,
+            "resume_data": resume_data,
+        }
+    )
