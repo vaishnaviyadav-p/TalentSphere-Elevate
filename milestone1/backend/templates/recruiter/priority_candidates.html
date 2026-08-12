@@ -1,0 +1,372 @@
+{% extends "base.html" %}
+
+{% block title %}Candidate Ranking{% endblock %}
+
+{% block content %}
+
+<style>
+    .priority-shell {
+        background: #f8fbff;
+        border-radius: 18px;
+        padding: 24px;
+        box-shadow: 0 12px 28px rgba(15, 23, 42, 0.08);
+    }
+
+    .priority-hero {
+        background: linear-gradient(135deg, #1d4ed8, #1e40af);
+        color: #fff;
+        border-radius: 16px;
+        padding: 22px 24px;
+        margin-bottom: 20px;
+    }
+
+    .priority-hero p {
+        margin: 0;
+        opacity: .92;
+    }
+
+    .filter-card,
+    .results-card {
+        background: #fff;
+        border-radius: 16px;
+        box-shadow: 0 8px 22px rgba(15, 23, 42, 0.08);
+    }
+
+    .filter-label {
+        font-size: .78rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .04em;
+        color: #475569;
+        margin-bottom: .45rem;
+    }
+
+    .skill-badge {
+        display: inline-flex;
+        align-items: center;
+        background: #eff6ff;
+        color: #1d4ed8;
+        border: 1px solid #bfdbfe;
+        border-radius: 999px;
+        padding: .35rem .7rem;
+        font-size: .85rem;
+        font-weight: 600;
+        margin: 0 .35rem .35rem 0;
+        white-space: nowrap;
+    }
+
+    .score-pill {
+        display: inline-flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-width: 88px;
+        padding: .45rem .7rem;
+        border-radius: 14px;
+        background: #e2e8f0;
+        color: #0f172a;
+        font-weight: 800;
+        line-height: 1.1;
+        gap: 2px;
+    }
+
+    .rank-number {
+        width: 42px;
+        height: 42px;
+        border-radius: 12px;
+        background: #dbeafe;
+        color: #1d4ed8;
+        font-weight: 800;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .score-pill.excellent {
+        background: #dcfce7;
+        color: #166534;
+    }
+
+    .score-pill.strong {
+        background: #dbeafe;
+        color: #1d4ed8;
+    }
+
+    .score-pill.moderate {
+        background: #fef3c7;
+        color: #92400e;
+    }
+
+    .score-pill.low {
+        background: #fee2e2;
+        color: #991b1b;
+    }
+
+    .score-value {
+        font-size: 1rem;
+    }
+
+    .score-label {
+        font-size: .7rem;
+        font-weight: 700;
+        letter-spacing: .02em;
+        text-transform: uppercase;
+        opacity: .9;
+    }
+
+    .filter-panel-title,
+    .results-panel-title {
+        font-size: .95rem;
+        font-weight: 700;
+        color: #0f172a;
+        margin-bottom: .35rem;
+    }
+
+    .filter-panel-subtitle {
+        color: #64748b;
+        margin-bottom: 0;
+    }
+
+    .filter-actions .btn {
+        min-height: 42px;
+        border-radius: 12px;
+        font-weight: 600;
+    }
+
+    .filter-form .form-control,
+    .filter-form .form-select {
+        min-height: 42px;
+        border-radius: 12px;
+    }
+
+    .filter-grid {
+        display: grid;
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+        gap: 14px;
+    }
+
+    .filter-actions {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+    .table thead th {
+        white-space: nowrap;
+    }
+
+    .table tbody td {
+        vertical-align: middle;
+    }
+
+    .empty-state {
+        padding: 40px 20px;
+        text-align: center;
+        color: #64748b;
+    }
+
+    .empty-state h5 {
+        color: #0f172a;
+        margin-bottom: .35rem;
+    }
+
+    .empty-state p {
+        margin: 0;
+    }
+
+    @media (max-width: 991.98px) {
+        .filter-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+    }
+
+    @media (max-width: 575.98px) {
+        .priority-shell {
+            padding: 16px;
+        }
+
+        .filter-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+<div class="container py-4">
+    <div class="priority-shell">
+        <div class="priority-hero">
+            <h2 class="mb-2">Candidate Ranking</h2>
+            <p>Review applicants ranked by ATS match score and refine results using job, score, skills, experience, and application status filters.</p>
+        </div>
+
+        <div class="filter-card p-3 p-lg-4 mb-4">
+            <div class="mb-3">
+                <div class="filter-panel-title">Filter Applicants</div>
+                <p class="filter-panel-subtitle">Narrow the applicant list using one or more criteria.</p>
+            </div>
+
+            <form method="get" class="filter-form">
+                <div class="filter-grid">
+                <div>
+                    <div class="filter-label">Job</div>
+                    <select name="job" class="form-select">
+                        <option value="">All Jobs</option>
+                        {% for job in jobs %}
+                            <option value="{{ job.id }}" {% if selected_job == job.id|stringformat:"s" %}selected{% endif %}>
+                                {{ job.title }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div>
+                    <div class="filter-label">ATS Score</div>
+                    <select name="score" class="form-select">
+                        {% for value, label in score_filter_options %}
+                            <option value="{{ value }}" {% if selected_score == value %}selected{% endif %}>
+                                {{ label }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div>
+                    <div class="filter-label">Application Status</div>
+                    <select name="status" class="form-select">
+                        <option value="">All Applications</option>
+                        {% for value, label in status_filter_options %}
+                            <option value="{{ value }}" {% if selected_status == value %}selected{% endif %}>
+                                {{ label }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div>
+                    <div class="filter-label">Skills</div>
+                    <select name="skill" class="form-select">
+                        <option value="">All Skills</option>
+                        {% for skill in skill_filter_options %}
+                            <option value="{{ skill }}" {% if selected_skill|lower == skill|lower %}selected{% endif %}>
+                                {{ skill|title }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div>
+                    <div class="filter-label">Experience</div>
+                    <select name="experience" class="form-select">
+                        {% for value, label in experience_filter_options %}
+                            <option value="{{ value }}" {% if selected_experience == value %}selected{% endif %}>
+                                {{ label }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                </div>
+
+                <div class="filter-actions mt-3">
+                    <button type="submit" class="btn btn-primary">Apply Filters</button>
+                    <a href="{% url 'priority_candidates' %}" class="btn btn-outline-secondary">Clear</a>
+                </div>
+            </form>
+        </div>
+
+        {% if invalid_job_filter %}
+            <div class="alert alert-warning">
+                The selected job is not available for this recruiter.
+            </div>
+        {% endif %}
+
+        <div class="results-card p-3 p-lg-4">
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-3">
+                <div>
+                    <div class="results-panel-title">Ranked Applicants</div>
+                    <p class="text-muted mb-0">{{ total_candidates }} candidate application{{ total_candidates|pluralize }} found.</p>
+                </div>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-primary">
+                        <tr>
+                            <th>Rank</th>
+                            <th>Candidate</th>
+                            <th>Job</th>
+                            <th>Score</th>
+                            <th>Skills</th>
+                            <th>Experience</th>
+                            <th>Status</th>
+                            <th>Applied</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for row in applications %}
+                            <tr>
+                                <td>
+                                    <span class="rank-number">{{ forloop.counter }}</span>
+                                </td>
+                                <td>
+                                    <div class="fw-semibold">{{ row.candidate_name }}</div>
+                                </td>
+                                <td>
+                                    <div class="fw-semibold">{{ row.job_title }}</div>
+                                </td>
+                                <td>
+                                    <span class="score-pill {% if row.score >= 90 %}excellent{% elif row.score >= 75 %}strong{% elif row.score >= 60 %}moderate{% else %}low{% endif %}">
+                                        <span class="score-value">{{ row.score_display }}</span>
+                                        <span class="score-label">{% if row.score >= 90 %}Excellent Match{% elif row.score >= 75 %}Strong Match{% elif row.score >= 60 %}Moderate Match{% else %}Low Match{% endif %}</span>
+                                    </span>
+                                </td>
+                                <td>
+                                    {% if row.candidate_skills %}
+                                        {% for skill in row.candidate_skills %}
+                                            <span class="skill-badge">{{ skill|title }}</span>
+                                        {% endfor %}
+                                    {% else %}
+                                        <span class="text-muted">No skills listed</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if row.candidate_experience %}
+                                        {{ row.candidate_experience }}
+                                    {% else %}
+                                        <span class="text-muted">Not provided</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if row.application.status == "Applied" %}
+                                        <span class="badge bg-primary">{{ row.application.status }}</span>
+                                    {% elif row.application.status == "Shortlisted" %}
+                                        <span class="badge bg-success">{{ row.application.status }}</span>
+                                    {% elif row.application.status == "Interview" %}
+                                        <span class="badge bg-warning text-dark">{{ row.application.status }}</span>
+                                    {% elif row.application.status == "Rejected" %}
+                                        <span class="badge bg-danger">{{ row.application.status }}</span>
+                                    {% else %}
+                                        <span class="badge bg-secondary">{{ row.application.status }}</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {{ row.applied_at|date:"d M Y" }}
+                                </td>
+                            </tr>
+                        {% empty %}
+                            <tr>
+                                <td colspan="8">
+                                    <div class="empty-state">
+                                        <h5>No candidates match the current filters.</h5>
+                                        <p>Try adjusting your filters or check back when new applications are received.</p>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
