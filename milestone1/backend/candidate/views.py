@@ -128,7 +128,6 @@ def apply_job(request, job_id):
 
 
 # ---------------- My Applications ----------------
-
 def my_applications(request):
 
     applications = JobApplication.objects.filter(
@@ -139,12 +138,19 @@ def my_applications(request):
         user=request.user
     ).first()
 
+    print("LOGGED IN USER:", request.user)
+    print("PROFILE:", candidate_profile)
+
+    if candidate_profile:
+        print("PROFILE SKILLS:", candidate_profile.skills)
+
     candidate_skills = []
 
     if candidate_profile and candidate_profile.skills:
+
         candidate_skills = [
             skill.strip()
-            for skill in candidate_profile.skills.split(",")
+            for skill in candidate_profile.skills.replace(",", " ").split()
             if skill.strip()
         ]
 
@@ -202,11 +208,18 @@ def candidate_profile(request):
         }
     )
 
+    resume_data = ResumeData.objects.filter(
+        candidate=profile
+    ).first()
+
     return render(
         request,
         "candidate/profile.html",
         {
-            "profile": profile
+            "profile": profile,
+            "resume_data":
+        resume_data
+
         }
     )
 
@@ -300,7 +313,7 @@ def candidate_dashboard(request):
 
 def upload_resume(request):
 
-    profile = CandidateProfile.objects.first()
+    profile = CandidateProfile.objects.filter(user=request.user).first()
 
     # Make sure a candidate profile exists
     if not profile:
@@ -331,6 +344,9 @@ def upload_resume(request):
                 parsed_data = parse_resume(
                     resume_data.resume_file.path
                 )
+                print("========== RESUME TEXT ==========")
+                print(parsed_data["extracted_text"])
+                print("=================================")
 
                 resume_data.extracted_text = parsed_data["extracted_text"]
                 resume_data.parsed_name = parsed_data["name"]
