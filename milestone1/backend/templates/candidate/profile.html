@@ -5,112 +5,87 @@
 {% block content %}
 
 
-<div class="card shadow-lg border-0 p-4">
+<div class="row">
 
-    <!-- ================= PROFILE HEADER ================= -->
+    <!-- LEFT SIDE : PROFILE -->
+    <div class="col-md-5">
+        <div class="card shadow-lg border-0 p-4 h-100">
 
-    <div class="text-center">
+            <div class="text-center">
 
-        {% if profile.profile_image %}
-            <img
-                src="{{ profile.profile_image.url }}"
-                class="profile-image mb-3"
-            >
-        {% else %}
-            <img
-                src="https://ui-avatars.com/api/?name={{ profile.full_name|default:'Candidate' }}&background=0D6EFD&color=fff&size=200"
-                class="profile-image mb-3"
-            >
-        {% endif %}
+                {% if profile.profile_image %}
+                    <img src="{{ profile.profile_image.url }}" class="profile-image mb-3">
+                {% else %}
+                    <img src="https://ui-avatars.com/api/?name={{ profile.full_name|default:'Candidate' }}&background=0D6EFD&color=fff&size=200"
+                         class="profile-image mb-3">
+                {% endif %}
 
-        <h2 class="fw-bold">
-            {{ profile.full_name }}
-        </h2>
+                <h2 class="fw-bold">{{ profile.full_name }}</h2>
 
-        <p class="text-muted fs-5">
-            {{ profile.education }}
-        </p>
+                <p class="text-muted fs-5">
+                    {{ profile.education }}
+                </p>
 
-    </div>
+            </div>
 
-    <hr>
+            <hr>
 
+            <div class="row">
 
-    <!-- ================= BASIC PROFILE INFORMATION ================= -->
+                <div class="col-6">
+                    <p><strong>📞 Phone:</strong> {{ profile.phone }}</p>
+                    <p><strong>📍 Location:</strong> {{ profile.location }}</p>
+                </div>
 
-    <div class="row">
+                <div class="col-6">
+                    <p><strong>🎓 Education:</strong> {{ profile.education }}</p>
+                    <p><strong>💼 Experience:</strong> {{ profile.experience }}</p>
+                </div>
 
-        <div class="col-md-6">
+            </div>
 
-            <p>
-                <strong>📞 Phone:</strong>
-                {{ profile.phone }}
-            </p>
+            <hr>
 
-            <p>
-                <strong>📍 Location:</strong>
-                {{ profile.location }}
-            </p>
+            <h4>🛠 Skills</h4>
+            <p>{{ profile.skills }}</p>
+
+            <h4>📝 About Me</h4>
+            <p>{{ profile.bio }}</p>
+
+            <!-- BUTTONS BELOW PROFILE -->
+            <div class="text-center mt-4">
+
+                <a href="{% url 'edit_candidate_profile' %}"
+                   class="btn btn-primary">
+                    Edit Profile
+                </a>
+
+                <a href="{% url 'upload_resume' %}"
+                   class="btn btn-success ms-2">
+                    📄 Upload Resume
+                </a>
+
+            </div>
 
         </div>
-
-        <div class="col-md-6">
-
-            <p>
-                <strong>🎓 Education:</strong>
-                {{ profile.education }}
-            </p>
-
-            <p>
-                <strong>💼 Experience:</strong>
-                {{ profile.experience }}
-            </p>
-
-        </div>
-
     </div>
 
-    <hr>
+    <!-- RIGHT SIDE : RESUME ANALYSIS -->
+    <div class="col-md-7">
 
+        <div class="card shadow-lg border-0 p-4">
 
-    <!-- ================= EXISTING SKILLS ================= -->
+            <h3 class="fw-bold">📄 Resume Analysis</h3>
 
-    <h4>🛠 Skills</h4>
+            <p class="text-muted">
+                Information automatically extracted from your uploaded resume.
+            </p>
 
-    <p>
-        {{ profile.skills }}
-    </p>
+            <hr>
 
+            
 
-    <!-- ================= ABOUT ME ================= -->
-
-    <h4>📝 About Me</h4>
-
-    <p>
-        {{ profile.bio }}
-    </p>
-
-
-    <!-- ===================================================== -->
-    <!-- ================= RESUME ANALYSIS =================== -->
-    <!-- ===================================================== -->
-
-    <hr>
-
-    <div class="mt-4">
-
-        <h3 class="fw-bold">
-            📄 Resume Analysis
-        </h3>
-
-        <p class="text-muted">
-            Information automatically extracted from your uploaded resume.
-        </p>
-
-    </div>
-
-
-    {% if resume_data %}
+                {% if resume_data %}
 
 
         <!-- ================= RESUME FILE ================= -->
@@ -187,7 +162,7 @@
         <div class="card border-0 shadow-sm p-3 mb-3">
 
             <h5 class="fw-bold">
-                🛠 Extracted Skills
+                🛠️ Extracted Skills
             </h5>
 
             {% if resume_data.parsed_skills %}
@@ -333,22 +308,9 @@
 
     {% endif %}
 
+                
 
-    <!-- ================= BUTTONS ================= -->
-
-    <div class="text-center mt-4">
-
-        <a
-            href="{% url 'edit_candidate_profile' %}"
-            class="btn btn-primary btn-lg px-5">
-            Edit Profile
-        </a>
-
-        <a
-            href="{% url 'upload_resume' %}"
-            class="btn btn-success btn-lg px-5 ms-2">
-            📄 Upload / Update Resume
-        </a>
+        </div>
 
     </div>
 
