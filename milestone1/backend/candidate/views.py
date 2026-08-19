@@ -1,7 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 
-
 from .models import CandidateProfile, ResumeData, JobApplication
 from .forms import CandidateProfileForm, ResumeUploadForm
 from .services.resume_parser import parse_resume
@@ -13,7 +12,9 @@ from .skill_matching import (
 )
 
 
-# ---------------- Dashboard ----------------
+# ============================================================
+# Candidate Dashboard
+# ============================================================
 
 def candidate_dashboard(request):
 
@@ -21,12 +22,79 @@ def candidate_dashboard(request):
         candidate=request.user
     )
 
+    # ---------------- Basic Application Metrics ----------------
+
+    total = applications.count()
+
+    applied = applications.filter(
+        status="Applied"
+    ).count()
+
+    under_review = applications.filter(
+        status="Under Review"
+    ).count()
+
+    shortlisted = applications.filter(
+        status="Shortlisted"
+    ).count()
+
+    interviews = applications.filter(
+        status="Interview"
+    ).count()
+
+    rejected = applications.filter(
+        status="Rejected"
+    ).count()
+
+    selected = applications.filter(
+        status="Selected"
+    ).count()
+
+    # ---------------- Candidate Metrics ----------------
+
+    # Application Success Rate
+    if total > 0:
+        success_rate = round(
+            ((shortlisted + selected) / total) * 100,
+            1
+        )
+    else:
+        success_rate = 0
+
+    # Interview Conversion Rate
+    if total > 0:
+        interview_rate = round(
+            (interviews / total) * 100,
+            1
+        )
+    else:
+        interview_rate = 0
+
+    # ---------------- Recent Applications ----------------
+
+    recent_applications = applications.select_related(
+        "job"
+    ).order_by("-id")[:5]
+
+    # ---------------- Context ----------------
+
     context = {
-        "total": applications.count(),
-        "applied": applications.filter(status="Applied").count(),
-        "shortlisted": applications.filter(status="Shortlisted").count(),
-        "interview": applications.filter(status="Interview").count(),
-        "rejected": applications.filter(status="Rejected").count(),
+
+        # Existing dashboard metrics
+        "total": total,
+        "applied": applied,
+        "under_review": under_review,
+        "shortlisted": shortlisted,
+        "interview": interviews,
+        "rejected": rejected,
+
+        # Additional candidate metrics
+        "selected": selected,
+        "success_rate": success_rate,
+        "interview_rate": interview_rate,
+
+        # Recent applications
+        "recent_applications": recent_applications,
     }
 
     return render(
@@ -36,7 +104,9 @@ def candidate_dashboard(request):
     )
 
 
-# ---------------- Browse Jobs ----------------
+# ============================================================
+# Browse Jobs
+# ============================================================
 
 def browse_jobs(request):
 
@@ -52,7 +122,10 @@ def browse_jobs(request):
         }
     )
 
-# ---------------- Job Detail ----------------
+
+# ============================================================
+# Job Detail
+# ============================================================
 
 def job_detail(request, job_id):
 
@@ -69,11 +142,13 @@ def job_detail(request, job_id):
     candidate_skills = []
 
     if profile:
+
         resume = ResumeData.objects.filter(
             candidate=profile
         ).first()
 
         if resume and resume.parsed_skills:
+
             candidate_skills = [
                 skill.strip()
                 for skill in resume.parsed_skills
@@ -103,10 +178,9 @@ def job_detail(request, job_id):
     )
 
 
-
-
-
-# ---------------- Apply Job ----------------
+# ============================================================
+# Apply Job
+# ============================================================
 
 def apply_job(request, job_id):
 
@@ -121,11 +195,14 @@ def apply_job(request, job_id):
     )
 
     if created:
+
         messages.success(
             request,
             "Application submitted successfully!"
         )
+
     else:
+
         messages.warning(
             request,
             "You have already applied for this job."
@@ -133,7 +210,10 @@ def apply_job(request, job_id):
 
     return redirect("my_applications")
 
-# ---------------- My Applications ----------------
+
+# ============================================================
+# My Applications
+# ============================================================
 
 def my_applications(request):
 
@@ -161,7 +241,10 @@ def my_applications(request):
                 if skill.strip()
             ]
 
-            print("RESUME SKILLS:", candidate_skills)
+            print(
+                "RESUME SKILLS:",
+                candidate_skills
+            )
 
     for application in applications:
 
@@ -175,8 +258,14 @@ def my_applications(request):
         )
 
         application.fit_score = result["score"]
-        application.matched_skills = result["matched_skills"]
-        application.missing_skills = result["missing_skills"]
+
+        application.matched_skills = (
+            result["matched_skills"]
+        )
+
+        application.missing_skills = (
+            result["missing_skills"]
+        )
 
         print(
             "JOB:",
@@ -198,8 +287,9 @@ def my_applications(request):
     )
 
 
-
-# ---------------- Candidate Profile ----------------
+# ============================================================
+# Candidate Profile
+# ============================================================
 
 def candidate_profile(request):
 
@@ -208,6 +298,7 @@ def candidate_profile(request):
         defaults={
             "full_name": request.user.get_full_name()
             or request.user.username,
+
             "phone": "",
             "location": "",
             "education": "",
@@ -226,14 +317,14 @@ def candidate_profile(request):
         "candidate/profile.html",
         {
             "profile": profile,
-            "resume_data":
-        resume_data
-
+            "resume_data": resume_data
         }
     )
 
 
-# ---------------- Edit Profile ----------------
+# ============================================================
+# Edit Candidate Profile
+# ============================================================
 
 def edit_candidate_profile(request):
 
@@ -242,6 +333,7 @@ def edit_candidate_profile(request):
         defaults={
             "full_name": request.user.get_full_name()
             or request.user.username,
+
             "phone": "",
             "location": "",
             "education": "",
@@ -268,7 +360,9 @@ def edit_candidate_profile(request):
                 "Profile updated successfully!"
             )
 
-            return redirect("candidate_profile")
+            return redirect(
+                "candidate_profile"
+            )
 
     else:
 
@@ -284,53 +378,28 @@ def edit_candidate_profile(request):
         }
     )
 
-# ---------------- Candidate Dashboard ----------------
 
-def candidate_dashboard(request):
-
-    applications = JobApplication.objects.filter(
-        candidate=request.user
-    )
-
-    context = {
-        "total": applications.count(),
-
-        "applied": applications.filter(
-            status="Applied"
-        ).count(),
-
-        "under_review": applications.filter(
-            status="Shortlisted"
-        ).count(),
-
-        "interview": applications.filter(
-            status="Interview"
-        ).count(),
-
-        "rejected": applications.filter(
-            status="Rejected"
-        ).count(),
-    }
-
-    return render(
-        request,
-        "candidate/dashboard.html",
-        context
-    )
-
-# ---------------- Upload Resume ----------------
+# ============================================================
+# Upload Resume
+# ============================================================
 
 def upload_resume(request):
 
-    profile = CandidateProfile.objects.filter(user=request.user).first()
+    profile = CandidateProfile.objects.filter(
+        user=request.user
+    ).first()
 
     # Make sure a candidate profile exists
     if not profile:
+
         messages.error(
             request,
             "Candidate profile not found. Please create a profile first."
         )
-        return redirect("candidate_profile")
+
+        return redirect(
+            "candidate_profile"
+        )
 
     if request.method == "POST":
 
@@ -345,26 +414,63 @@ def upload_resume(request):
                 candidate=profile
             )
 
-            resume_data.resume_file = form.cleaned_data["resume_file"]
+            resume_data.resume_file = (
+                form.cleaned_data["resume_file"]
+            )
+
             resume_data.save()
 
             try:
 
+                # Parse uploaded resume
                 parsed_data = parse_resume(
                     resume_data.resume_file.path
                 )
-                print("========== RESUME TEXT ==========")
-                print(parsed_data["extracted_text"])
-                print("=================================")
 
-                resume_data.extracted_text = parsed_data["extracted_text"]
-                resume_data.parsed_name = parsed_data["name"]
-                resume_data.parsed_email = parsed_data["email"]
-                resume_data.parsed_phone = parsed_data["phone"]
-                resume_data.parsed_skills = parsed_data["skills"]
-                resume_data.parsed_experience = parsed_data["experience"]
-                resume_data.parsed_projects = parsed_data["projects"]
-                resume_data.parsed_keywords = parsed_data["keywords"]
+                print(
+                    "========== RESUME TEXT =========="
+                )
+
+                print(
+                    parsed_data["extracted_text"]
+                )
+
+                print(
+                    "================================="
+                )
+
+                # Save extracted information
+                resume_data.extracted_text = (
+                    parsed_data["extracted_text"]
+                )
+
+                resume_data.parsed_name = (
+                    parsed_data["name"]
+                )
+
+                resume_data.parsed_email = (
+                    parsed_data["email"]
+                )
+
+                resume_data.parsed_phone = (
+                    parsed_data["phone"]
+                )
+
+                resume_data.parsed_skills = (
+                    parsed_data["skills"]
+                )
+
+                resume_data.parsed_experience = (
+                    parsed_data["experience"]
+                )
+
+                resume_data.parsed_projects = (
+                    parsed_data["projects"]
+                )
+
+                resume_data.parsed_keywords = (
+                    parsed_data["keywords"]
+                )
 
                 resume_data.save()
 
@@ -380,9 +486,12 @@ def upload_resume(request):
                     f"Resume parsing failed: {error}"
                 )
 
-            return redirect("candidate_profile")
+            return redirect(
+                "candidate_profile"
+            )
 
     else:
+
         form = ResumeUploadForm()
 
     return render(
