@@ -1,0 +1,100 @@
+{% extends 'base.html' %}
+
+{% block title %}Reschedule Interview{% endblock %}
+
+{% block content %}
+
+<div class="container mt-5">
+
+    <div class="card shadow-lg border-0">
+
+        <div class="card-header bg-warning">
+            <h3 class="mb-0">
+                Reschedule Interview
+            </h3>
+        </div>
+
+        <div class="card-body p-4">
+
+            <div class="alert alert-info">
+                Candidate:
+                <strong>
+                    {{ interview.candidate.full_name }}
+                </strong>
+            </div>
+
+            <form method="POST">
+
+                {% csrf_token %}
+
+                <div class="row">
+
+                    <div class="col-md-6 mb-3">
+
+                        <label class="form-label fw-bold">
+                            Interview Date
+                        </label>
+
+                        {{ form.interview_date }}
+
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+
+                        <label class="form-label fw-bold">
+                            Interview Time
+                        </label>
+
+                        {{ form.interview_time }}
+
+                    </div>
+
+                </div>
+
+                <div class="mb-3">
+
+                    <label class="form-label fw-bold">
+                        Google Meet / Online Meeting Link
+                    </label>
+
+                    {{ form.meeting_link }}
+
+                </div>
+
+                <div class="mb-3">
+
+                    <label class="form-label fw-bold">
+                        Interview Notes
+                    </label>
+
+                    {{ form.notes }}
+
+                </div>
+
+                <div class="mt-4">
+
+                    <button
+                        type="submit"
+                        class="btn btn-warning px-4"
+                    >
+                        Reschedule Interview
+                    </button>
+
+                    <a
+                        href="{% url 'interview_list' %}"
+                        class="btn btn-secondary px-4"
+                    >
+                        Cancel
+                    </a>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}
