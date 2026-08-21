@@ -1,4 +1,4 @@
-from services.resume_parser import parse_resume
+from candidate.services.resume_parser import parse_resume
 
 
 resume_path = "candidate/sample_resume.pdf"
