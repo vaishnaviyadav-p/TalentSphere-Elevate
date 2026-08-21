@@ -38,6 +38,7 @@ from .ranking import (
 )
 
 from django.db.models.functions import TruncMonth, TruncWeek
+from django.db.models import Count
 
 
 # ============================================================
