@@ -126,17 +126,24 @@
 
         <!-- Interviews -->
 
-        <div class="col-md-3">
+        
+        <!-- Interviews -->
 
-            <div class="card-box bg-success">
+<div class="col-md-3">
 
-                <h3>{{ interview }}</h3>
+    <div class="card-box bg-success"
+         style="cursor:pointer;"
+         onclick="document.getElementById('interviewDetails').style.display='block';">
 
-                Interviews
+        <h3>{{ interview }}</h3>
 
-            </div>
+        <div>Interviews</div>
 
-        </div>
+        <small>Click to view details</small>
+
+    </div>
+
+</div>
 
 
         <!-- Rejected -->
@@ -154,6 +161,75 @@
         </div>
 
     </div>
+
+    <!-- Interview Details -->
+
+<div id="interviewDetails"
+     class="card mt-4"
+     style="display:none;">
+
+    <div class="card-header bg-success text-white">
+        <h5 class="mb-0">Scheduled Interview</h5>
+    </div>
+
+    <div class="card-body">
+
+        {% if interviews %}
+
+            {% for interview in interviews %}
+
+                <div class="mb-3">
+
+                    <h5>
+                        {{ interview.job.company }}
+                    </h5>
+
+                    <p>
+                        <strong>Job:</strong>
+                        {{ interview.job.title }}
+                    </p>
+
+                    <p>
+                        <strong>Date:</strong>
+                        {{ interview.interview_date }}
+                    </p>
+
+                    <p>
+                        <strong>Time:</strong>
+                        {{ interview.interview_time }}
+                    </p>
+
+                    <p>
+                        <strong>Meeting Link:</strong>
+                        <a href="{{ interview.meeting_link }}"
+                           target="_blank"
+                           class="btn btn-primary btn-sm">
+                            Join Google Meet
+                        </a>
+                    </p>
+
+                    {% if interview.notes %}
+                    <p>
+                        <strong>Notes:</strong>
+                        {{ interview.notes }}
+                    </p>
+                    {% endif %}
+
+                </div>
+
+            {% endfor %}
+
+        {% else %}
+
+            <p class="text-muted">
+                No interview scheduled yet.
+            </p>
+
+        {% endif %}
+
+    </div>
+
+</div>
 
 
 

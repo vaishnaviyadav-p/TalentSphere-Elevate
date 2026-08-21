@@ -335,19 +335,49 @@
                                         <span class="text-muted">Not provided</span>
                                     {% endif %}
                                 </td>
-                                <td>
-                                    {% if row.application.status == "Applied" %}
-                                        <span class="badge bg-primary">{{ row.application.status }}</span>
-                                    {% elif row.application.status == "Shortlisted" %}
-                                        <span class="badge bg-success">{{ row.application.status }}</span>
-                                    {% elif row.application.status == "Interview" %}
-                                        <span class="badge bg-warning text-dark">{{ row.application.status }}</span>
-                                    {% elif row.application.status == "Rejected" %}
-                                        <span class="badge bg-danger">{{ row.application.status }}</span>
-                                    {% else %}
-                                        <span class="badge bg-secondary">{{ row.application.status }}</span>
-                                    {% endif %}
-                                </td>
+ <td>
+
+    <form method="POST"
+          action="{% url 'update_application_status' row.application.id %}">
+
+        {% csrf_token %}
+
+        <select name="status"
+                class="form-select form-select-sm"
+                onchange="this.form.submit()">
+
+            <option value="Applied"
+                {% if row.application.status == "Applied" %}selected{% endif %}>
+                Applied
+            </option>
+
+            <option value="Shortlisted"
+                {% if row.application.status == "Shortlisted" %}selected{% endif %}>
+                Shortlisted
+            </option>
+
+            <option value="Rejected"
+                {% if row.application.status == "Rejected" %}selected{% endif %}>
+                Rejected
+            </option>
+
+        </select>
+
+    </form>
+
+
+    {% if row.application.status == "Shortlisted" %}
+
+        <a href="{% url 'schedule_interview' %}?candidate_id={{ row.application.candidate_id }}"
+           class="btn btn-success btn-sm mt-2">
+
+            Schedule Interview
+
+        </a>
+
+    {% endif %}
+
+</td>
                                 <td>
                                     {{ row.applied_at|date:"d M Y" }}
                                 </td>

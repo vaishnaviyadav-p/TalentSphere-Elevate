@@ -1,0 +1,163 @@
+{% extends 'base.html' %}
+
+{% block title %}Schedule Interview{% endblock %}
+
+{% block content %}
+
+<div class="container mt-5">
+
+    <div class="card shadow-lg border-0">
+
+        <div class="card-header bg-primary text-white">
+            <h3 class="mb-0">
+                Schedule Interview
+            </h3>
+        </div>
+
+        <div class="card-body p-4">
+
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+
+
+            <form method="POST">
+
+                {% csrf_token %}
+
+
+                <!-- Candidate -->
+
+                <div class="mb-3">
+
+                    <label class="form-label fw-bold">
+                        Select Candidate
+                    </label>
+
+                    {{ form.candidate }}
+
+                    {% if form.candidate.errors %}
+                        <div class="text-danger">
+                            {{ form.candidate.errors }}
+                        </div>
+                    {% endif %}
+
+                </div>
+
+
+                <!-- Date and Time -->
+
+                <div class="row">
+
+                    <div class="col-md-6 mb-3">
+
+                        <label class="form-label fw-bold">
+                            Interview Date
+                        </label>
+
+                        {{ form.interview_date }}
+
+                        {% if form.interview_date.errors %}
+                            <div class="text-danger">
+                                {{ form.interview_date.errors }}
+                            </div>
+                        {% endif %}
+
+                    </div>
+
+
+                    <div class="col-md-6 mb-3">
+
+                        <label class="form-label fw-bold">
+                            Interview Time
+                        </label>
+
+                        {{ form.interview_time }}
+
+                        {% if form.interview_time.errors %}
+                            <div class="text-danger">
+                                {{ form.interview_time.errors }}
+                            </div>
+                        {% endif %}
+
+                    </div>
+
+                </div>
+
+
+                <!-- Meeting Link -->
+
+                <div class="mb-3">
+
+                    <label class="form-label fw-bold">
+                        Google Meet / Online Meeting Link
+                    </label>
+
+                    {{ form.meeting_link }}
+
+                    <small class="text-muted">
+                        Example:
+                        https://meet.google.com/abc-defg-hij
+                    </small>
+
+                    {% if form.meeting_link.errors %}
+                        <div class="text-danger">
+                            {{ form.meeting_link.errors }}
+                        </div>
+                    {% endif %}
+
+                </div>
+
+
+                <!-- Notes -->
+
+                <div class="mb-3">
+
+                    <label class="form-label fw-bold">
+                        Interview Notes
+                    </label>
+
+                    {{ form.notes }}
+
+                    {% if form.notes.errors %}
+                        <div class="text-danger">
+                            {{ form.notes.errors }}
+                        </div>
+                    {% endif %}
+
+                </div>
+
+
+                <!-- Buttons -->
+
+                <div class="mt-4">
+
+                    <button
+                        type="submit"
+                        class="btn btn-primary px-4"
+                    >
+                        Schedule Interview
+                    </button>
+
+                    <a
+                        href="{% url 'interview_list' %}"
+                        class="btn btn-secondary px-4"
+                    >
+                        Cancel
+                    </a>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

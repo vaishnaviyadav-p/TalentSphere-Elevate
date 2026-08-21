@@ -1,0 +1,250 @@
+{% extends 'base.html' %}
+
+{% block title %}Interview Schedule{% endblock %}
+
+{% block content %}
+
+<div class="container mt-5">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+
+        <h2>
+            Interview Schedule
+        </h2>
+
+        <a
+            href="{% url 'schedule_interview' %}"
+            class="btn btn-primary"
+        >
+            + Schedule Interview
+        </a>
+
+    </div>
+
+
+    {% if messages %}
+
+        {% for message in messages %}
+
+            <div class="alert alert-{{ message.tags }}">
+                {{ message }}
+            </div>
+
+        {% endfor %}
+
+    {% endif %}
+
+
+    {% if interviews %}
+
+        <div class="table-responsive">
+
+            <table class="table table-bordered table-hover align-middle">
+
+                <thead class="table-dark">
+
+                    <tr>
+
+                        <th>Candidate</th>
+
+                        <th>Date</th>
+
+                        <th>Time</th>
+
+                        <th>Meeting</th>
+
+                        <th>Status</th>
+
+                        <th>Update Status</th>
+
+                        <th>Action</th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+                    {% for interview in interviews %}
+
+                    <tr>
+
+                        <td>
+
+                            <strong>
+                                {{ interview.candidate.full_name }}
+                            </strong>
+
+                        </td>
+
+
+                        <td>
+                            {{ interview.interview_date|date:"d M Y" }}
+                        </td>
+
+
+                        <td>
+                            {{ interview.interview_time|time:"h:i A" }}
+                        </td>
+
+
+                        <td>
+
+                            <a
+                                href="{{ interview.meeting_link }}"
+                                target="_blank"
+                                class="btn btn-sm btn-outline-primary"
+                            >
+                                Join Meeting
+                            </a>
+
+                        </td>
+
+
+                        <td>
+
+                            {% if interview.status == "Scheduled" %}
+
+                                <span class="badge bg-primary">
+                                    Scheduled
+                                </span>
+
+                            {% elif interview.status == "Completed" %}
+
+                                <span class="badge bg-success">
+                                    Completed
+                                </span>
+
+                            {% elif interview.status == "Cancelled" %}
+
+                                <span class="badge bg-danger">
+                                    Cancelled
+                                </span>
+
+                            {% elif interview.status == "Rescheduled" %}
+
+                                <span class="badge bg-warning text-dark">
+                                    Rescheduled
+                                </span>
+
+                            {% endif %}
+
+                        </td>
+
+
+                        <td>
+
+                            <form
+                                method="POST"
+                                action="{% url 'update_interview_status' interview.id %}"
+                            >
+
+                                {% csrf_token %}
+
+                                <select
+                                    name="status"
+                                    class="form-select form-select-sm"
+                                    onchange="this.form.submit()"
+                                >
+
+                                    <option
+                                        value="Scheduled"
+                                        {% if interview.status == "Scheduled" %}
+                                            selected
+                                        {% endif %}
+                                    >
+                                        Scheduled
+                                    </option>
+
+
+                                    <option
+                                        value="Completed"
+                                        {% if interview.status == "Completed" %}
+                                            selected
+                                        {% endif %}
+                                    >
+                                        Completed
+                                    </option>
+
+
+                                    <option
+                                        value="Cancelled"
+                                        {% if interview.status == "Cancelled" %}
+                                            selected
+                                        {% endif %}
+                                    >
+                                        Cancelled
+                                    </option>
+
+
+                                    <option
+                                        value="Rescheduled"
+                                        {% if interview.status == "Rescheduled" %}
+                                            selected
+                                        {% endif %}
+                                    >
+                                        Rescheduled
+                                    </option>
+
+                                </select>
+
+                            </form>
+
+                        </td>
+
+
+                        <!-- RESCHEDULE BUTTON -->
+
+                        <td>
+
+                            <a
+                                href="{% url 'edit_interview' interview.id %}"
+                                class="btn btn-sm btn-warning"
+                            >
+                                Reschedule
+                            </a>
+
+                        </td>
+
+
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    {% else %}
+
+        <div class="card shadow-sm">
+
+            <div class="card-body text-center p-5">
+
+                <h4>
+                    No Interviews Scheduled
+                </h4>
+
+                <p class="text-muted">
+                    Schedule an interview for a candidate to see it here.
+                </p>
+
+                <a
+                    href="{% url 'schedule_interview' %}"
+                    class="btn btn-primary"
+                >
+                    Schedule First Interview
+                </a>
+
+            </div>
+
+        </div>
+
+    {% endif %}
+
+</div>
+
+{% endblock %}

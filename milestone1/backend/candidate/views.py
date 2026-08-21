@@ -39,7 +39,7 @@ def candidate_dashboard(request):
     ).count()
 
     interviews = applications.filter(
-        status="Interview"
+        status__in=["Shortlisted", "Scheduled Interview"]
     ).count()
 
     rejected = applications.filter(
