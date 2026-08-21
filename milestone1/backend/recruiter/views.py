@@ -32,10 +32,11 @@ from .forms import (
 )
 
 from .ranking import (
-from django.db.models.functions import TruncMonth, TruncWeek
     build_priority_candidate_rows,
     collect_available_skills,
 )
+
+from django.db.models.functions import TruncMonth, TruncWeek
 
 
 # ============================================================
