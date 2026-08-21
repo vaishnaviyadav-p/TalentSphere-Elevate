@@ -65,7 +65,17 @@ def _is_recruiter(user):
 @login_required
 def recruiter_profile(request):
 
-    profile = RecruiterProfile.objects.first()
+    profile, created = RecruiterProfile.objects.get_or_create(
+        user=request.user,
+        defaults={
+            "recruiter_name": request.user.get_full_name() or request.user.username,
+            "company_name": "My Company",
+            "email": request.user.email or "recruiter@example.com",
+            "phone": "",
+            "location": "",
+            "company_description": ""
+        }
+    )
 
     return render(
         request,
@@ -79,7 +89,17 @@ def recruiter_profile(request):
 @login_required
 def edit_recruiter_profile(request):
 
-    profile = RecruiterProfile.objects.first()
+    profile, created = RecruiterProfile.objects.get_or_create(
+        user=request.user,
+        defaults={
+            "recruiter_name": request.user.get_full_name() or request.user.username,
+            "company_name": "My Company",
+            "email": request.user.email or "recruiter@example.com",
+            "phone": "",
+            "location": "",
+            "company_description": ""
+        }
+    )
 
     if request.method == "POST":
 
@@ -678,7 +698,9 @@ def view_candidate_detail(
 ):
 
     recruiter_profile_obj = (
-        RecruiterProfile.objects.first()
+        RecruiterProfile.objects.filter(
+            user=request.user
+        ).first()
     )
 
     candidate = get_object_or_404(
@@ -719,7 +741,9 @@ def view_candidate_detail(
 @login_required
 def schedule_interview(request):
 
-    recruiter = RecruiterProfile.objects.first()
+    recruiter = RecruiterProfile.objects.filter(
+        user=request.user
+    ).first()
 
     if not recruiter:
 
@@ -789,7 +813,9 @@ def schedule_interview(request):
 @login_required
 def interview_list(request):
 
-    recruiter = RecruiterProfile.objects.first()
+    recruiter = RecruiterProfile.objects.filter(
+        user=request.user
+    ).first()
 
     interviews = Interview.objects.filter(
         recruiter=recruiter
@@ -819,7 +845,9 @@ def update_interview_status(
     interview_id
 ):
 
-    recruiter = RecruiterProfile.objects.first()
+    recruiter = RecruiterProfile.objects.filter(
+        user=request.user
+    ).first()
 
     interview = get_object_or_404(
         Interview,
@@ -874,7 +902,9 @@ def edit_interview(
     interview_id
 ):
 
-    recruiter = RecruiterProfile.objects.first()
+    recruiter = RecruiterProfile.objects.filter(
+        user=request.user
+    ).first()
 
     interview = get_object_or_404(
         Interview,
