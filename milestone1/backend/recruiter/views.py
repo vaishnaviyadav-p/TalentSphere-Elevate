@@ -32,6 +32,7 @@ from .forms import (
 )
 
 from .ranking import (
+from django.db.models.functions import TruncMonth, TruncWeek
     build_priority_candidate_rows,
     collect_available_skills,
 )
@@ -138,6 +139,132 @@ def dashboard(request):
         "recruiter/dashboard.html",
         context
     )
+
+
+# ============================================================
+# ANALYTICS DASHBOARD
+# ============================================================
+
+@login_required
+def analytics_dashboard(request):
+
+    recruiter = request.user
+
+    # ==========================================
+    # JOBS POSTED BY THIS RECRUITER
+    # ==========================================
+
+    jobs = Job.objects.filter(recruiter=recruiter)
+
+    # Total jobs
+    total_jobs = jobs.count()
+
+    # ==========================================
+    # APPLICATIONS FOR RECRUITER'S JOBS
+    # ==========================================
+
+    applications = JobApplication.objects.filter(
+        job__recruiter=recruiter
+    )
+
+    total_applications = applications.count()
+
+    shortlisted = applications.filter(
+        status="Shortlisted"
+    ).count()
+
+    interviews = applications.filter(
+        status="Interview"
+    ).count()
+
+    # ==========================================
+    # MONTH-WISE JOB POSTING DATA
+    # ==========================================
+
+    jobs_by_month = (
+        jobs
+        .annotate(month=TruncMonth("created_at"))
+        .values("month")
+        .annotate(total=Count("id"))
+        .order_by("month")
+    )
+
+    month_labels = []
+    month_data = []
+
+    for item in jobs_by_month:
+        month_labels.append(
+            item["month"].strftime("%b %Y")
+        )
+        month_data.append(item["total"])
+
+    # ==========================================
+    # WEEK-WISE JOB POSTING DATA
+    # ==========================================
+
+    jobs_by_week = (
+        jobs
+        .annotate(week=TruncWeek("created_at"))
+        .values("week")
+        .annotate(total=Count("id"))
+        .order_by("week")
+    )
+
+    week_labels = []
+    week_data = []
+
+    for item in jobs_by_week:
+        week_labels.append(
+            item["week"].strftime("%d %b")
+        )
+        week_data.append(item["total"])
+
+    # ==========================================
+    # APPLICATION TREND BY MONTH
+    # ==========================================
+
+    applications_by_month = (
+        applications
+        .annotate(month=TruncMonth("applied_at"))
+        .values("month")
+        .annotate(total=Count("id"))
+        .order_by("month")
+    )
+
+    trend_labels = []
+    trend_data = []
+
+    for item in applications_by_month:
+        trend_labels.append(
+            item["month"].strftime("%b %Y")
+        )
+        trend_data.append(item["total"])
+
+    context = {
+
+        "total_jobs": total_jobs,
+
+        "total_applications": total_applications,
+
+        "shortlisted": shortlisted,
+
+        "interviews": interviews,
+
+        "month_labels": month_labels,
+        "month_data": month_data,
+
+        "week_labels": week_labels,
+        "week_data": week_data,
+
+        "trend_labels": trend_labels,
+        "trend_data": trend_data,
+    }
+
+    return render(
+        request,
+        "recruiter/analytics_dashboard.html",
+        context
+    )   
 
 
 # ============================================================

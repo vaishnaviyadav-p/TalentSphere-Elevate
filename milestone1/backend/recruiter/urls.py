@@ -29,6 +29,15 @@ urlpatterns = [
     ),
 
 
+    # Recruiter Analytics (from origin/main)
+
+    path(
+        "analytics/",
+        views.analytics_dashboard,
+        name="analytics_dashboard"
+    ),
+
+
     # Candidate
 
     path(
