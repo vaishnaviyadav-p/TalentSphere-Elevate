@@ -1,0 +1,1436 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TalentSphere Elevate - Project Presentation</title>
+    <!-- Google Fonts: Inter & Outfit -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-color: #0b0f19;
+            --card-bg: rgba(17, 24, 39, 0.7);
+            --card-border: rgba(255, 255, 255, 0.08);
+            --text-primary: #f3f4f6;
+            --text-secondary: #9ca3af;
+            --accent-blue: #3b82f6;
+            --accent-blue-glow: rgba(59, 130, 246, 0.5);
+            --accent-green: #10b981;
+            --accent-green-glow: rgba(16, 185, 129, 0.3);
+            --accent-purple: #8b5cf6;
+            --accent-purple-glow: rgba(139, 92, 246, 0.3);
+            --accent-red: #ef4444;
+            --glass-blur: blur(12px);
+            --font-display: 'Outfit', sans-serif;
+            --font-sans: 'Inter', sans-serif;
+        }
+
+        .light-mode {
+            --bg-color: #f3f4f6;
+            --card-bg: rgba(255, 255, 255, 0.75);
+            --card-border: rgba(0, 0, 0, 0.08);
+            --text-primary: #111827;
+            --text-secondary: #4b5563;
+            --accent-blue: #1d4ed8;
+            --accent-blue-glow: rgba(29, 78, 216, 0.2);
+            --accent-green: #047857;
+            --accent-green-glow: rgba(4, 120, 87, 0.2);
+            --accent-purple: #6d28d9;
+            --accent-purple-glow: rgba(109, 40, 217, 0.2);
+            --accent-red: #dc2626;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            transition: background-color 0.3s ease, border-color 0.3s ease;
+        }
+
+        body {
+            font-family: var(--font-sans);
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            overflow: hidden;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Gradient background glows */
+        .bg-glows {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        .glow-1 {
+            position: absolute;
+            top: -10%;
+            left: -10%;
+            width: 50%;
+            height: 50%;
+            background: radial-gradient(circle, rgba(59, 130, 246, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+            filter: blur(80px);
+        }
+
+        .glow-2 {
+            position: absolute;
+            bottom: -10%;
+            right: -10%;
+            width: 50%;
+            height: 50%;
+            background: radial-gradient(circle, rgba(139, 92, 246, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+            filter: blur(80px);
+        }
+
+        /* Top Header Navigation */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.2rem 2.5rem;
+            z-index: 10;
+            border-bottom: 1px solid var(--card-border);
+            background: rgba(11, 15, 25, 0.4);
+            backdrop-filter: var(--glass-blur);
+        }
+
+        .logo {
+            font-family: var(--font-display);
+            font-weight: 800;
+            font-size: 1.5rem;
+            background: linear-gradient(135deg, var(--accent-blue) 0%, var(--accent-purple) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .logo span {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            background: rgba(59, 130, 246, 0.15);
+            color: var(--accent-blue);
+            padding: 0.2rem 0.6rem;
+            border-radius: 20px;
+            font-family: var(--font-sans);
+            -webkit-text-fill-color: initial;
+        }
+
+        .nav-controls {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .theme-toggle, .btn-help {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--card-border);
+            color: var(--text-primary);
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .theme-toggle:hover, .btn-help:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        /* Deck Container */
+        .deck-container {
+            flex: 1;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+            perspective: 1200px;
+        }
+
+        /* Slide Structure */
+        .slide {
+            position: absolute;
+            width: 90%;
+            max-width: 1200px;
+            height: 80vh;
+            max-height: 650px;
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 24px;
+            padding: 2.5rem;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            backdrop-filter: var(--glass-blur);
+            opacity: 0;
+            pointer-events: none;
+            transform: scale(0.92) translateZ(-100px);
+            transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .slide.active {
+            opacity: 1;
+            pointer-events: auto;
+            transform: scale(1) translateZ(0px);
+            z-index: 5;
+        }
+
+        .slide.prev {
+            transform: scale(0.95) translateX(-105%) rotateY(15deg);
+            opacity: 0;
+        }
+
+        .slide.next {
+            transform: scale(0.95) translateX(105%) rotateY(-15deg);
+            opacity: 0;
+        }
+
+        /* Standard Slide Layouts */
+        .slide-header {
+            margin-bottom: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--card-border);
+            padding-bottom: 1rem;
+        }
+
+        .slide-header h2 {
+            font-family: var(--font-display);
+            font-weight: 700;
+            font-size: 2rem;
+            letter-spacing: -0.02em;
+        }
+
+        .slide-header .slide-tag {
+            color: var(--accent-blue);
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        .slide-content {
+            flex: 1;
+            display: flex;
+            gap: 2rem;
+            min-height: 0;
+        }
+
+        .col-left, .col-right {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            min-height: 0;
+        }
+
+        /* Cover Slide Specific */
+        .cover-slide {
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            background: radial-gradient(circle at center, rgba(30, 41, 59, 0.4) 0%, var(--card-bg) 100%);
+        }
+
+        .cover-title {
+            font-family: var(--font-display);
+            font-size: 4rem;
+            font-weight: 800;
+            line-height: 1.1;
+            margin-bottom: 1rem;
+            letter-spacing: -0.03em;
+            background: linear-gradient(135deg, #ffffff 30%, #a5b4fc 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .light-mode .cover-title {
+            background: linear-gradient(135deg, #111827 30%, #4338ca 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .cover-subtitle {
+            font-size: 1.5rem;
+            color: var(--accent-blue);
+            font-weight: 500;
+            margin-bottom: 2.5rem;
+            font-family: var(--font-display);
+        }
+
+        .cover-features {
+            display: flex;
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .feat-badge {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--card-border);
+            padding: 0.6rem 1.2rem;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 500;
+        }
+
+        .feat-badge svg {
+            width: 16px;
+            height: 16px;
+            color: var(--accent-green);
+        }
+
+        /* Typography & List Styling */
+        h3 {
+            font-family: var(--font-display);
+            font-size: 1.4rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--accent-blue);
+        }
+
+        p {
+            font-size: 1rem;
+            line-height: 1.6;
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+        }
+
+        ul {
+            list-style: none;
+            margin-bottom: 1.5rem;
+        }
+
+        li {
+            position: relative;
+            padding-left: 1.8rem;
+            margin-bottom: 0.8rem;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        li::before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: var(--accent-green);
+            font-weight: bold;
+        }
+
+        .warning-list li::before {
+            content: "✦";
+            color: var(--accent-purple);
+        }
+
+        /* Custom UI Panels & Glass cards */
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--card-border);
+            padding: 1.5rem;
+            border-radius: 16px;
+            margin-bottom: 1rem;
+        }
+
+        .accent-border-blue { border-left: 4px solid var(--accent-blue); }
+        .accent-border-green { border-left: 4px solid var(--accent-green); }
+        .accent-border-purple { border-left: 4px solid var(--accent-purple); }
+
+        /* Interactive Playground styles */
+        .playground-container {
+            display: flex;
+            flex-direction: column;
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            padding: 1.2rem;
+            height: 100%;
+            justify-content: space-between;
+        }
+
+        label {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 0.4rem;
+            display: block;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        textarea, input[type="text"], select {
+            width: 100%;
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid var(--card-border);
+            color: var(--text-primary);
+            padding: 0.75rem;
+            border-radius: 8px;
+            font-family: var(--font-sans);
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+            resize: none;
+        }
+
+        textarea:focus, input[type="text"]:focus, select:focus {
+            outline: none;
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 0 2px var(--accent-blue-glow);
+        }
+
+        .btn-action {
+            background: linear-gradient(135deg, var(--accent-blue) 0%, var(--accent-purple) 100%);
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            letter-spacing: 0.08em;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            justify-content: center;
+        }
+
+        .btn-action:hover {
+            opacity: 0.9;
+            box-shadow: 0 4px 15px var(--accent-blue-glow);
+        }
+
+        .results-box {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--card-border);
+            border-radius: 8px;
+            padding: 1rem;
+            font-family: monospace;
+            font-size: 0.85rem;
+            flex: 1;
+            overflow-y: auto;
+            margin-top: 1rem;
+        }
+
+        /* SVG Architecture Diagram Styles */
+        .arch-svg {
+            width: 100%;
+            height: 100%;
+            max-height: 420px;
+        }
+
+        .arch-node {
+            fill: rgba(30, 41, 59, 0.7);
+            stroke: var(--card-border);
+            stroke-width: 1.5px;
+            transition: all 0.3s ease;
+        }
+
+        .arch-node:hover {
+            fill: rgba(59, 130, 246, 0.15);
+            stroke: var(--accent-blue);
+            filter: drop-shadow(0 0 8px var(--accent-blue-glow));
+        }
+
+        .arch-node.active {
+            fill: rgba(16, 185, 129, 0.1);
+            stroke: var(--accent-green);
+        }
+
+        .arch-text {
+            fill: var(--text-primary);
+            font-family: var(--font-display);
+            font-size: 13px;
+            font-weight: 600;
+            text-anchor: middle;
+            pointer-events: none;
+        }
+
+        .arch-subtext {
+            fill: var(--text-secondary);
+            font-family: var(--font-sans);
+            font-size: 10px;
+            text-anchor: middle;
+            pointer-events: none;
+        }
+
+        .arch-line {
+            stroke: var(--card-border);
+            stroke-width: 2px;
+            fill: none;
+            marker-end: url(#arrow);
+        }
+
+        .arch-line.highlight {
+            stroke: var(--accent-purple);
+            stroke-dasharray: 5;
+            animation: flow 15s linear infinite;
+        }
+
+        @keyframes flow {
+            to { stroke-dashoffset: -100; }
+        }
+
+        /* Code block stylings */
+        pre {
+            background: rgba(15, 23, 42, 0.7);
+            border: 1px solid var(--card-border);
+            padding: 1rem;
+            border-radius: 12px;
+            overflow-x: auto;
+            max-height: 380px;
+            font-size: 0.85rem;
+            color: #e2e8f0;
+            text-align: left;
+        }
+
+        code {
+            font-family: 'Consolas', 'Monaco', monospace;
+        }
+
+        .keyword { color: #f472b6; }
+        .func { color: #60a5fa; }
+        .string { color: #34d399; }
+        .comment { color: #6b7280; font-style: italic; }
+
+        /* circular progress gauge */
+        .gauge-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            margin: 1.5rem 0;
+        }
+
+        .gauge-svg {
+            width: 140px;
+            height: 140px;
+        }
+
+        .gauge-bg {
+            fill: none;
+            stroke: rgba(255, 255, 255, 0.05);
+            stroke-width: 12px;
+        }
+
+        .gauge-progress {
+            fill: none;
+            stroke: url(#gauge-gradient);
+            stroke-width: 12px;
+            stroke-linecap: round;
+            transform: rotate(-90deg);
+            transform-origin: 50% 50%;
+            stroke-dasharray: 377;
+            stroke-dashoffset: 377;
+            transition: stroke-dashoffset 1s ease-out;
+        }
+
+        .gauge-text {
+            position: absolute;
+            font-size: 1.8rem;
+            font-weight: 700;
+            font-family: var(--font-display);
+            color: var(--text-primary);
+        }
+
+        /* Bottom Controls Bar */
+        footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.2rem 2.5rem;
+            border-top: 1px solid var(--card-border);
+            background: rgba(11, 15, 25, 0.4);
+            backdrop-filter: var(--glass-blur);
+            z-index: 10;
+        }
+
+        .slide-counter {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .deck-nav-buttons {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .nav-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--card-border);
+            color: var(--text-primary);
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.2rem;
+            transition: all 0.2s ease;
+        }
+
+        .nav-btn:hover {
+            background: var(--accent-blue);
+            color: white;
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 10px var(--accent-blue-glow);
+        }
+
+        .nav-btn:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+            background: transparent;
+        }
+
+        /* Progress Bar */
+        .progress-bar-container {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent-blue), var(--accent-purple));
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        /* Simulated entities tag styles */
+        .entity-tag {
+            display: inline-block;
+            background: rgba(59, 130, 246, 0.15);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            color: #60a5fa;
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            margin: 0.2rem;
+            font-size: 0.8rem;
+        }
+
+        .entity-tag.exp {
+            background: rgba(139, 92, 246, 0.15);
+            border: 1px solid rgba(139, 92, 246, 0.3);
+            color: #c084fc;
+        }
+
+        .entity-tag.contact {
+            background: rgba(16, 185, 129, 0.15);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            color: #34d399;
+        }
+
+        .entity-tag.missing {
+            background: rgba(239, 68, 68, 0.15);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: #f87171;
+        }
+
+        /* Keyboard overlay tooltip */
+        .keyboard-hint {
+            position: fixed;
+            bottom: 80px;
+            right: 20px;
+            background: rgba(15, 23, 42, 0.9);
+            border: 1px solid var(--card-border);
+            padding: 0.8rem;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            pointer-events: none;
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+            z-index: 100;
+            opacity: 0.8;
+        }
+
+        .key-badge {
+            background: #374151;
+            color: white;
+            padding: 0.1rem 0.4rem;
+            border-radius: 4px;
+            font-family: monospace;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="bg-glows">
+        <div class="glow-1"></div>
+        <div class="glow-2"></div>
+    </div>
+
+    <!-- Top Header -->
+    <header>
+        <div class="logo">
+            TalentSphere <span>Elevate</span>
+        </div>
+        <div class="nav-controls">
+            <button class="btn-help" onclick="alert('Use Left/Right arrow keys or spacebar to navigate the deck. Try out the interactive playground controls on the NLP, Scoring, and Ranking slides!')">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                Help
+            </button>
+            <button class="theme-toggle" id="theme-btn" onclick="toggleTheme()">
+                🌙 Dark Mode
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Deck -->
+    <div class="deck-container">
+
+        <!-- Slide 1: Welcome & Cover -->
+        <div class="slide cover-slide active">
+            <h1 class="cover-title">TalentSphere Elevate</h1>
+            <p class="cover-subtitle">Next-Gen AI-Powered Applicant Tracking & Screening System</p>
+            
+            <div class="cover-features">
+                <div class="feat-badge">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                    NLP Resume Parsing
+                </div>
+                <div class="feat-badge">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                    Automated Fit Scoring
+                </div>
+                <div class="feat-badge">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                    Priority Ranking Engine
+                </div>
+                <div class="feat-badge">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                    Role-Based Access
+                </div>
+            </div>
+
+            <p style="max-width: 600px; font-size: 1.1rem;">
+                A comprehensive technical demonstration of the milestone 1 architecture. Powered by Django, spaCy NLP, and sqlite3 database models.
+            </p>
+            <button class="btn-action" style="margin-top: 1.5rem;" onclick="nextSlide()">
+                Start Presentation
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+            </button>
+        </div>
+
+        <!-- Slide 2: Problem & Solution -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2>The Challenge & The Solution</h2>
+                <span class="slide-tag">Core Concept</span>
+            </div>
+            <div class="slide-content">
+                <div class="col-left">
+                    <h3>The Recruiting Bottleneck</h3>
+                    <p>Modern HR departments struggle to sift through hundreds of applications per vacancy, leading to lost time and missed top talent.</p>
+                    <ul class="warning-list">
+                        <li><strong>Manual Screening Overhead:</strong> Average resume review takes 23 seconds, prone to fatigue and subjective bias.</li>
+                        <li><strong>Inconsistent Document Formats:</strong> Parsing resumes in different formats (PDFs, DOCX files) fails or skips details.</li>
+                        <li><strong>Opaque Skills Alignment:</strong> Identifying who has the exact skill set requirements vs. filler buzzwords is difficult.</li>
+                    </ul>
+                </div>
+                <div class="col-right">
+                    <div class="glass-panel accent-border-blue">
+                        <h3>TalentSphere Elevate Approach</h3>
+                        <p>We built a multi-stage intelligent system that automates CV parsing, scoring, and candidate prioritizing within a unified recruiter dashboard.</p>
+                        <ul>
+                            <li><strong>Ingestion Engine:</strong> Automatically extracts text from PDF and Word resumes.</li>
+                            <li><strong>spaCy NLP Entity Extractor:</strong> Extracts email, phone, candidate names, and filters core technical competencies.</li>
+                            <li><strong>ATS scoring & ranking:</strong> Normalizes candidate features against job descriptions instantly.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 3: Architecture Diagram -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2>System Architecture</h2>
+                <span class="slide-tag">Tech Stack & Data Flow</span>
+            </div>
+            <div class="slide-content" style="flex-direction: column; justify-content: center;">
+                <svg class="arch-svg" viewBox="0 0 800 380">
+                    <defs>
+                        <!-- Gradients -->
+                        <linearGradient id="blueGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stop-color="#3b82f6" />
+                            <stop offset="100%" stop-color="#1d4ed8" />
+                        </linearGradient>
+                        <linearGradient id="purpleGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stop-color="#8b5cf6" />
+                            <stop offset="100%" stop-color="#6d28d9" />
+                        </linearGradient>
+                        <linearGradient id="greenGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stop-color="#10b981" />
+                            <stop offset="100%" stop-color="#047857" />
+                        </linearGradient>
+                        <!-- Markers -->
+                        <marker id="arrow" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                            <path d="M 0 1 L 10 5 L 0 9 z" fill="#9ca3af" />
+                        </marker>
+                    </defs>
+
+                    <!-- Client Tier -->
+                    <g transform="translate(40, 60)">
+                        <rect class="arch-node" x="0" y="0" width="140" height="70" rx="10" />
+                        <text class="arch-text" x="70" y="30">Candidate Panel</text>
+                        <text class="arch-subtext" x="70" y="50">Resume Upload & Profile</text>
+                    </g>
+                    <g transform="translate(40, 230)">
+                        <rect class="arch-node" x="0" y="0" width="140" height="70" rx="10" />
+                        <text class="arch-text" x="70" y="30">Recruiter Dashboard</text>
+                        <text class="arch-subtext" x="70" y="50">Job Posts & Rank List</text>
+                    </g>
+
+                    <!-- Core Backend Web Server -->
+                    <g transform="translate(260, 115)">
+                        <rect class="arch-node" x="0" y="0" width="180" height="130" rx="12" style="fill: rgba(30, 41, 59, 0.9); stroke: var(--accent-blue); stroke-width: 2px;" />
+                        <text class="arch-text" x="90" y="35" style="fill: var(--accent-blue); font-size: 16px;">Django Backend</text>
+                        <text class="arch-subtext" x="90" y="65">accounts, candidate, recruiter</text>
+                        <text class="arch-subtext" x="90" y="85">SQLite Database ORM</text>
+                        <text class="arch-subtext" x="90" y="105">Role-Based Auth Middleware</text>
+                    </g>
+
+                    <!-- NLP Engine -->
+                    <g transform="translate(560, 60)">
+                        <rect class="arch-node" x="0" y="0" width="180" height="90" rx="12" style="fill: rgba(139, 92, 246, 0.1); stroke: var(--accent-purple); stroke-width: 2px;" />
+                        <text class="arch-text" x="90" y="30" style="fill: var(--accent-purple);">NLP & Extraction</text>
+                        <text class="arch-subtext" x="90" y="50">PyMuPDF / docx Parser</text>
+                        <text class="arch-subtext" x="90" y="65">spaCy "en_core_web_sm"</text>
+                        <text class="arch-subtext" x="90" y="80">Regex Phone & Email Engine</text>
+                    </g>
+
+                    <!-- Scoring Engine -->
+                    <g transform="translate(560, 210)">
+                        <rect class="arch-node" x="0" y="0" width="180" height="90" rx="12" style="fill: rgba(16, 185, 129, 0.1); stroke: var(--accent-green); stroke-width: 2px;" />
+                        <text class="arch-text" x="90" y="30" style="fill: var(--accent-green);">Smart Matcher</text>
+                        <text class="arch-subtext" x="90" y="50">Jaccard Skills Align Engine</text>
+                        <text class="arch-subtext" x="90" y="65">Exp Level Extraction</text>
+                        <text class="arch-subtext" x="90" y="80">Weighted Score Calculator</text>
+                    </g>
+
+                    <!-- Connectors -->
+                    <!-- Candidate to Django -->
+                    <path class="arch-line" d="M 180 95 L 260 145" />
+                    <!-- Recruiter to Django -->
+                    <path class="arch-line" d="M 180 265 L 260 210" />
+                    <!-- Django to NLP -->
+                    <path class="arch-line" d="M 440 150 L 560 105" />
+                    <!-- Django to Matcher -->
+                    <path class="arch-line" d="M 440 205 L 560 250" />
+                    <!-- NLP to Matcher -->
+                    <path class="arch-line highlight" d="M 650 150 L 650 210" />
+                </svg>
+            </div>
+        </div>
+
+        <!-- Slide 4: NLP Ingestion Pipeline -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2>Resume Parser & NLP Pipeline</h2>
+                <span class="slide-tag">backend/candidate/services/resume_parser.py</span>
+            </div>
+            <div class="slide-content">
+                <div class="col-left" style="flex: 1.2;">
+                    <h3>Entity & Feature Extraction</h3>
+                    <p>Uses <strong>spaCy</strong> for NLP parsing, combining rules-based lookups with Regex matchers to construct structured profiles from unstructured documents.</p>
+                    <pre><code><span class="comment"># Load spaCy NLP model</span>
+nlp = spacy.load(<span class="string">"en_core_web_sm"</span>)
+
+<span class="keyword">def</span> <span class="func">extract_skills</span>(text):
+    text_lower = text.lower()
+    found_skills = []
+    <span class="keyword">for</span> skill <span class="keyword">in</span> SKILLS:
+        pattern = <span class="string">r"(?&lt;!\w)"</span> + re.escape(skill) + <span class="string">r"(?!\w)"</span>
+        <span class="keyword">if</span> re.search(pattern, text_lower):
+            found_skills.append(skill)
+    <span class="keyword">return</span> sorted(set(found_skills))</code></pre>
+                </div>
+                <div class="col-right" style="flex: 0.8;">
+                    <div class="playground-container">
+                        <div>
+                            <label>Parser Simulator Playground</label>
+                            <p style="font-size: 0.8rem; margin-bottom: 0.5rem;">Enter candidate text to simulate python extraction pipeline.</p>
+                            <textarea id="parser-input" rows="4">HARSH YADAV
+Email: harshyadav@gmail.com
+Phone: +91 9876543210
+Experienced Python developer with 2+ years working with Django, SQL and React. Done ML projects.</textarea>
+                            <button class="btn-action" onclick="runSimulatedParser()">Simulate Ingestion</button>
+                        </div>
+                        <div class="results-box" id="parser-output">
+                            <span class="comment">// Extracted Data output will show here...</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 5: ATS Fit Score -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2>ATS Skills Match & Gap Analysis</h2>
+                <span class="slide-tag">candidate/skill_matching.py</span>
+            </div>
+            <div class="slide-content">
+                <div class="col-left" style="flex: 1.1;">
+                    <h3>Fit Scoring Logic</h3>
+                    <p>The system calculates skills overlap against job requirements, highlighting matching strengths and missing keywords for gap correction.</p>
+                    <pre><code><span class="keyword">def</span> <span class="func">calculate_skill_match</span>(candidate_skills, required_skills):
+    candidate_set = {s.lower() <span class="keyword">for</span> s <span class="keyword">in</span> candidate_skills}
+    required_set = {s.lower() <span class="keyword">for</span> s <span class="keyword">in</span> required_skills}
+    
+    matched = candidate_set.intersection(required_set)
+    missing = required_set.difference(candidate_set)
+    
+    score = 0
+    <span class="keyword">if</span> required_set:
+        score = round((len(matched) / len(required_set)) * 100)
+        
+    <span class="keyword">return</span> {
+        <span class="string">"score"</span>: score,
+        <span class="string">"matched_skills"</span>: list(matched),
+        <span class="string">"missing_skills"</span>: list(missing),
+    }</code></pre>
+                </div>
+                <div class="col-right" style="flex: 0.9;">
+                    <div class="playground-container">
+                        <div>
+                            <label>Skills Matcher Playground</label>
+                            
+                            <label style="font-size: 0.75rem;">Required Job Skills</label>
+                            <input type="text" id="match-job" value="Python, Django, React, SQL, AWS">
+
+                            <label style="font-size: 0.75rem;">Candidate Parsed Skills</label>
+                            <input type="text" id="match-candidate" value="Python, SQL, HTML, CSS, Git">
+
+                            <button class="btn-action" onclick="runSimulatedMatcher()">Calculate ATS Score</button>
+                        </div>
+                        
+                        <div style="display: flex; align-items: center; gap: 1rem; margin-top: 1rem;">
+                            <div class="gauge-container">
+                                <svg class="gauge-svg">
+                                    <circle class="gauge-bg" cx="70" cy="70" r="60" />
+                                    <circle class="gauge-progress" id="gauge-circle" cx="70" cy="70" r="60" />
+                                </svg>
+                                <div class="gauge-text" id="gauge-percent">0%</div>
+                            </div>
+                            <div id="match-output" style="font-size: 0.85rem; flex: 1;">
+                                <div class="comment">// Match details...</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 6: Recruiter Ranking -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2>Recruiter Prioritization</h2>
+                <span class="slide-tag">recruiter/ranking.py</span>
+            </div>
+            <div class="slide-content">
+                <div class="col-left" style="flex: 0.9;">
+                    <h3>Priority Scoring & Normalization</h3>
+                    <p>To rank applicants objectively, recruiter tools compute an aggregated priority ranking. It incorporates skills overlap and candidate experience matching coefficients.</p>
+                    <ul>
+                        <li><strong>Normalization:</strong> Converts strings (e.g. "3+ Years", "2 years") into floating-point numbers.</li>
+                        <li><strong>Weighting:</strong> Blends Skills Fit Index (70% weight) with Experience Match Score (30% weight).</li>
+                        <li><strong>Sorting:</strong> Ranks applications dynamically, allowing recruiters to focus on premium qualified candidates.</li>
+                    </ul>
+                </div>
+                <div class="col-right" style="flex: 1.1;">
+                    <div class="playground-container">
+                        <div>
+                            <label>Smart Recruiter Ranker Widget</label>
+                            <label style="font-size: 0.75rem;">Select Role Requirements</label>
+                            <select id="ranker-role" onchange="runSimulatedRanker()">
+                                <option value="senior">Senior Python Developer (Req: Python, Django, AWS, SQL | 5+ Years Exp)</option>
+                                <option value="frontend">Frontend Developer (Req: React, CSS, HTML, JavaScript | 2+ Years Exp)</option>
+                            </select>
+                            <button class="btn-action" style="width: 100%; margin-bottom: 0.5rem;" onclick="runSimulatedRanker()">Rank Candidates</button>
+                        </div>
+                        <div class="results-box" id="ranker-output" style="background: rgba(15, 23, 42, 0.4); max-height: 250px;">
+                            Click Rank Candidates to sort applicants...
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 7: Models & Schema -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2>Database Models & Schema</h2>
+                <span class="slide-tag">SQLite3 ORM Diagram</span>
+            </div>
+            <div class="slide-content">
+                <div class="col-left">
+                    <h3>Role-based App Schema</h3>
+                    <p>Designed around a flexible Django model architecture which connects user roles to profiles and tracks job application pipelines.</p>
+                    
+                    <div class="glass-panel accent-border-purple" style="padding: 1rem; margin-bottom: 0.8rem;">
+                        <strong>accounts.UserProfile</strong>
+                        <p style="font-size: 0.8rem; margin: 0.2rem 0;">Extends User with role choices: <code>candidate</code> or <code>recruiter</code>.</p>
+                    </div>
+
+                    <div class="glass-panel accent-border-blue" style="padding: 1rem; margin-bottom: 0.8rem;">
+                        <strong>candidate.CandidateProfile & ResumeData</strong>
+                        <p style="font-size: 0.8rem; margin: 0.2rem 0;">Stores personal records and links parsed resume text/metadata.</p>
+                    </div>
+
+                    <div class="glass-panel accent-border-green" style="padding: 1rem; margin-bottom: 0;">
+                        <strong>recruiter.Job & JobApplication</strong>
+                        <p style="font-size: 0.8rem; margin: 0.2rem 0;">Maintains active job profiles, skills requirements, and application states.</p>
+                    </div>
+                </div>
+                <div class="col-right">
+                    <div class="glass-panel" style="background: rgba(0, 0, 0, 0.2); font-family: monospace; font-size: 0.8rem;">
+                        <span class="comment"># candidate/models.py</span><br>
+                        <span class="keyword">class</span> <span class="func">CandidateProfile</span>(models.Model):<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;user = OneToOneField(User)<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;full_name = CharField(max_length=100)<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;skills = TextField(help_text="Comma separated")<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;experience = TextField()<br><br>
+                        
+                        <span class="keyword">class</span> <span class="func">ResumeData</span>(models.Model):<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;candidate = ForeignKey(CandidateProfile)<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;resume_file = FileField(upload_to="resumes/")<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;extracted_text = TextField()<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;parsed_name = CharField(max_length=100)<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;parsed_email = EmailField()<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;parsed_skills = JSONField()<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;parsed_experience = JSONField()
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 8: Key Commands -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2>Local Execution & Development Guide</h2>
+                <span class="slide-tag">CLI Reference</span>
+            </div>
+            <div class="slide-content">
+                <div class="col-left">
+                    <h3>Command Dashboard</h3>
+                    <p>To run the TalentSphere-Elevate project locally, verify migrations, execute NLP tests, and trigger parser simulations, use these shell scripts.</p>
+                    <ul class="warning-list">
+                        <li><strong>Server Initialization:</strong> Spins up localhost development server interface.</li>
+                        <li><strong>Parser Unit Tests:</strong> Validates file validators, size boundary exceptions, and document extractors.</li>
+                        <li><strong>Standalone Parser Script:</strong> Direct access to local PDF parser output validation.</li>
+                    </ul>
+                </div>
+                <div class="col-right">
+                    <div class="glass-panel accent-border-purple">
+                        <label>Run Local Web Server</label>
+                        <pre><code>cd milestone1/backend
+python manage.py migrate
+python manage.py runserver</code></pre>
+                        
+                        <label style="margin-top: 1rem;">Execute Python Unit Tests</label>
+                        <pre><code>python manage.py test candidate</code></pre>
+
+                        <label style="margin-top: 1rem;">Run Resume Parser Debug Script</label>
+                        <pre><code>python candidate/test_parser.py</code></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 9: Milestone 2 Resume Parsing Roadmap -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2>Milestone 2: Intelligent Resume Parsing</h2>
+                <span class="slide-tag">Future Roadmap & Next Steps</span>
+            </div>
+            <div class="slide-content">
+                <div class="col-left">
+                    <h3>Generative AI & Semantic Architecture</h3>
+                    <p>Milestone 2 focuses on upgrading the baseline matching algorithm from rule-based filters to context-aware generative processing.</p>
+                    <ul class="warning-list">
+                        <li><strong>Gemini API JSON Extraction:</strong> Integrates LLMs to extract clean, structured profile details directly from freeform resumes.</li>
+                        <li><strong>OCR Scanning Ingestion:</strong> Adds Tesseract / PDFplumber rasterized image processing to capture scanned text.</li>
+                        <li><strong>Semantic Skills Embeddings:</strong> Calculates similarity scores using Vector Embeddings (e.g. matching "Frontend" with "React.js" semantically).</li>
+                    </ul>
+                </div>
+                <div class="col-right">
+                    <div class="glass-panel accent-border-blue" style="margin-bottom: 0.8rem;">
+                        <strong>1. Generative AI JSON Schema Ingestion</strong>
+                        <p style="font-size: 0.8rem; margin: 0.2rem 0; color: var(--text-secondary);">Using Gemini structured outputs to parse complex sections (Work Experience dates, GPA, University names) with zero rules configuration.</p>
+                    </div>
+                    <div class="glass-panel accent-border-purple" style="margin-bottom: 0.8rem;">
+                        <strong>2. Deep Experience Timeline Modeling</strong>
+                        <p style="font-size: 0.8rem; margin: 0.2rem 0; color: var(--text-secondary);">Structuring candidate work history timelines (Job title -> Company -> Years) into chronological charts for recruiters.</p>
+                    </div>
+                    <div class="glass-panel accent-border-green" style="margin-bottom: 0;">
+                        <strong>3. Sentence Embeddings Matcher</strong>
+                        <p style="font-size: 0.8rem; margin: 0.2rem 0; color: var(--text-secondary);">Bridges the terminology gap by understanding that a candidate with "Deep Learning" is highly relevant to a "Machine Learning" requirement.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 10: Conclusion -->
+        <div class="slide" style="justify-content: center; align-items: center; text-align: center;">
+            <h2 style="font-family: var(--font-display); font-size: 3rem; margin-bottom: 1rem; font-weight: 800;">Thank You!</h2>
+            <p style="font-size: 1.2rem; max-width: 600px; margin-bottom: 2rem;">
+                The interactive presentation demonstration of <strong>TalentSphere Elevate</strong> is complete. Feel free to explore the features further.
+            </p>
+            <div class="glass-panel" style="max-width: 500px; text-align: left;">
+                <h4 style="margin-bottom: 0.5rem; color: var(--accent-blue);">Milestone 1 Deliverables Accomplished:</h4>
+                <ul>
+                    <li>Role redirection view workflow mapping.</li>
+                    <li>PyMuPDF and docx document parser validation.</li>
+                    <li>Automatic Skills overlap calculator & recruiters ranking algorithm.</li>
+                </ul>
+            </div>
+            <button class="btn-action" style="margin-top: 2rem;" onclick="goToSlide(0)">
+                Restart Deck
+            </button>
+        </div>
+
+    </div>
+
+    <!-- Bottom Navigation Bar -->
+    <footer>
+        <div class="slide-counter" id="slide-count">Slide 1 of 10</div>
+        <div class="deck-nav-buttons">
+            <button class="nav-btn" id="prev-btn" onclick="prevSlide()" disabled>&larr;</button>
+            <button class="nav-btn" id="next-btn" onclick="nextSlide()">&rarr;</button>
+        </div>
+        <div class="progress-bar-container">
+            <div class="progress-fill" id="progress-indicator"></div>
+        </div>
+    </footer>
+
+    <!-- Keyboard Shortcut Overlay Tooltip -->
+    <div class="keyboard-hint">
+        <div>Navigate: <span class="key-badge">&larr;</span> / <span class="key-badge">&rarr;</span> or <span class="key-badge">Space</span></div>
+        <div>Reset: <span class="key-badge">R</span></div>
+    </div>
+
+    <!-- JS Logic -->
+    <script>
+        let currentSlideIndex = 0;
+        const slides = document.querySelectorAll('.slide');
+        const slideCounter = document.getElementById('slide-count');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const progressIndicator = document.getElementById('progress-indicator');
+        
+        function updateDeckUI() {
+            slides.forEach((slide, idx) => {
+                slide.classList.remove('active', 'prev', 'next');
+                if (idx === currentSlideIndex) {
+                    slide.classList.add('active');
+                } else if (idx < currentSlideIndex) {
+                    slide.classList.add('prev');
+                } else {
+                    slide.classList.add('next');
+                }
+            });
+
+            // Update Counter
+            slideCounter.textContent = `Slide ${currentSlideIndex + 1} of ${slides.length}`;
+
+            // Update navigation button states
+            prevBtn.disabled = currentSlideIndex === 0;
+            nextBtn.disabled = currentSlideIndex === slides.length - 1;
+
+            // Update progress bar
+            const percent = (currentSlideIndex / (slides.length - 1)) * 100;
+            progressIndicator.style.width = `${percent}%`;
+        }
+
+        function nextSlide() {
+            if (currentSlideIndex < slides.length - 1) {
+                currentSlideIndex++;
+                updateDeckUI();
+            }
+        }
+
+        function prevSlide() {
+            if (currentSlideIndex > 0) {
+                currentSlideIndex--;
+                updateDeckUI();
+            }
+        }
+
+        function goToSlide(idx) {
+            if (idx >= 0 && idx < slides.length) {
+                currentSlideIndex = idx;
+                updateDeckUI();
+            }
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (e.target.tagName === 'TEXTAREA' || e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT') {
+                return; // Don't intercept typing in simulator fields
+            }
+            if (e.key === 'ArrowRight' || e.key === 'Spacebar' || e.key === ' ' || e.key === 'n') {
+                nextSlide();
+                e.preventDefault();
+            } else if (e.key === 'ArrowLeft' || e.key === 'p') {
+                prevSlide();
+                e.preventDefault();
+            } else if (e.key === 'r') {
+                goToSlide(0);
+                e.preventDefault();
+            }
+        });
+
+        // Theme Toggle
+        function toggleTheme() {
+            const body = document.body;
+            const themeBtn = document.getElementById('theme-btn');
+            body.classList.toggle('light-mode');
+            if (body.classList.contains('light-mode')) {
+                themeBtn.textContent = "☀️ Light Mode";
+            } else {
+                themeBtn.textContent = "🌙 Dark Mode";
+            }
+        }
+
+        // ==========================================
+        // SIMULATED NLP PARSER JAVASCRIPT
+        // ==========================================
+        const DUMMY_SKILLS = [
+            "python", "java", "javascript", "typescript", "sql", "html", "css",
+            "react", "angular", "vue", "node.js", "express", "django", "flask",
+            "fastapi", "spring boot", "aws", "azure", "gcp", "docker", "kubernetes",
+            "git", "github", "mongodb", "mysql", "postgresql", "pandas"
+        ];
+
+        function runSimulatedParser() {
+            const inputText = document.getElementById('parser-input').value;
+            const outputBox = document.getElementById('parser-output');
+
+            // Extraction simulation mimicking candidate/services/resume_parser.py
+            
+            // Name Extraction: First non-empty line (skipping resumes, CV labels)
+            const lines = inputText.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+            let name = "Not Detected";
+            const ignoredWords = ["resume", "cv", "curriculum vitae", "profile"];
+            for (let line of lines.slice(0, 5)) {
+                if (!ignoredWords.includes(line.toLowerCase()) && !line.includes('@') && !/\d{8,}/.test(line)) {
+                    name = line;
+                    break;
+                }
+            }
+
+            // Email Regex
+            const emailMatch = inputText.match(/[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}/);
+            const email = emailMatch ? emailMatch[0] : "Not Detected";
+
+            // Indian Phone Regex
+            const phoneMatch = inputText.match(/(?:\+91[\s-]?)?[6-9]\d{9}/);
+            const phone = phoneMatch ? phoneMatch[0] : "Not Detected";
+
+            // Skills parsing
+            const foundSkills = [];
+            const textLower = inputText.toLowerCase();
+            DUMMY_SKILLS.forEach(skill => {
+                const escaped = skill.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+                const regex = new RegExp(`\\b${escaped}\\b`, 'i');
+                if (regex.test(textLower)) {
+                    foundSkills.push(skill);
+                }
+            });
+
+            // Render output inside results
+            let html = `{\n`;
+            html += `  <span class="keyword">"parsed_name"</span>: <span class="string">"${name}"</span>,\n`;
+            html += `  <span class="keyword">"parsed_email"</span>: <span class="string">"${email}"</span>,\n`;
+            html += `  <span class="keyword">"parsed_phone"</span>: <span class="string">"${phone}"</span>,\n`;
+            html += `  <span class="keyword">"parsed_skills"</span>: [\n`;
+            
+            foundSkills.forEach((skill, idx) => {
+                const comma = idx < foundSkills.length - 1 ? ',' : '';
+                html += `    <span class="string">"${skill}"</span>${comma}\n`;
+            });
+            html += `  ],\n`;
+            
+            // Render simulated tags in real-time visual representation
+            html += `  <span class="keyword">"extracted_tags"</span>: [\n`;
+            html += `    <span class="entity-tag contact">${name} (Name)</span>\n`;
+            if (email !== "Not Detected") html += `    <span class="entity-tag contact">${email}</span>\n`;
+            if (phone !== "Not Detected") html += `    <span class="entity-tag contact">${phone}</span>\n`;
+            foundSkills.forEach(s => {
+                html += `    <span class="entity-tag">${s}</span>\n`;
+            });
+            html += `  ]\n}`;
+            
+            outputBox.innerHTML = html;
+        }
+
+        // ==========================================
+        // SIMULATED SKILLS MATCHER JAVASCRIPT
+        // ==========================================
+        function runSimulatedMatcher() {
+            const jobSkillsInput = document.getElementById('match-job').value;
+            const candSkillsInput = document.getElementById('match-candidate').value;
+            const matchOutput = document.getElementById('match-output');
+
+            const jobSkills = jobSkillsInput.split(',').map(s => s.trim().toLowerCase()).filter(s => s.length > 0);
+            const candSkills = candSkillsInput.split(',').map(s => s.trim().toLowerCase()).filter(s => s.length > 0);
+
+            if (jobSkills.length === 0) {
+                matchOutput.innerHTML = `<span style="color:var(--accent-red)">Specify job requirements.</span>`;
+                return;
+            }
+
+            const matched = jobSkills.filter(s => candSkills.includes(s));
+            const missing = jobSkills.filter(s => !candSkills.includes(s));
+
+            const score = Math.round((matched.length / jobSkills.length) * 100);
+
+            // Update progress circle gauge
+            const circle = document.getElementById('gauge-circle');
+            const percentText = document.getElementById('gauge-percent');
+            
+            // SVG circle circumference is 2 * pi * r = 2 * 3.14159 * 60 = 377
+            const offset = 377 - (377 * score) / 100;
+            circle.style.strokeDashoffset = offset;
+            percentText.textContent = `${score}%`;
+
+            // Display listing
+            let html = `<div><strong>Matched Skills (${matched.length}):</strong><br>`;
+            if (matched.length > 0) {
+                matched.forEach(s => {
+                    html += `<span class="entity-tag contact" style="text-transform: capitalize;">${s}</span>`;
+                });
+            } else {
+                html += `<span style="font-size:0.8rem;color:var(--text-secondary)">None matched</span>`;
+            }
+            html += `</div><div style="margin-top: 0.8rem;"><strong>Missing Skills Gap (${missing.length}):</strong><br>`;
+            if (missing.length > 0) {
+                missing.forEach(s => {
+                    html += `<span class="entity-tag missing" style="text-transform: capitalize;">${s}</span>`;
+                });
+            } else {
+                html += `<span class="entity-tag contact">Perfect match (No gaps!)</span>`;
+            }
+            html += `</div>`;
+
+            matchOutput.innerHTML = html;
+        }
+
+        // ==========================================
+        // SIMULATED RECRUITER RANKER JAVASCRIPT
+        // ==========================================
+        const APPLICANTS_POOL = [
+            { name: "John Doe", skills: ["python", "sql", "git", "html"], expText: "2 Years", expNum: 2 },
+            { name: "Harsh Yadav", skills: ["python", "django", "react", "sql", "git", "aws"], expText: "3 Years", expNum: 3 },
+            { name: "Sneha Sen", skills: ["react", "javascript", "html", "css", "git", "typescript"], expText: "4 Years", expNum: 4 },
+            { name: "Vikram Raj", skills: ["python", "django", "aws", "postgresql", "docker", "kubernetes", "sql"], expText: "6 Years", expNum: 6 }
+        ];
+
+        function runSimulatedRanker() {
+            const roleSelect = document.getElementById('ranker-role').value;
+            const outputDiv = document.getElementById('ranker-output');
+
+            let reqSkills = [];
+            let targetExp = 0;
+
+            if (roleSelect === "senior") {
+                reqSkills = ["python", "django", "aws", "sql"];
+                targetExp = 5;
+            } else {
+                reqSkills = ["react", "css", "html", "javascript"];
+                targetExp = 2;
+            }
+
+            // Map and score candidates
+            const scoredCandidates = APPLICANTS_POOL.map(cand => {
+                // Skills Match Score (0 - 100)
+                const matched = cand.skills.filter(s => reqSkills.includes(s));
+                const skillScore = reqSkills.length > 0 ? (matched.length / reqSkills.length) * 100 : 0;
+
+                // Experience Matching score (0 - 30 max weight)
+                // If candidate has enough or more exp, get full 30. If less, proportional.
+                const expScore = cand.expNum >= targetExp ? 30 : (cand.expNum / targetExp) * 30;
+
+                // Final blended priority score (skills weighted at 70%, experience weighted at 30%)
+                const finalScore = Math.round((skillScore * 0.7) + expScore);
+
+                return {
+                    name: cand.name,
+                    skills: cand.skills,
+                    expText: cand.expText,
+                    matchedSkillsCount: matched.length,
+                    skillScore: Math.round(skillScore),
+                    expScore: Math.round(expScore),
+                    finalScore: finalScore
+                };
+            });
+
+            // Sort descending by finalScore
+            scoredCandidates.sort((a, b) => b.finalScore - a.finalScore);
+
+            // Render rank list
+            let html = `<table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.85rem;">`;
+            html += `<tr style="border-bottom: 1px solid var(--card-border); color: var(--accent-blue);">`;
+            html += `<th style="padding: 0.4rem;">Rank</th>`;
+            html += `<th style="padding: 0.4rem;">Candidate</th>`;
+            html += `<th style="padding: 0.4rem;">Exp</th>`;
+            html += `<th style="padding: 0.4rem;">Skills Score</th>`;
+            html += `<th style="padding: 0.4rem;">Exp Score</th>`;
+            html += `<th style="padding: 0.4rem; text-align: right;">Total Fit</th>`;
+            html += `</tr>`;
+
+            scoredCandidates.forEach((cand, idx) => {
+                const rowStyle = idx === 0 ? `style="background: rgba(16, 185, 129, 0.08); font-weight: bold; border-left: 3px solid var(--accent-green);"` : `style="border-bottom: 1px solid rgba(255,255,255,0.03);"`;
+                html += `<tr ${rowStyle}>`;
+                html += `<td style="padding: 0.6rem 0.4rem;">#${idx + 1}</td>`;
+                html += `<td style="padding: 0.6rem 0.4rem;">${cand.name}</td>`;
+                html += `<td style="padding: 0.6rem 0.4rem;">${cand.expText}</td>`;
+                html += `<td style="padding: 0.6rem 0.4rem;">${cand.skillScore}% (70%)</td>`;
+                html += `<td style="padding: 0.6rem 0.4rem;">${cand.expScore}/30 (30%)</td>`;
+                html += `<td style="padding: 0.6rem 0.4rem; text-align: right; color: ${idx === 0 ? 'var(--accent-green)' : 'var(--text-primary)'}">${cand.finalScore}%</td>`;
+                html += `</tr>`;
+            });
+            html += `</table>`;
+
+            outputDiv.innerHTML = html;
+        }
+
+        // Initialize calculators
+        runSimulatedParser();
+        runSimulatedMatcher();
+        runSimulatedRanker();
+        updateDeckUI();
+    </script>
+</body>
+</html>

@@ -624,6 +624,13 @@ def schedule_interview(request):
 
             interview.save()
 
+            try:
+                from .email_services import send_interview_scheduled_email
+                send_interview_scheduled_email(interview)
+            except Exception as e:
+                import logging
+                logging.getLogger(__name__).error(f"Error sending interview scheduled email: {e}")
+
             messages.success(
                 request,
                 "Interview scheduled successfully!"
@@ -707,10 +714,16 @@ def update_interview_status(
         ]
 
         if new_status in valid_statuses:
-
+            previous_status = interview.status
             interview.status = new_status
-
             interview.save()
+
+            try:
+                from .email_services import send_interview_status_update_email
+                send_interview_status_update_email(interview, previous_status)
+            except Exception as e:
+                import logging
+                logging.getLogger(__name__).error(f"Error sending interview status update email: {e}")
 
             messages.success(
                 request,
@@ -760,6 +773,13 @@ def edit_interview(
             )
 
             updated_interview.save()
+
+            try:
+                from .email_services import send_interview_rescheduled_email
+                send_interview_rescheduled_email(updated_interview)
+            except Exception as e:
+                import logging
+                logging.getLogger(__name__).error(f"Error sending interview rescheduled email: {e}")
 
             messages.success(
                 request,

@@ -74,3 +74,8 @@ def register_view(request):
         form = RegisterForm()
 
     return render(request, "accounts/register.html", {"form": form})
+
+
+def presentation_view(request):
+    return render(request, "presentation.html")
+
