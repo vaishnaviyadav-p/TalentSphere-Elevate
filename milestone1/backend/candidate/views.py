@@ -4,17 +4,13 @@ from django.contrib import messages
 from .models import CandidateProfile, ResumeData, JobApplication
 from .forms import CandidateProfileForm, ResumeUploadForm
 from .services.resume_parser import parse_resume
-from recruiter.models import Job
+from recruiter.models import Job,Interview
 
 from .skill_matching import (
     extract_required_skills,
     calculate_skill_match,
 )
 
-
-# ============================================================
-# Candidate Dashboard
-# ============================================================
 
 def candidate_dashboard(request):
 
@@ -38,10 +34,6 @@ def candidate_dashboard(request):
         status="Shortlisted"
     ).count()
 
-    interviews = applications.filter(
-        status__in=["Shortlisted", "Scheduled Interview"]
-    ).count()
-
     rejected = applications.filter(
         status="Rejected"
     ).count()
@@ -50,9 +42,32 @@ def candidate_dashboard(request):
         status="Selected"
     ).count()
 
+    # ---------------- Candidate Profile ----------------
+
+    candidate_profile = CandidateProfile.objects.filter(
+        user=request.user
+    ).first()
+
+    # ---------------- Interviews ----------------
+
+    interviews = Interview.objects.none()
+
+    if candidate_profile:
+
+        interviews = Interview.objects.filter(
+            candidate=candidate_profile,
+            status="Scheduled"
+        ).select_related(
+            "recruiter"
+        ).order_by(
+            "interview_date",
+            "interview_time"
+        )
+
+    interview_count = interviews.count()
+
     # ---------------- Candidate Metrics ----------------
 
-    # Application Success Rate
     if total > 0:
         success_rate = round(
             ((shortlisted + selected) / total) * 100,
@@ -61,10 +76,9 @@ def candidate_dashboard(request):
     else:
         success_rate = 0
 
-    # Interview Conversion Rate
     if total > 0:
         interview_rate = round(
-            (interviews / total) * 100,
+            (interview_count / total) * 100,
             1
         )
     else:
@@ -76,31 +90,61 @@ def candidate_dashboard(request):
         "job"
     ).order_by("-id")[:5]
 
-    # ---------------- Context ----------------
-
     context = {
 
-        # Existing dashboard metrics
         "total": total,
         "applied": applied,
         "under_review": under_review,
         "shortlisted": shortlisted,
-        "interview": interviews,
-        "rejected": rejected,
 
-        # Additional candidate metrics
+        # Important
+        "interview": interview_count,
+
+        "rejected": rejected,
         "selected": selected,
+
         "success_rate": success_rate,
         "interview_rate": interview_rate,
 
-        # Recent applications
         "recent_applications": recent_applications,
+
+        # Interview details
+        "interviews": interviews,
     }
 
     return render(
         request,
         "candidate/dashboard.html",
         context
+    )
+def candidate_interviews(request):
+
+    candidate_profile = CandidateProfile.objects.filter(
+        user=request.user
+    ).first()
+
+    if not candidate_profile:
+        messages.error(
+            request,
+            "Candidate profile not found."
+        )
+        return redirect("candidate_dashboard")
+
+    interviews = Interview.objects.filter(
+        candidate=candidate_profile
+    ).select_related(
+        "recruiter"
+    ).order_by(
+        "-interview_date",
+        "-interview_time"
+    )
+
+    return render(
+        request,
+        "candidate/interviews.html",
+        {
+            "interviews": interviews
+        }
     )
 
 

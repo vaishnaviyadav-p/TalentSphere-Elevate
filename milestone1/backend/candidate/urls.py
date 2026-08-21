@@ -4,16 +4,64 @@ from . import views
 
 urlpatterns = [
 
+    # ==============================
+    # Candidate Dashboard
+    # ==============================
+
     path(
-        "dashboard/", views.candidate_dashboard, name="candidate_dashboard"),
+        "dashboard/",
+        views.candidate_dashboard,
+        name="candidate_dashboard"
+    ),
 
-    path("jobs/", views.browse_jobs, name="browse_jobs"),
-    path("jobs/<int:job_id>/", views.job_detail, name="job_detail"),
-    path("apply/<int:job_id>/", views.apply_job, name="apply_job"),
+    # ==============================
+    # Jobs
+    # ==============================
 
-    path("applications/", views.my_applications, name="my_applications"),
+    path(
+        "jobs/",
+        views.browse_jobs,
+        name="browse_jobs"
+    ),
 
-    path("profile/",
+    path(
+        "jobs/<int:job_id>/",
+        views.job_detail,
+        name="job_detail"
+    ),
+
+    path(
+        "apply/<int:job_id>/",
+        views.apply_job,
+        name="apply_job"
+    ),
+
+    # ==============================
+    # Applications
+    # ==============================
+
+    path(
+        "applications/",
+        views.my_applications,
+        name="my_applications"
+    ),
+
+    # ==============================
+    # Interviews
+    # ==============================
+
+    path(
+        "interviews/",
+        views.candidate_interviews,
+        name="candidate_interviews"
+    ),
+
+    # ==============================
+    # Candidate Profile
+    # ==============================
+
+    path(
+        "profile/",
         views.candidate_profile,
         name="candidate_profile"
     ),
@@ -24,10 +72,13 @@ urlpatterns = [
         name="edit_candidate_profile"
     ),
 
-    path(
-        'upload-resume/',
-        views.upload_resume,
-        name='upload_resume'
-    ),
+    # ==============================
+    # Resume
+    # ==============================
 
+    path(
+        "upload-resume/",
+        views.upload_resume,
+        name="upload_resume"
+    ),
 ]
