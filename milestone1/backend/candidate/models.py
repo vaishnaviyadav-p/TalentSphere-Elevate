@@ -138,3 +138,22 @@ class JobApplication(models.Model):
 
     def __str__(self):
         return f"{self.candidate.username} applied for {self.job.title}"
+
+    def save(self, *args, **kwargs):
+        is_new = self.pk is None
+        old_status = None
+        if not is_new:
+            try:
+                old_status = JobApplication.objects.get(pk=self.pk).status
+            except JobApplication.DoesNotExist:
+                pass
+        
+        super().save(*args, **kwargs)
+        
+        if (not is_new and old_status != self.status) or (is_new and self.status != "Applied"):
+            try:
+                from recruiter.email_services import send_application_status_update_email
+                send_application_status_update_email(self)
+            except Exception as e:
+                import logging
+                logging.getLogger(__name__).error(f"Error sending application status update email: {e}")
