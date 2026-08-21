@@ -9,6 +9,7 @@ from django.core.exceptions import PermissionDenied
 from django.contrib.auth.decorators import login_required
 
 from django.contrib import messages
+from django.db.models import Count
 
 from accounts.models import UserProfile
 
@@ -130,6 +131,19 @@ def edit_recruiter_profile(request):
             "form": form
         }
     )
+
+def update_application_status(request, application_id):
+    application = get_object_or_404(JobApplication, id=application_id)
+
+    if request.method == "POST":
+        new_status = request.POST.get("status")
+
+        if new_status in dict(JobApplication.STATUS_CHOICES):
+            application.status = new_status
+            application.save()
+            messages.success(request, "Application status updated successfully.")
+
+    return redirect("priority_candidates")
 
 
 # ============================================================

@@ -329,11 +329,15 @@
                                     {% endif %}
                                 </td>
                                 <td>
-                                    {% if row.candidate_experience %}
-                                        {{ row.candidate_experience }}
-                                    {% else %}
-                                        <span class="text-muted">Not provided</span>
-                                    {% endif %}
+                                    {% if row.experience_bucket == "0-2" %}
+    0–2 years
+{% elif row.experience_bucket == "2-5" %}
+    2–5 years
+{% elif row.experience_bucket == "5+" %}
+    5+ years
+{% else %}
+    <span class="text-muted">Not provided</span>
+{% endif %}
                                 </td>
  <td>
 

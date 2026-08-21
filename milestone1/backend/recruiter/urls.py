@@ -104,4 +104,9 @@ urlpatterns = [
         views.edit_interview,
         name="edit_interview"
     ),
+    path(
+    "update-application-status/<int:application_id>/",
+    views.update_application_status,
+    name="update_application_status",
+),
 ]
