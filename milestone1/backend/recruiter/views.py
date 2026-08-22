@@ -317,8 +317,7 @@ def analytics_dashboard(request):
 
     week_data = [week_counts.get(key, 0) for key in week_keys]
 
-    # 5. APPLICATION STATUS BREAKDOWN (PIE CHART)
-    # IN YOUR CONTEXT DICTIONARY:
+    # 5.recruiter trends
     context = {
     "total_jobs": total_jobs,
     "total_applications": total_applications,
