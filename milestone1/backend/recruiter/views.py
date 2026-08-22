@@ -220,127 +220,131 @@ def dashboard(request):
 # ANALYTICS DASHBOARD
 # ============================================================
 
+import json
+import calendar
+from datetime import date, datetime, timedelta
+
+from django.shortcuts import render
+from django.contrib.auth.decorators import login_required
+from django.db.models import Count
+from django.db.models.functions import TruncMonth, TruncWeek
+from django.utils import timezone
+
+from .models import Job
+from candidate.models import JobApplication  # Adjust path if JobApplication is in another app
+
 @login_required
 def analytics_dashboard(request):
-
     recruiter = request.user
 
-    # ==========================================
-    # JOBS POSTED BY THIS RECRUITER
-    # ==========================================
-
+    # 1. JOBS & APPLICATIONS BASE QUERYSETS
     jobs = Job.objects.filter(recruiter=recruiter)
+    applications = JobApplication.objects.filter(job__recruiter=recruiter)
 
-    # Total jobs
+    # 2. COUNTER METRICS (Total Jobs, Applications, Shortlisted, Interviews)
     total_jobs = jobs.count()
-
-    # ==========================================
-    # APPLICATIONS FOR RECRUITER'S JOBS
-    # ==========================================
-
-    applications = JobApplication.objects.filter(
-        job__recruiter=recruiter
-    )
-
     total_applications = applications.count()
+    shortlisted = applications.filter(status="Shortlisted").count()
+    interviews = applications.filter(status="Interview").count()
 
-    shortlisted = applications.filter(
-        status="Shortlisted"
-    ).count()
+    today = timezone.now().date()
 
-    interviews = applications.filter(
-        status="Interview"
-    ).count()
+    from django.db.models.functions import ExtractMonth, ExtractYear
 
     # ==========================================
-    # MONTH-WISE JOB POSTING DATA
+    # 3. MONTH-WISE DATA (EXACT MATCH LIKE WEEK-WISE)
     # ==========================================
+    month_labels = []
+    month_keys = []
 
-    jobs_by_month = (
+    for i in range(11, -1, -1):
+        year = today.year - ((today.month - 1 - i) // -12 if (today.month - 1 - i) < 0 else 0)
+        month = (today.month - 1 - i) % 12 + 1
+        
+        # Unique key formatted as "YYYY-M" (e.g., "2026-8")
+        month_keys.append(f"{year}-{month}")
+        
+        # Display label (e.g., "Aug 2026")
+        dt = date(year, month, 1)
+        month_labels.append(dt.strftime("%b %Y"))
+
+    # Query DB and extract exact integer Year and Month
+    jobs_by_month_qs = (
         jobs
-        .annotate(month=TruncMonth("created_at"))
-        .values("month")
+        .annotate(
+            y=ExtractYear("created_at"),
+            m=ExtractMonth("created_at")
+        )
+        .values("y", "m")
         .annotate(total=Count("id"))
-        .order_by("month")
     )
 
-    month_labels = []
-    month_data = []
+    # Build dictionary lookup: {"2026-8": 5, "2026-7": 2, ...}
+    month_counts = {
+        f"{item['y']}-{item['m']}": item["total"]
+        for item in jobs_by_month_qs if item["y"] and item["m"]
+    }
 
-    for item in jobs_by_month:
-        month_labels.append(
-            item["month"].strftime("%b %Y")
-        )
-        month_data.append(item["total"])
+    # Match counts to month keys (defaults to 0 if no jobs posted that month)
+    month_data = [month_counts.get(key, 0) for key in month_keys]
+    
+    # 4. WEEK-WISE DATA (LAST 12 WEEKS)
+    current_monday = today - timedelta(days=today.weekday())
+    
+    week_labels = []
+    week_keys = []
 
-    # ==========================================
-    # WEEK-WISE JOB POSTING DATA
-    # ==========================================
+    for i in range(11, -1, -1):
+        week_monday = current_monday - timedelta(weeks=i)
+        week_keys.append(week_monday.strftime("%Y-%W"))
+        week_labels.append(week_monday.strftime("%d %b"))
 
-    jobs_by_week = (
+    naive_week_start = datetime.combine(current_monday - timedelta(weeks=11), datetime.min.time())
+    week_start_date = timezone.make_aware(naive_week_start)
+
+    jobs_by_week_qs = (
         jobs
+        .filter(created_at__gte=week_start_date)
         .annotate(week=TruncWeek("created_at"))
         .values("week")
         .annotate(total=Count("id"))
-        .order_by("week")
     )
 
-    week_labels = []
-    week_data = []
-
-    for item in jobs_by_week:
-        week_labels.append(
-            item["week"].strftime("%d %b")
-        )
-        week_data.append(item["total"])
-
-    # ==========================================
-    # APPLICATION TREND BY MONTH
-    # ==========================================
-
-    applications_by_month = (
-        applications
-        .annotate(month=TruncMonth("applied_at"))
-        .values("month")
-        .annotate(total=Count("id"))
-        .order_by("month")
-    )
-
-    trend_labels = []
-    trend_data = []
-
-    for item in applications_by_month:
-        trend_labels.append(
-            item["month"].strftime("%b %Y")
-        )
-        trend_data.append(item["total"])
-
-    context = {
-
-        "total_jobs": total_jobs,
-
-        "total_applications": total_applications,
-
-        "shortlisted": shortlisted,
-
-        "interviews": interviews,
-
-        "month_labels": month_labels,
-        "month_data": month_data,
-
-        "week_labels": week_labels,
-        "week_data": week_data,
-
-        "trend_labels": trend_labels,
-        "trend_data": trend_data,
+    week_counts = {
+        item["week"].strftime("%Y-%W"): item["total"]
+        for item in jobs_by_week_qs if item["week"]
     }
 
-    return render(
-        request,
-        "recruiter/analytics_dashboard.html",
-        context
-    )   
+    week_data = [week_counts.get(key, 0) for key in week_keys]
 
+    # 5. APPLICATION STATUS BREAKDOWN (PIE CHART)
+    # IN YOUR CONTEXT DICTIONARY:
+    context = {
+    "total_jobs": total_jobs,
+    "total_applications": total_applications,
+    "shortlisted": shortlisted,
+    "interviews": interviews,
+
+    "month_labels_json": json.dumps(month_labels),
+    "month_data_json": json.dumps(month_data), # This is your monthly recruitment trend!
+    "week_labels_json": json.dumps(week_labels),
+    "week_data_json": json.dumps(week_data),  
+    }
+
+    # 6. CONTEXT DICTIONARY (Includes Counter Metrics AND Chart JSON Data)
+    context = {
+        "total_jobs": total_jobs,
+        "total_applications": total_applications,
+        "shortlisted": shortlisted,
+        "interviews": interviews,
+
+        "month_labels_json": json.dumps(month_labels),
+        "month_data_json": json.dumps(month_data),
+        "week_labels_json": json.dumps(week_labels),
+        "week_data_json": json.dumps(week_data),
+    }
+
+    return render(request, "recruiter/analytics_dashboard.html", context)
 
 # ============================================================
 # POST JOB
