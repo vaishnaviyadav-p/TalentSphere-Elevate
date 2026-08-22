@@ -1,12 +1,20 @@
+<<<<<<< HEAD
 from django.shortcuts import (
     render,
     redirect,
     get_object_or_404
 )
 
+=======
+from datetime import timedelta
+
+from django.shortcuts import render, redirect
+>>>>>>> 790e825 (Implement recruiter metrics dashboard)
 from django.core.exceptions import PermissionDenied
 
 from django.contrib.auth.decorators import login_required
+from django.db.models import Count, Q
+from django.utils import timezone
 
 from django.contrib import messages
 from django.db.models import Count
@@ -153,20 +161,57 @@ def update_application_status(request, application_id):
 
 @login_required
 def dashboard(request):
+    now = timezone.now()
+    week_start = now - timedelta(days=now.weekday())
+    week_start = week_start.replace(hour=0, minute=0, second=0, microsecond=0)
+    month_start = now.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
 
-    active_jobs = Job.objects.filter(
-        recruiter=request.user,
-        is_active=True
+    recruiter_jobs = Job.objects.filter(recruiter=request.user)
+
+    total_jobs_posted = recruiter_jobs.count()
+    active_jobs = recruiter_jobs.filter(is_active=True).count()
+    inactive_jobs = recruiter_jobs.filter(is_active=False).count()
+
+    recruiter_applications = JobApplication.objects.filter(job__recruiter=request.user)
+    total_applications = recruiter_applications.count()
+    candidates_interviewed = recruiter_applications.filter(status="Interview").count()
+    candidates_shortlisted = recruiter_applications.filter(status="Shortlisted").count()
+
+    jobs_posted_this_week = recruiter_jobs.filter(created_at__gte=week_start).count()
+    applications_this_week = recruiter_applications.filter(applied_at__gte=week_start).count()
+    interviews_this_week = recruiter_applications.filter(
+        status="Interview", applied_at__gte=week_start
     ).count()
 
+<<<<<<< HEAD
     jobs = Job.objects.filter(
         recruiter=request.user
     ).order_by(
         "-created_at"
     )
+=======
+    jobs_posted_this_month = recruiter_jobs.filter(created_at__gte=month_start).count()
+    applications_this_month = recruiter_applications.filter(applied_at__gte=month_start).count()
+    interviews_this_month = recruiter_applications.filter(
+        status="Interview", applied_at__gte=month_start
+    ).count()
+
+    jobs = recruiter_jobs.order_by("-created_at")
+>>>>>>> 790e825 (Implement recruiter metrics dashboard)
 
     context = {
         "active_jobs": active_jobs,
+        "inactive_jobs": inactive_jobs,
+        "total_jobs_posted": total_jobs_posted,
+        "total_applications": total_applications,
+        "candidates_interviewed": candidates_interviewed,
+        "candidates_shortlisted": candidates_shortlisted,
+        "jobs_posted_this_week": jobs_posted_this_week,
+        "applications_this_week": applications_this_week,
+        "interviews_this_week": interviews_this_week,
+        "jobs_posted_this_month": jobs_posted_this_month,
+        "applications_this_month": applications_this_month,
+        "interviews_this_month": interviews_this_month,
         "jobs": jobs,
     }
 
