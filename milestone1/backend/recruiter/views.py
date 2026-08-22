@@ -1,15 +1,12 @@
-<<<<<<< HEAD
 from django.shortcuts import (
     render,
     redirect,
     get_object_or_404
 )
 
-=======
 from datetime import timedelta
 
 from django.shortcuts import render, redirect
->>>>>>> 790e825 (Implement recruiter metrics dashboard)
 from django.core.exceptions import PermissionDenied
 
 from django.contrib.auth.decorators import login_required
@@ -183,13 +180,11 @@ def dashboard(request):
         status="Interview", applied_at__gte=week_start
     ).count()
 
-<<<<<<< HEAD
     jobs = Job.objects.filter(
         recruiter=request.user
     ).order_by(
         "-created_at"
     )
-=======
     jobs_posted_this_month = recruiter_jobs.filter(created_at__gte=month_start).count()
     applications_this_month = recruiter_applications.filter(applied_at__gte=month_start).count()
     interviews_this_month = recruiter_applications.filter(
@@ -197,7 +192,6 @@ def dashboard(request):
     ).count()
 
     jobs = recruiter_jobs.order_by("-created_at")
->>>>>>> 790e825 (Implement recruiter metrics dashboard)
 
     context = {
         "active_jobs": active_jobs,
