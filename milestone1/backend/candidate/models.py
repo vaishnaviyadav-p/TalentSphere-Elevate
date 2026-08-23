@@ -103,12 +103,13 @@ class ResumeData(models.Model):
 
 class JobApplication(models.Model):
 
-    STATUS_CHOICES = (
+    STATUS_CHOICES = [
         ("Applied", "Applied"),
         ("Shortlisted", "Shortlisted"),
         ("Interview", "Interview"),
         ("Rejected", "Rejected"),
-    )
+        ("Selected", "Selected"),
+    ]
 
     candidate = models.ForeignKey(
         User,
@@ -156,4 +157,4 @@ class JobApplication(models.Model):
                 send_application_status_update_email(self)
             except Exception as e:
                 import logging
-                logging.getLogger(__name__).error(f"Error sending application status update email: {e}")
+                logging.getLogger(__name__).error(f"Error sending application status update email: {e}")

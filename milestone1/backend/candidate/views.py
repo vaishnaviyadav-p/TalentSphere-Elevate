@@ -1,5 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
+from django.utils import timezone
+from datetime import timedelta
 
 from .models import CandidateProfile, ResumeData, JobApplication
 from .forms import CandidateProfileForm, ResumeUploadForm
@@ -40,6 +42,54 @@ def candidate_dashboard(request):
 
     selected = applications.filter(
         status="Selected"
+    ).count()
+
+    # ---------------- Weekly & Monthly Activity ----------------
+
+    today = timezone.now().date()
+
+    week_start = today - timedelta(days=today.weekday())
+
+    month_start = today.replace(day=1)
+
+    # Weekly Activity
+    weekly_applications = applications.filter(
+        applied_at__date__gte=week_start
+    ).count()
+
+    weekly_shortlisted = applications.filter(
+        applied_at__date__gte=week_start,
+        status="Shortlisted"
+    ).count()
+
+    weekly_interviews = applications.filter(
+        applied_at__date__gte=week_start,
+        status="Interview"
+    ).count()
+
+    weekly_rejected = applications.filter(
+        applied_at__date__gte=week_start,
+        status="Rejected"
+    ).count()
+
+    # Monthly Activity
+    monthly_applications = applications.filter(
+        applied_at__date__gte=month_start
+    ).count()
+
+    monthly_shortlisted = applications.filter(
+        applied_at__date__gte=month_start,
+        status="Shortlisted"
+    ).count()
+
+    monthly_interviews = applications.filter(
+        applied_at__date__gte=month_start,
+        status="Interview"
+    ).count()
+
+    monthly_rejected = applications.filter(
+        applied_at__date__gte=month_start,
+        status="Rejected"
     ).count()
 
     # ---------------- Candidate Profile ----------------
@@ -110,6 +160,18 @@ def candidate_dashboard(request):
 
         # Interview details
         "interviews": interviews,
+
+        # Weekly Activity
+        "weekly_applications": weekly_applications,
+        "weekly_shortlisted": weekly_shortlisted,
+        "weekly_interviews": weekly_interviews,
+        "weekly_rejected": weekly_rejected,
+
+        # Monthly Activity
+        "monthly_applications": monthly_applications,
+        "monthly_shortlisted": monthly_shortlisted,
+        "monthly_interviews": monthly_interviews,
+        "monthly_rejected": monthly_rejected,
     }
 
     return render(
