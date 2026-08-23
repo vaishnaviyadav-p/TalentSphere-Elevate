@@ -114,7 +114,7 @@ def candidate_dashboard(request):
             "interview_time"
         )
 
-    interview_count = interviews.count()
+    interview_count = interviews.values("candidate").distinct().count()
 
     # ---------------- Candidate Metrics ----------------
 
