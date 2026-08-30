@@ -9,6 +9,9 @@ from datetime import timedelta
 from django.shortcuts import render, redirect
 from django.core.exceptions import PermissionDenied
 
+from django.contrib.auth import update_session_auth_hash
+from django.contrib.auth.forms import PasswordChangeForm
+
 from django.contrib.auth.decorators import login_required
 from django.db.models import Count, Q
 from django.utils import timezone
@@ -27,7 +30,8 @@ from candidate.models import (
 from .models import (
     RecruiterProfile,
     Job,
-    Interview
+    Interview,
+    RecruiterSettings
 )
 
 from .forms import (
@@ -44,6 +48,101 @@ from .ranking import (
 
 from django.db.models.functions import TruncMonth, TruncWeek
 from django.db.models import Count
+
+# ============================================================
+# RECRUITER SETTINGS
+# ============================================================
+
+@login_required
+def recruiter_settings(request):
+    return render(request, "recruiter/settings.html")  # Redirect to the settings page
+
+    settings_obj, created = RecruiterSettings.objects.get_or_create(
+        user=request.user
+    )
+
+    if request.method == "POST":
+
+        # ------------------------------------------
+        # CHANGE PASSWORD
+        # ------------------------------------------
+
+        if "change_password" in request.POST:
+
+            password_form = RecruiterPasswordChangeForm(
+                request.user,
+                request.POST
+            )
+
+            settings_form = RecruiterSettingsForm(
+                instance=settings_obj
+            )
+
+            if password_form.is_valid():
+
+                user = password_form.save()
+
+                # Keep user logged in after password change
+                update_session_auth_hash(
+                    request,
+                    user
+                )
+
+                messages.success(
+                    request,
+                    "Password changed successfully!"
+                )
+
+                return redirect(
+                    "recruiter_settings"
+                )
+
+        # ------------------------------------------
+        # SAVE NOTIFICATION SETTINGS
+        # ------------------------------------------
+
+        elif "save_notifications" in request.POST:
+
+            settings_form = RecruiterSettingsForm(
+                request.POST,
+                instance=settings_obj
+            )
+
+            password_form = RecruiterPasswordChangeForm(
+                request.user
+            )
+
+            if settings_form.is_valid():
+
+                settings_form.save()
+
+                messages.success(
+                    request,
+                    "Notification settings updated successfully!"
+                )
+
+                return redirect(
+                    "recruiter_settings"
+                )
+
+    else:
+
+        settings_form = RecruiterSettingsForm(
+            instance=settings_obj
+        )
+
+        password_form = RecruiterPasswordChangeForm(
+            request.user
+        )
+
+    return render(
+        request,
+        "recruiter/settings.html",
+        {
+            "settings_form": settings_form,
+            "password_form": password_form,
+        }
+    )
 
 
 # ============================================================
@@ -344,6 +443,25 @@ def analytics_dashboard(request):
     }
 
     return render(request, "recruiter/analytics_dashboard.html", context)
+
+# ============================================================
+# RECRUITER JOB LISTINGS
+# ============================================================
+
+@login_required
+def job_listings(request):
+
+    jobs = Job.objects.filter(
+        recruiter=request.user
+    ).order_by("-created_at")
+
+    return render(
+        request,
+        "recruiter/job_listings.html",
+        {
+            "jobs": jobs
+        }
+    )
 
 # ============================================================
 # POST JOB

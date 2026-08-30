@@ -2,6 +2,9 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.utils import timezone
 from datetime import timedelta
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth import update_session_auth_hash
+from django.contrib.auth.forms import PasswordChangeForm
 
 from .models import CandidateProfile, ResumeData, JobApplication
 from .forms import CandidateProfileForm, ResumeUploadForm
@@ -154,7 +157,8 @@ def candidate_dashboard(request):
         "selected": selected,
 
         "success_rate": success_rate,
-        "interview_rate": interview_rate,
+
+        "interview_conversion": interview_rate,
 
         "recent_applications": recent_applications,
 
@@ -172,6 +176,15 @@ def candidate_dashboard(request):
         "monthly_shortlisted": monthly_shortlisted,
         "monthly_interviews": monthly_interviews,
         "monthly_rejected": monthly_rejected,
+
+        "analytics_data": {
+    "Applied": applied,
+    "Under Review": under_review,
+    "Shortlisted": shortlisted,
+    "Interview": interview_count,
+    "Selected": selected,
+    "Rejected": rejected,
+},
     }
 
     return render(
@@ -282,6 +295,128 @@ def job_detail(request, job_id):
             "missing_skills": result["missing_skills"],
         }
     )
+
+
+
+@login_required
+def candidate_settings(request):
+
+    user = request.user
+
+    if request.method == "POST":
+
+        # Update email
+        email = request.POST.get("email")
+
+        if email:
+            user.email = email
+
+        # Update username
+        username = request.POST.get("username")
+
+        if username:
+            user.username = username
+
+        user.save()
+
+        # Change password if entered
+        password_form = PasswordChangeForm(
+            user,
+            request.POST
+        )
+
+        if (
+            request.POST.get("old_password")
+            or request.POST.get("new_password1")
+            or request.POST.get("new_password2")
+        ):
+
+            if password_form.is_valid():
+
+                password_form.save()
+
+                update_session_auth_hash(
+                    request,
+                    user
+                )
+
+                messages.success(
+                    request,
+                    "Settings and password updated successfully!"
+                )
+
+                return redirect("candidate_settings")
+
+            else:
+
+                return render(
+                    request,
+                    "candidate/settings.html",
+                    {
+                        "password_form": password_form,
+                        "user": user
+                    }
+                )
+
+        messages.success(
+            request,
+            "Settings updated successfully!"
+        )
+
+        return redirect("candidate_settings")
+
+    password_form = PasswordChangeForm(user)
+
+    return render(
+        request,
+        "candidate/settings.html",
+        {
+            "user": user,
+            "password_form": password_form
+        }
+    )
+
+@login_required
+def change_password(request):
+
+    if request.method == "POST":
+
+        form = PasswordChangeForm(
+            request.user,
+            request.POST
+        )
+
+        if form.is_valid():
+
+            form.save()
+
+            update_session_auth_hash(
+                request,
+                request.user
+            )
+
+            messages.success(
+                request,
+                "Password changed successfully!"
+            )
+
+            return redirect("candidate_settings")
+
+    else:
+
+        form = PasswordChangeForm(
+            request.user
+        )
+
+    return render(
+        request,
+        "candidate/change_password.html",
+        {
+            "form": form
+        }
+    )
+
+
 
 
 # ============================================================
@@ -481,6 +616,29 @@ def edit_candidate_profile(request):
         "candidate/edit_profile.html",
         {
             "form": form
+        }
+    )
+
+def candidate_analytics(request):
+
+    applications = JobApplication.objects.filter(
+        candidate=request.user
+    )
+
+    analytics_data = {
+        "Applied": applications.filter(status="Applied").count(),
+        "Under Review": applications.filter(status="Under Review").count(),
+        "Shortlisted": applications.filter(status="Shortlisted").count(),
+        "Interview": applications.filter(status="Interview").count(),
+        "Selected": applications.filter(status="Selected").count(),
+        "Rejected": applications.filter(status="Rejected").count(),
+    }
+
+    return render(
+        request,
+        "candidate/analytics.html",
+        {
+            "analytics_data": analytics_data
         }
     )
 

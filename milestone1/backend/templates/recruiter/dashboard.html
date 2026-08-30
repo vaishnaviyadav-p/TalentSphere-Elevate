@@ -4,699 +4,1874 @@
 
 <style>
 
-body{
-    background:#f4f7fb;
-    font-family: 'Segoe UI', sans-serif;
+/* =========================================
+   PAGE
+   ========================================= */
+
+body {
+    background: #f4f7fb;
+    font-family: "Segoe UI", sans-serif;
+    margin: 0;
 }
 
-/* Header */
-
-.dashboard-header{
-    background:linear-gradient(135deg,#2563eb,#1e40af);
-    color:white;
-    padding:35px;
-    border-radius:18px;
-    margin-bottom:30px;
-    box-shadow:0 15px 35px rgba(0,0,0,.12);
-}
-
-.dashboard-header h2{
-    font-weight:700;
-}
-
-.dashboard-header p{
-    opacity:.9;
-    margin:0;
-}
-
-/* Cards */
-
-.stats-card{
-    background:white;
-    border:none;
-    border-radius:18px;
-    transition:.3s;
-    box-shadow:0 8px 25px rgba(0,0,0,.08);
-}
-
-.stats-card:hover{
-    transform:translateY(-6px);
-}
-
-.stats-card .card-body{
-    text-align:center;
-    padding:30px;
-}
-
-.stats-card h2{
-    font-size:34px;
-    color:#2563eb;
-    font-weight:bold;
-}
-
-.stats-card h6{
-    color:#64748b;
-}
-
-/* Metric Cards */
-
-.metric-card{
-    background:white;
-    border:none;
-    border-radius:16px;
-    transition:.3s;
-    box-shadow:0 6px 20px rgba(0,0,0,.06);
-    height:100%;
-}
-
-.metric-card:hover{
-    transform:translateY(-4px);
-    box-shadow:0 12px 30px rgba(0,0,0,.1);
-}
-
-.metric-card .card-body{
-    padding:24px;
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    text-align:center;
-}
-
-.metric-icon{
-    width:48px;
-    height:48px;
-    border-radius:12px;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    margin-bottom:12px;
-}
-
-.metric-icon.primary{
-    background:#dbeafe;
-    color:#2563eb;
-}
-
-.metric-icon.success{
-    background:#d1fae5;
-    color:#059669;
-}
-
-.metric-icon.warning{
-    background:#fef3c7;
-    color:#d97706;
-}
-
-.metric-icon.danger{
-    background:#fee2e2;
-    color:#dc2626;
-}
-
-.metric-icon.info{
-    background:#e0e7ff;
-    color:#4f46e5;
-}
-
-.metric-value{
-    font-size:28px;
-    font-weight:700;
-    color:#1e293b;
-    line-height:1.2;
-    margin-bottom:4px;
-}
-
-.metric-label{
-    font-size:13px;
-    color:#64748b;
-    font-weight:500;
-    text-transform:uppercase;
-    letter-spacing:.05em;
-}
-
-/* Section Cards */
-
-.section-card{
-    background:white;
-    border:none;
-    border-radius:16px;
-    box-shadow:0 6px 20px rgba(0,0,0,.06);
-    overflow:hidden;
-}
-
-.section-header{
-    padding:20px 24px;
-    border-bottom:1px solid #e2e8f0;
-    background:#f8fafc;
-}
-
-.section-header h5{
-    margin:0;
-    font-size:15px;
-    font-weight:600;
-    color:#1e293b;
-}
-
-.section-body{
-    padding:24px;
-}
-
-.metric-row{
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    padding:14px 0;
-    border-bottom:1px solid #f1f5f9;
-}
-
-.metric-row:last-child{
-    border-bottom:none;
-}
-
-.metric-info{
-    display:flex;
-    align-items:center;
-    gap:12px;
-}
-
-.metric-dot{
-    width:10px;
-    height:10px;
-    border-radius:50%;
-    flex-shrink:0;
-}
-
-.metric-dot.primary{ background:#2563eb; }
-.metric-dot.success{ background:#059669; }
-.metric-dot.warning{ background:#d97706; }
-.metric-dot.danger{ background:#dc2626; }
-.metric-dot.info{ background:#4f46e5; }
-
-.metric-name{
-    font-size:14px;
-    font-weight:500;
-    color:#334155;
-}
-
-.metric-count{
-    font-size:16px;
-    font-weight:700;
-    color:#1e293b;
-}
-
-/* Tab Navigation */
-
-.metric-tabs{
-    display:flex;
-    gap:8px;
-    margin-bottom:20px;
-    border-bottom:2px solid #e2e8f0;
-    padding-bottom:4px;
-}
-
-.metric-tab{
-    padding:10px 20px;
-    font-size:13px;
-    font-weight:600;
-    color:#64748b;
-    background:transparent;
-    border:none;
-    border-radius:8px;
-    cursor:pointer;
-    transition:all .2s;
-}
-
-.metric-tab:hover{
-    color:#2563eb;
-    background:#f1f5f9;
-}
-
-.metric-tab.active{
-    color:#2563eb;
-    background:#dbeafe;
-}
-
-/* Quick Buttons */
-
-.quick-btn{
-    border-radius:12px;
-    padding:12px 18px;
-    font-weight:600;
-    margin-right:10px;
-    transition:transform .2s ease, box-shadow .2s ease, background-color .2s ease, border-color .2s ease;
-    display:inline-flex;
-    align-items:center;
-    gap:8px;
-    min-height:44px;
-    line-height:1;
-}
-
-.quick-btn-icon{
-    width:16px;
-    height:16px;
-    flex:0 0 auto;
-}
-
-.post-job-btn,
-.applications-btn,
-.candidate-ranking-btn{
-    background:#d97706;
-    border-color:#d97706;
-    color:#fff;
-}
-
-.schedule-interview-btn{
-    background:#059669;
-    border-color:#059669;
-    color:#fff;
-}
-
-.schedule-interview-btn:hover,
-.schedule-interview-btn:focus{
-    background:#047857;
-    border-color:#047857;
-    color:#fff;
-    transform:translateY(-1px);
-    box-shadow:0 10px 22px rgba(5,150,105,.18);
-}
-
-..post-job-btn:hover,
-.post-job-btn:focus{
-    background:#7c3aed;
-    border-color:#7c3aed;
-    color:#fff;
-    transform:translateY(-1px);
-    box-shadow:0 10px 22px rgba(124,58,237,.18);
-}
-
-.candidate-ranking-btn:hover,
-.candidate-ranking-btn:focus{
-    background:#d97706;
-    border-color:#d97706;
-    color:#fff;
-    transform:translateY(-1px);
-    box-shadow:0 10px 22px rgba(217,119,6,.18);
-}
-
-.applications-btn{
-    background:#1e40af;
-    border-color:#1e40af;
-    color:#fff;
-}
-
-.applications-btn:hover,
-.applications-btn:focus{
-    background:#1d4ed8;
-    border-color:#1d4ed8;
-    color:#fff;
-
+.recruiter-dashboard {
+    min-height: 100vh;
+    margin-left: 280px;
+    width: calc(100% - 280px);
 }
 
 
-.post-job-btn{
+/* =========================================
+   LEFT SIDEBAR
+   ========================================= */
 
-    background:#7c3aed;
+.recruiter-sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 280px;
+    height: 100vh;
+    z-index: 1000;
+    overflow-y: auto;
 
-    border-color:#7c3aed;
+    background: linear-gradient(
+        180deg,
+        #0f3d91 0%,
+        #082b68 100%
+    );
 
-    color:#fff;
+    color: white;
+    z-index: 1000;
+
+    display: flex;
+    flex-direction: column;
+
+    box-shadow: 5px 0 20px rgba(0, 0, 0, 0.12);
 }
 
-/* Table */
 
-.table-card{
-    background:white;
-    border-radius:18px;
-    overflow:hidden;
-    box-shadow:0 8px 25px rgba(0,0,0,.08);
+/* Brand */
+
+.sidebar-brand {
+    padding: 28px 24px;
+    border-bottom: 1px solid rgba(255,255,255,0.12);
 }
 
-.table thead{
-    background:#2563eb;
-    color:white;
+.brand-name {
+    font-size: 25px;
+    font-weight: 700;
+    color: white;
 }
 
-.badge{
-    padding:8px 12px;
-    border-radius:20px;
-    font-weight:500;
+.brand-subtitle {
+    font-size: 11px;
+    margin-top: 5px;
+    color: rgba(255,255,255,0.75);
 }
 
-.badge.pending{
-    background:#fff3cd;
-    color:#856404;
+
+/* Sidebar Menu */
+
+.sidebar-menu {
+    padding: 20px 12px;
+    flex: 1;
 }
 
-.badge.shortlisted{
-    background:#d1fae5;
-    color:#047857;
+.sidebar-link {
+    display: flex;
+    align-items: center;
+    gap: 13px;
+
+    color: rgba(255,255,255,0.9);
+
+    text-decoration: none;
+
+    padding: 12px 14px;
+
+    margin-bottom: 7px;
+
+    border-radius: 9px;
+
+    font-size: 14px;
+    font-weight: 500;
+
+    transition: all 0.2s ease;
 }
 
-/* Responsive */
+.sidebar-link:hover {
+    background: rgba(255,255,255,0.12);
+    color: white;
+    transform: translateX(2px);
+}
+
+.sidebar-link.active {
+    background: #2563eb;
+    color: white;
+    box-shadow: 0 5px 15px rgba(37,99,235,0.35);
+}
+
+.sidebar-icon {
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+}
+
+
+/* Sidebar Logout */
+
+.sidebar-logout {
+    padding: 18px 12px;
+    border-top: 1px solid rgba(255,255,255,0.12);
+}
+
+.sidebar-logout a {
+    display: flex;
+    align-items: center;
+    gap: 13px;
+
+    color: white;
+    text-decoration: none;
+
+    padding: 12px 14px;
+    border-radius: 9px;
+
+    font-size: 14px;
+}
+
+.sidebar-logout a:hover {
+    background: rgba(255,255,255,0.12);
+}
+
+
+/* =========================================
+   MAIN CONTENT
+   ========================================= */
+
+.recruiter-main {
+    margin-left: 235px;
+    min-height: 100vh;
+    padding: 0;
+}
+
+
+/* =========================================
+   TOP BLUE BAR
+   ========================================= */
+
+.recruiter-topbar {
+    height: 72px;
+
+    background: #2563eb;
+
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+
+    padding: 0 30px;
+
+    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+}
+
+
+/* Top buttons */
+
+.topbar-links {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.topbar-link {
+    text-decoration: none;
+
+    padding: 9px 16px;
+
+    border-radius: 8px;
+
+    font-size: 13px;
+    font-weight: 600;
+
+    transition: all 0.2s ease;
+}
+
+
+/* Dashboard */
+
+.top-dashboard {
+    background: white;
+    color: #2563eb;
+}
+
+.top-dashboard:hover {
+    background: #dbeafe;
+    color: #1d4ed8;
+}
+
+
+/* Analytics */
+
+.top-analytics {
+    background: white;
+    color: #2563eb;
+}
+
+.top-analytics:hover {
+    background: #dbeafe;
+    color: #1d4ed8;
+}
+
+
+/* Profile */
+
+.top-profile {
+    background: #fbbf24;
+    color: #1e293b;
+}
+
+.top-profile:hover {
+    background: #f59e0b;
+    color: #1e293b;
+}
+
+
+/* Logout */
+
+.top-logout {
+    background: #dc2626;
+    color: white;
+}
+
+.top-logout:hover {
+    background: #b91c1c;
+    color: white;
+}
+
+
+/* =========================================
+   CONTENT WRAPPER
+   ========================================= */
+
+.dashboard-content {
+    padding: 30px;
+}
+
+
+/* =========================================
+   WELCOME HEADER
+   ========================================= */
+
+.dashboard-header {
+    background: linear-gradient(
+        135deg,
+        #2563eb,
+        #1e40af
+    );
+
+    color: white;
+
+    padding: 32px;
+
+    border-radius: 18px;
+
+    margin-bottom: 30px;
+
+    box-shadow: 0 15px 35px rgba(0,0,0,.12);
+}
+
+.dashboard-header h2 {
+    font-weight: 700;
+    margin-bottom: 5px;
+}
+
+.dashboard-header p {
+    opacity: .9;
+    margin-bottom: 20px;
+}
+
+
+/* =========================================
+   QUICK BUTTONS
+   ========================================= */
+
+.quick-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.quick-btn {
+    border-radius: 10px;
+
+    padding: 11px 18px;
+
+    font-weight: 600;
+
+    text-decoration: none;
+
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+
+    transition: all .2s ease;
+}
+
+.quick-btn:hover {
+    transform: translateY(-2px);
+}
+
+
+/* Post Job */
+
+.post-job-btn {
+    background: #7c3aed;
+    color: white;
+}
+
+.post-job-btn:hover {
+    background: #6d28d9;
+    color: white;
+}
+
+
+/* Candidate Ranking */
+
+.candidate-ranking-btn {
+    background: #d97706;
+    color: white;
+}
+
+.candidate-ranking-btn:hover {
+    background: #b45309;
+    color: white;
+}
+
+
+/* Schedule Interview */
+
+.schedule-interview-btn {
+    background: #059669;
+    color: white;
+}
+
+.schedule-interview-btn:hover {
+    background: #047857;
+    color: white;
+}
+
+
+/* =========================================
+   METRIC CARDS
+   ========================================= */
+
+.metric-card {
+    background: white;
+
+    border: none;
+
+    border-radius: 16px;
+
+    height: 100%;
+
+    box-shadow: 0 6px 20px rgba(0,0,0,.06);
+
+    transition: all .25s ease;
+}
+
+.metric-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 30px rgba(0,0,0,.10);
+}
+
+.metric-card .card-body {
+    padding: 24px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    text-align: center;
+}
+
+
+/* Metric Icon */
+
+.metric-icon {
+    width: 50px;
+    height: 50px;
+
+    border-radius: 14px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    margin-bottom: 12px;
+}
+
+.metric-icon.primary {
+    background: #dbeafe;
+    color: #2563eb;
+}
+
+.metric-icon.success {
+    background: #d1fae5;
+    color: #059669;
+}
+
+.metric-icon.warning {
+    background: #fef3c7;
+    color: #d97706;
+}
+
+.metric-icon.danger {
+    background: #fee2e2;
+    color: #dc2626;
+}
+
+.metric-icon.info {
+    background: #e0e7ff;
+    color: #4f46e5;
+}
+
+
+/* Metric Value */
+
+.metric-value {
+    font-size: 28px;
+
+    font-weight: 700;
+
+    color: #1e293b;
+
+    line-height: 1.2;
+
+    margin-bottom: 5px;
+}
+
+.metric-label {
+    font-size: 12px;
+
+    color: #64748b;
+
+    font-weight: 600;
+
+    text-transform: uppercase;
+
+    letter-spacing: .04em;
+}
+
+
+/* =========================================
+   SECTION CARDS
+   ========================================= */
+
+.section-card {
+    background: white;
+
+    border: none;
+
+    border-radius: 16px;
+
+    box-shadow: 0 6px 20px rgba(0,0,0,.06);
+
+    overflow: hidden;
+
+    height: 100%;
+}
+
+.section-header {
+    padding: 20px 24px;
+
+    border-bottom: 1px solid #e2e8f0;
+
+    background: #f8fafc;
+}
+
+.section-header h5 {
+    margin: 0;
+
+    font-size: 15px;
+
+    font-weight: 600;
+
+    color: #1e293b;
+}
+
+.section-body {
+    padding: 24px;
+}
+
+
+/* =========================================
+   METRIC ROW
+   ========================================= */
+
+.metric-row {
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    padding: 14px 0;
+
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.metric-row:last-child {
+    border-bottom: none;
+}
+
+.metric-info {
+    display: flex;
+
+    align-items: center;
+
+    gap: 12px;
+}
+
+.metric-dot {
+    width: 10px;
+    height: 10px;
+
+    border-radius: 50%;
+
+    flex-shrink: 0;
+}
+
+.metric-dot.primary {
+    background: #2563eb;
+}
+
+.metric-dot.success {
+    background: #059669;
+}
+
+.metric-dot.warning {
+    background: #d97706;
+}
+
+.metric-dot.danger {
+    background: #dc2626;
+}
+
+.metric-dot.info {
+    background: #4f46e5;
+}
+
+.metric-name {
+    font-size: 14px;
+
+    font-weight: 500;
+
+    color: #334155;
+}
+
+.metric-count {
+    font-size: 16px;
+
+    font-weight: 700;
+
+    color: #1e293b;
+}
+
+
+/* =========================================
+   RECRUITER STATISTICS
+   ========================================= */
+
+.stat-box {
+    background: #f8fafc;
+
+    padding: 18px;
+
+    border-radius: 12px;
+
+    height: 100%;
+}
+
+.stat-box-title {
+    font-size: 12px;
+
+    color: #64748b;
+
+    font-weight: 600;
+
+    margin-bottom: 7px;
+}
+
+.stat-box-value {
+    font-size: 25px;
+
+    font-weight: 700;
+
+    color: #1e293b;
+}
+
+.stat-box-info {
+    font-size: 12px;
+
+    color: #64748b;
+
+    margin-top: 5px;
+}
+
+
+/* =========================================
+   JOB TABLE
+   ========================================= */
+
+.table-card {
+    background: white;
+
+    border-radius: 16px;
+
+    overflow: hidden;
+
+    box-shadow: 0 6px 20px rgba(0,0,0,.06);
+}
+
+.table-card-header {
+    padding: 20px 24px;
+
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.table-card-header h5 {
+    margin: 0;
+
+    font-size: 16px;
+
+    font-weight: 600;
+
+    color: #1e293b;
+}
+
+.jobs-table {
+    margin: 0;
+}
+
+.jobs-table thead {
+    background: #2563eb;
+
+    color: white;
+}
+
+.jobs-table th {
+    font-size: 13px;
+
+    font-weight: 600;
+
+    padding: 14px;
+}
+
+.jobs-table td {
+    font-size: 13px;
+
+    color: #334155;
+
+    padding: 14px;
+
+    vertical-align: middle;
+}
+
+.jobs-table tbody tr:hover {
+    background: #f8fafc;
+}
+
+
+/* =========================================
+   STATUS BADGES
+   ========================================= */
+
+.status-badge {
+    display: inline-block;
+
+    padding: 6px 12px;
+
+    border-radius: 20px;
+
+    font-size: 12px;
+
+    font-weight: 600;
+}
+
+.status-active {
+    background: #d1fae5;
+
+    color: #047857;
+}
+
+.status-closed {
+    background: #fee2e2;
+
+    color: #b91c1c;
+}
+
+
+/* =========================================
+   ACTION BUTTONS
+   ========================================= */
+
+.action-btn {
+    display: inline-block;
+
+    padding: 6px 12px;
+
+    border-radius: 7px;
+
+    text-decoration: none;
+
+    font-size: 12px;
+
+    font-weight: 600;
+
+    margin-right: 4px;
+}
+
+.edit-btn {
+    background: #fef3c7;
+
+    color: #92400e;
+}
+
+.edit-btn:hover {
+    background: #fde68a;
+
+    color: #78350f;
+}
+
+.delete-btn {
+    background: #fee2e2;
+
+    color: #b91c1c;
+}
+
+.delete-btn:hover {
+    background: #fecaca;
+
+    color: #991b1b;
+}
+
+
+/* =========================================
+   RESPONSIVE
+   ========================================= */
+
+@media (max-width: 992px) {
+
+    .recruiter-sidebar {
+        width: 200px;
+    }
+
+    .recruiter-main {
+        margin-left: 200px;
+    }
+
+    .dashboard-content {
+        padding: 20px;
+    }
+}
+
 
 @media (max-width: 768px) {
-    .dashboard-header{
-        padding:24px;
+
+    .recruiter-sidebar {
+        position: relative;
+
+        width: 100%;
+
+        height: auto;
     }
-    
-    .metric-card .card-body{
-        padding:20px;
+
+    .recruiter-main {
+        margin-left: 0;
     }
-    
-    .metric-value{
-        font-size:24px;
+
+    .sidebar-menu {
+        display: flex;
+
+        flex-wrap: wrap;
     }
-    
-    .section-body{
-        padding:16px;
+
+    .sidebar-link {
+        flex: 1 1 45%;
+    }
+
+    .sidebar-logout {
+        display: none;
+    }
+
+    .recruiter-topbar {
+        height: auto;
+
+        padding: 12px;
+
+        justify-content: center;
+    }
+
+    .topbar-links {
+        flex-wrap: wrap;
+
+        justify-content: center;
+    }
+
+    .dashboard-content {
+        padding: 16px;
+    }
+
+    .dashboard-header {
+        padding: 24px;
+    }
+
+    .jobs-table {
+        min-width: 800px;
+    }
+
+    .table-card {
+        overflow-x: auto;
     }
 }
-
-
 
 </style>
 
-<div class="container mt-4">
 
-<div class="dashboard-header">
+<div class="recruiter-dashboard">
 
-<h2>Recruiter Dashboard</h2>
 
-<p>Manage job postings and track recruitment metrics from one place.</p>
+    <!-- =====================================
+         LEFT SIDEBAR
+         ===================================== -->
 
-<div class="mb-4">
+    <aside class="recruiter-sidebar">
 
-    <a href="{% url 'post_job' %}" class="btn quick-btn post-job-btn">
-        <svg class="quick-btn-icon" viewBox="0 0 20 20" fill="none" aria-hidden="true">
-            <path d="M4 6.5C4 5.12 5.12 4 6.5 4H13.5L16 6.5V13.5C16 14.88 14.88 16 13.5 16H6.5C5.12 16 4 14.88 4 13.5V6.5Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
-            <path d="M10 7V13" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
-            <path d="M7 10H13" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
-        </svg>
-        Post Job
-    </a>
 
-    <a href="{% url 'priority_candidates' %}" class="btn quick-btn candidate-ranking-btn">
-        <svg class="quick-btn-icon" viewBox="0 0 20 20" fill="none" aria-hidden="true">
-            <path d="M5 15.25V11.25" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
-            <path d="M9.5 15.25V7.75" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
-            <path d="M14 15.25V4.75" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
-            <path d="M4 15.75H16" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
-        </svg>
-        Candidate Ranking
-    </a>
-    <a href="{% url 'schedule_interview' %}" class="btn quick-btn schedule-interview-btn">
-    Schedule Interview
-    </a>
+        <!-- BRAND -->
 
-</div>
+        <div class="sidebar-brand">
 
-</div>
-
-<!-- Recruitment Overview -->
-<div class="row g-4 mb-4">
-    <div class="col-md-3">
-        <div class="card metric-card">
-            <div class="card-body">
-                <div class="metric-icon primary">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                        <polyline points="14 2 14 8 20 8"></polyline>
-                        <line x1="16" y1="13" x2="8" y2="13"></line>
-                        <line x1="16" y1="17" x2="8" y2="17"></line>
-                        <polyline points="10 9 9 9 8 9"></polyline>
-                    </svg>
-                </div>
-                <div class="metric-value">{{ total_jobs_posted }}</div>
-                <div class="metric-label">Jobs Posted</div>
+            <div class="brand-name">
+                Infosys
             </div>
+
+            <div class="brand-subtitle">
+                Talent Management Platform
+            </div>
+
         </div>
-    </div>
+
+
+        <!-- SIDEBAR MENU -->
+
+        <div class="sidebar-menu">
+
+
+            <!-- Dashboard -->
+
+            <a href="{% url 'recruiter_dashboard' %}"
+               class="sidebar-link active">
+
+                <svg class="sidebar-icon"
+                     viewBox="0 0 24 24"
+                     fill="none"
+                     stroke="currentColor"
+                     stroke-width="2"
+                     stroke-linecap="round"
+                     stroke-linejoin="round">
+
+                    <path d="M3 10.5L12 3l9 7.5"></path>
+
+                    <path d="M5 9.5V21h14V9.5"></path>
+
+                    <path d="M9 21v-6h6v6"></path>
+
+                </svg>
+
+                <span>Dashboard</span>
+
+            </a>
+
+
+            <!-- Post Job -->
+
+            <a href="{% url 'post_job' %}"
+               class="sidebar-link">
+
+                <svg class="sidebar-icon"
+                     viewBox="0 0 24 24"
+                     fill="none"
+                     stroke="currentColor"
+                     stroke-width="2"
+                     stroke-linecap="round"
+                     stroke-linejoin="round">
+
+                    <rect x="4" y="4"
+                          width="16"
+                          height="16"
+                          rx="2"></rect>
+
+                    <line x1="12"
+                          y1="8"
+                          x2="12"
+                          y2="16"></line>
+
+                    <line x1="8"
+                          y1="12"
+                          x2="16"
+                          y2="12"></line>
+
+                </svg>
+
+                <span>Post Job</span>
+
+            </a>
+
+
+            <!-- Candidate Ranking -->
+
+            <a href="{% url 'priority_candidates' %}"
+               class="sidebar-link">
+
+                <svg class="sidebar-icon"
+                     viewBox="0 0 24 24"
+                     fill="none"
+                     stroke="currentColor"
+                     stroke-width="2"
+                     stroke-linecap="round"
+                     stroke-linejoin="round">
+
+                    <line x1="5"
+                          y1="20"
+                          x2="5"
+                          y2="12"></line>
+
+                    <line x1="12"
+                          y1="20"
+                          x2="12"
+                          y2="8"></line>
+
+                    <line x1="19"
+                          y1="20"
+                          x2="19"
+                          y2="4"></line>
+
+                </svg>
+
+                <span>Candidate Ranking</span>
+
+            </a>
+
+
+            <!-- Interviews -->
+
+            <a href="{% url 'schedule_interview' %}"
+               class="sidebar-link">
+
+                <svg class="sidebar-icon"
+                     viewBox="0 0 24 24"
+                     fill="none"
+                     stroke="currentColor"
+                     stroke-width="2"
+                     stroke-linecap="round"
+                     stroke-linejoin="round">
+
+                    <rect x="3"
+                          y="4"
+                          width="18"
+                          height="17"
+                          rx="2"></rect>
+
+                    <line x1="16"
+                          y1="2"
+                          x2="16"
+                          y2="6"></line>
+
+                    <line x1="8"
+                          y1="2"
+                          x2="8"
+                          y2="6"></line>
+
+                    <line x1="3"
+                          y1="10"
+                          x2="21"
+                          y2="10"></line>
+
+                </svg>
+
+                <span>Interviews</span>
+
+            </a>
+
+
+            <!-- Job Listings -->
+
+            <a href="{% url 'job_listings' %}"
+               class="sidebar-link">
+
+                <svg class="sidebar-icon"
+                     viewBox="0 0 24 24"
+                     fill="none"
+                     stroke="currentColor"
+                     stroke-width="2"
+                     stroke-linecap="round"
+                     stroke-linejoin="round">
+
+                    <rect x="3"
+                          y="4"
+                          width="18"
+                          height="16"
+                          rx="2"></rect>
+
+                    <line x1="7"
+                          y1="9"
+                          x2="17"
+                          y2="9"></line>
+
+                    <line x1="7"
+                          y1="13"
+                          x2="17"
+                          y2="13"></line>
+
+                    <line x1="7"
+                          y1="17"
+                          x2="13"
+                          y2="17"></line>
+
+                </svg>
+
+                <span>Job Listings</span>
+
+            </a>
+
+
+            <!-- ANALYTICS -->
+
+            <a href="{% url 'analytics_dashboard' %}"
+               class="sidebar-link">
+
+                <svg class="sidebar-icon"
+                     viewBox="0 0 24 24"
+                     fill="none"
+                     stroke="currentColor"
+                     stroke-width="2"
+                     stroke-linecap="round"
+                     stroke-linejoin="round">
+
+                    <line x1="5"
+                          y1="20"
+                          x2="5"
+                          y2="10"></line>
+
+                    <line x1="12"
+                          y1="20"
+                          x2="12"
+                          y2="4"></line>
+
+                    <line x1="19"
+                          y1="20"
+                          x2="19"
+                          y2="7"></line>
+
+                </svg>
+
+                <span>Analytics</span>
+
+            </a>
+
+
+            <!-- PROFILE -->
+
+            <a href="{% url 'recruiter_profile' %}"
+               class="sidebar-link">
+
+                <svg class="sidebar-icon"
+                     viewBox="0 0 24 24"
+                     fill="none"
+                     stroke="currentColor"
+                     stroke-width="2"
+                     stroke-linecap="round"
+                     stroke-linejoin="round">
+
+                    <circle cx="12"
+                            cy="8"
+                            r="4"></circle>
+
+                    <path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8"></path>
+
+                </svg>
+
+                <span>Profile</span>
+
+            </a>
+
+
+            <!-- SETTINGS -->
+
+            <a href="{% url 'recruiter_settings' %}"
+               class="sidebar-link">
+
+                <svg class="sidebar-icon"
+                     viewBox="0 0 24 24"
+                     fill="none"
+                     stroke="currentColor"
+                     stroke-width="2"
+                     stroke-linecap="round"
+                     stroke-linejoin="round">
+
+                    <circle cx="12"
+                            cy="12"
+                            r="3"></circle>
+
+                    <path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1-1.8 1.8-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.5V20h-2.5v-.1a1.7 1.7 0 0 0-1-1.5 1.7 1.7 0 0 0-1.9.3l-.1.1-1.8-1.8.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.5-1H6v-2.5h.1a1.7 1.7 0 0 0 1.5-1 1.7 1.7 0 0 0-.3-1.9l-.1-.1L9 6.7l.1.1a1.7 1.7 0 0 0 1.9.3 1.7 1.7 0 0 0 1-1.5V5h2.5v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.9-.3l.1-.1 1.8 1.8-.1.1a1.7 1.7 0 0 0-.3 1.9 1.7 1.7 0 0 0 1.5 1h.1v2.5h-.1a1.7 1.7 0 0 0-1.5 1z"></path>
+
+                </svg>
+
+                <span>Settings</span>
+
+            </a>
+
+
+        </div>
+
+
+        <!-- LOGOUT -->
+
+        <div class="sidebar-logout">
+
+            <a href="{% url 'logout' %}">
+
+                <svg class="sidebar-icon"
+                     viewBox="0 0 24 24"
+                     fill="none"
+                     stroke="currentColor"
+                     stroke-width="2"
+                     stroke-linecap="round"
+                     stroke-linejoin="round">
+
+                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+
+                    <polyline points="16 17 21 12 16 7"></polyline>
+
+                    <line x1="21"
+                          y1="12"
+                          x2="9"
+                          y2="12"></line>
+
+                </svg>
+
+                <span>Logout</span>
+
+            </a>
+
+        </div>
+
+
+    </aside>
+
+
+
     
-    <div class="col-md-3">
-        <div class="card metric-card">
-            <div class="card-body">
-                <div class="metric-icon success">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
-                        <polyline points="22 4 12 14.01 9 11.01"></polyline>
-                    </svg>
-                </div>
-                <div class="metric-value">{{ total_applications }}</div>
-                <div class="metric-label">Total Applications</div>
-            </div>
-        </div>
-    </div>
-    
-    <div class="col-md-3">
-        <div class="card metric-card">
-            <div class="card-body">
-                <div class="metric-icon warning">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-                        <circle cx="9" cy="7" r="4"></circle>
-                        <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
-                        <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
-                    </svg>
-                </div>
-                <div class="metric-value">{{ candidates_interviewed }}</div>
-                <div class="metric-label">Candidates Interviewed</div>
-            </div>
-        </div>
-    </div>
-    
-    <div class="col-md-3">
-        <div class="card metric-card">
-            <div class="card-body">
-                <div class="metric-icon info">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                        <circle cx="12" cy="7" r="4"></circle>
-                    </svg>
-                </div>
-                <div class="metric-value">{{ candidates_shortlisted }}</div>
-                <div class="metric-label">Candidates Shortlisted</div>
-            </div>
-        </div>
-    </div>
-</div>
 
-<!-- Recruitment Activity -->
-<div class="row g-4 mb-4">
-    <div class="col-lg-6">
-        <div class="card section-card h-100">
-            <div class="section-header">
-                <h5>Weekly Activity</h5>
-            </div>
-            <div class="section-body">
-                <div class="metric-row">
-                    <div class="metric-info">
-                        <span class="metric-dot primary"></span>
-                        <span class="metric-name">Jobs Posted This Week</span>
-                    </div>
-                    <span class="metric-count">{{ jobs_posted_this_week }}</span>
-                </div>
-                <div class="metric-row">
-                    <div class="metric-info">
-                        <span class="metric-dot success"></span>
-                        <span class="metric-name">Applications Received</span>
-                    </div>
-                    <span class="metric-count">{{ applications_this_week }}</span>
-                </div>
-                <div class="metric-row">
-                    <div class="metric-info">
-                        <span class="metric-dot warning"></span>
-                        <span class="metric-name">Interviews Conducted</span>
-                    </div>
-                    <span class="metric-count">{{ interviews_this_week }}</span>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <div class="col-lg-6">
-        <div class="card section-card h-100">
-            <div class="section-header">
-                <h5>Monthly Activity</h5>
-            </div>
-            <div class="section-body">
-                <div class="metric-row">
-                    <div class="metric-info">
-                        <span class="metric-dot primary"></span>
-                        <span class="metric-name">Jobs Posted This Month</span>
-                    </div>
-                    <span class="metric-count">{{ jobs_posted_this_month }}</span>
-                </div>
-                <div class="metric-row">
-                    <div class="metric-info">
-                        <span class="metric-dot success"></span>
-                        <span class="metric-name">Applications Received</span>
-                    </div>
-                    <span class="metric-count">{{ applications_this_month }}</span>
-                </div>
-                <div class="metric-row">
-                    <div class="metric-info">
-                        <span class="metric-dot warning"></span>
-                        <span class="metric-name">Interviews Conducted</span>
-                    </div>
-                    <span class="metric-count">{{ interviews_this_month }}</span>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
 
-<!-- Recruiter Statistics -->
-<div class="row g-4 mb-4">
-    <div class="col-12">
-        <div class="card section-card">
-            <div class="section-header">
-                <h5>Recruiter Statistics</h5>
+        <!-- DASHBOARD CONTENT -->
+
+        <div class="dashboard-content">
+
+
+            <!-- =====================================
+                 HEADER
+                 ===================================== -->
+
+            <div class="dashboard-header">
+
+                <h2>
+                    Welcome back, Recruiter! 👋
+                </h2>
+
+                <p>
+                    Here's what's happening with your recruitment activities.
+                </p>
+
+
+                <div class="quick-actions">
+
+
+                    <a href="{% url 'post_job' %}"
+                       class="quick-btn post-job-btn">
+
+                        <span>＋</span>
+
+                        Post Job
+
+                    </a>
+
+
+                    <a href="{% url 'priority_candidates' %}"
+                       class="quick-btn candidate-ranking-btn">
+
+                        <span>📊</span>
+
+                        Candidate Ranking
+
+                    </a>
+
+
+                    <a href="{% url 'schedule_interview' %}"
+                       class="quick-btn schedule-interview-btn">
+
+                        <span>📅</span>
+
+                        Schedule Interview
+
+                    </a>
+
+
+                </div>
+
             </div>
-            <div class="section-body">
-                <div class="row g-3">
-                    <div class="col-md-3">
-                        <div class="metric-row" style="flex-direction:column; align-items:flex-start; padding:16px; background:#f8fafc; border-radius:12px; border:none;">
-                            <span class="metric-name" style="font-size:12px;">Jobs Posted</span>
-                            <span class="metric-count" style="font-size:24px;">{{ total_jobs_posted }}</span>
-                            <div style="font-size:12px; color:#64748b; margin-top:4px;">
-                                Active: {{ active_jobs }} | Inactive: {{ inactive_jobs }}
+
+
+
+            <!-- =====================================
+                 MAIN RECRUITMENT METRICS
+                 ===================================== -->
+
+            <div class="row g-4 mb-4">
+
+
+                <!-- Jobs Posted -->
+
+                <div class="col-md-3">
+
+                    <div class="card metric-card">
+
+                        <div class="card-body">
+
+                            <div class="metric-icon primary">
+
+                                <svg width="24"
+                                     height="24"
+                                     viewBox="0 0 24 24"
+                                     fill="none"
+                                     stroke="currentColor"
+                                     stroke-width="2">
+
+                                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+
+                                    <polyline points="14 2 14 8 20 8"></polyline>
+
+                                    <line x1="16"
+                                          y1="13"
+                                          x2="8"
+                                          y2="13"></line>
+
+                                    <line x1="16"
+                                          y1="17"
+                                          x2="8"
+                                          y2="17"></line>
+
+                                </svg>
+
                             </div>
+
+
+                            <div class="metric-value">
+                                {{ total_jobs_posted }}
+                            </div>
+
+                            <div class="metric-label">
+                                Jobs Posted
+                            </div>
+
                         </div>
+
                     </div>
-                    <div class="col-md-3">
-                        <div class="metric-row" style="flex-direction:column; align-items:flex-start; padding:16px; background:#f8fafc; border-radius:12px; border:none;">
-                            <span class="metric-name" style="font-size:12px;">Total Applications</span>
-                            <span class="metric-count" style="font-size:24px;">{{ total_applications }}</span>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="metric-row" style="flex-direction:column; align-items:flex-start; padding:16px; background:#f8fafc; border-radius:12px; border:none;">
-                            <span class="metric-name" style="font-size:12px;">Candidates Interviewed</span>
-                            <span class="metric-count" style="font-size:24px;">{{ candidates_interviewed }}</span>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="metric-row" style="flex-direction:column; align-items:flex-start; padding:16px; background:#f8fafc; border-radius:12px; border:none;">
-                            <span class="metric-name" style="font-size:12px;">Candidates Shortlisted</span>
-                            <span class="metric-count" style="font-size:24px;">{{ candidates_shortlisted }}</span>
-                        </div>
-                    </div>
+
                 </div>
+
+
+
+                <!-- Applications -->
+
+                <div class="col-md-3">
+
+                    <div class="card metric-card">
+
+                        <div class="card-body">
+
+                            <div class="metric-icon success">
+
+                                <svg width="24"
+                                     height="24"
+                                     viewBox="0 0 24 24"
+                                     fill="none"
+                                     stroke="currentColor"
+                                     stroke-width="2">
+
+                                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+
+                                    <polyline points="22 4 12 14.01 9 11.01"></polyline>
+
+                                </svg>
+
+                            </div>
+
+
+                            <div class="metric-value">
+                                {{ total_applications }}
+                            </div>
+
+                            <div class="metric-label">
+                                Total Applications
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- Interviews -->
+
+                <div class="col-md-3">
+
+                    <div class="card metric-card">
+
+                        <div class="card-body">
+
+                            <div class="metric-icon warning">
+
+                                <svg width="24"
+                                     height="24"
+                                     viewBox="0 0 24 24"
+                                     fill="none"
+                                     stroke="currentColor"
+                                     stroke-width="2">
+
+                                    <circle cx="12"
+                                            cy="8"
+                                            r="4"></circle>
+
+                                    <path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8"></path>
+
+                                </svg>
+
+                            </div>
+
+
+                            <div class="metric-value">
+                                {{ candidates_interviewed }}
+                            </div>
+
+                            <div class="metric-label">
+                                Candidates Interviewed
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- Shortlisted -->
+
+                <div class="col-md-3">
+
+                    <div class="card metric-card">
+
+                        <div class="card-body">
+
+                            <div class="metric-icon info">
+
+                                <svg width="24"
+                                     height="24"
+                                     viewBox="0 0 24 24"
+                                     fill="none"
+                                     stroke="currentColor"
+                                     stroke-width="2">
+
+                                    <circle cx="12"
+                                            cy="8"
+                                            r="4"></circle>
+
+                                    <path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8"></path>
+
+                                </svg>
+
+                            </div>
+
+
+                            <div class="metric-value">
+                                {{ candidates_shortlisted }}
+                            </div>
+
+                            <div class="metric-label">
+                                Candidates Shortlisted
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
             </div>
+
+
+
+            <!-- =====================================
+                 RECRUITER METRICS
+                 ===================================== -->
+
+            <div class="card section-card mb-4">
+
+                <div class="section-header">
+
+                    <h5>
+                        Recruiter Metrics
+                    </h5>
+
+                </div>
+
+
+                <div class="section-body">
+
+                    <div class="row g-3">
+
+
+                        <div class="col-md-3">
+
+                            <div class="stat-box">
+
+                                <div class="stat-box-title">
+                                    Active Jobs
+                                </div>
+
+                                <div class="stat-box-value">
+                                    {{ active_jobs }}
+                                </div>
+
+                                <div class="stat-box-info">
+                                    Currently active
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="col-md-3">
+
+                            <div class="stat-box">
+
+                                <div class="stat-box-title">
+                                    Shortlisted
+                                </div>
+
+                                <div class="stat-box-value">
+                                    {{ candidates_shortlisted }}
+                                </div>
+
+                                <div class="stat-box-info">
+                                    Candidates shortlisted
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="col-md-3">
+
+                            <div class="stat-box">
+
+                                <div class="stat-box-title">
+                                    Interviewed
+                                </div>
+
+                                <div class="stat-box-value">
+                                    {{ candidates_interviewed }}
+                                </div>
+
+                                <div class="stat-box-info">
+                                    Candidates interviewed
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="col-md-3">
+
+                            <div class="stat-box">
+
+                                <div class="stat-box-title">
+                                    Inactive Jobs
+                                </div>
+
+                                <div class="stat-box-value">
+                                    {{ inactive_jobs }}
+                                </div>
+
+                                <div class="stat-box-info">
+                                    Closed jobs
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- =====================================
+                 WEEKLY + MONTHLY ACTIVITY
+                 ===================================== -->
+
+            <div class="row g-4 mb-4">
+
+
+                <!-- Weekly -->
+
+                <div class="col-lg-6">
+
+                    <div class="card section-card h-100">
+
+                        <div class="section-header">
+
+                            <h5>
+                                Weekly Activity
+                            </h5>
+
+                        </div>
+
+
+                        <div class="section-body">
+
+
+                            <div class="metric-row">
+
+                                <div class="metric-info">
+
+                                    <span class="metric-dot primary"></span>
+
+                                    <span class="metric-name">
+                                        Jobs Posted This Week
+                                    </span>
+
+                                </div>
+
+                                <span class="metric-count">
+                                    {{ jobs_posted_this_week }}
+                                </span>
+
+                            </div>
+
+
+                            <div class="metric-row">
+
+                                <div class="metric-info">
+
+                                    <span class="metric-dot success"></span>
+
+                                    <span class="metric-name">
+                                        Applications Received
+                                    </span>
+
+                                </div>
+
+                                <span class="metric-count">
+                                    {{ applications_this_week }}
+                                </span>
+
+                            </div>
+
+
+                            <div class="metric-row">
+
+                                <div class="metric-info">
+
+                                    <span class="metric-dot warning"></span>
+
+                                    <span class="metric-name">
+                                        Interviews Conducted
+                                    </span>
+
+                                </div>
+
+                                <span class="metric-count">
+                                    {{ interviews_this_week }}
+                                </span>
+
+                            </div>
+
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- Monthly -->
+
+                <div class="col-lg-6">
+
+                    <div class="card section-card h-100">
+
+                        <div class="section-header">
+
+                            <h5>
+                                Monthly Activity
+                            </h5>
+
+                        </div>
+
+
+                        <div class="section-body">
+
+
+                            <div class="metric-row">
+
+                                <div class="metric-info">
+
+                                    <span class="metric-dot primary"></span>
+
+                                    <span class="metric-name">
+                                        Jobs Posted This Month
+                                    </span>
+
+                                </div>
+
+                                <span class="metric-count">
+                                    {{ jobs_posted_this_month }}
+                                </span>
+
+                            </div>
+
+
+                            <div class="metric-row">
+
+                                <div class="metric-info">
+
+                                    <span class="metric-dot success"></span>
+
+                                    <span class="metric-name">
+                                        Applications Received
+                                    </span>
+
+                                </div>
+
+                                <span class="metric-count">
+                                    {{ applications_this_month }}
+                                </span>
+
+                            </div>
+
+
+                            <div class="metric-row">
+
+                                <div class="metric-info">
+
+                                    <span class="metric-dot warning"></span>
+
+                                    <span class="metric-name">
+                                        Interviews Conducted
+                                    </span>
+
+                                </div>
+
+                                <span class="metric-count">
+                                    {{ interviews_this_month }}
+                                </span>
+
+                            </div>
+
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+            </div>
+
+
+
+            <!-- =====================================
+                 JOB LISTINGS
+                 ===================================== -->
+
+            <div class="table-card mt-4">
+
+
+                <div class="table-card-header">
+
+                    <h5>
+                        My Job Listings
+                    </h5>
+
+                </div>
+
+
+                <div class="table-responsive">
+
+                    <table class="table jobs-table table-hover align-middle">
+
+
+                        <thead>
+
+                            <tr>
+
+                                <th>
+                                    Job Title
+                                </th>
+
+                                <th>
+                                    Company
+                                </th>
+
+                                <th>
+                                    Location
+                                </th>
+
+                                <th>
+                                    Status
+                                </th>
+
+                                <th>
+                                    Deadline
+                                </th>
+
+                                <th>
+                                    Action
+                                </th>
+
+                            </tr>
+
+                        </thead>
+
+
+                        <tbody>
+
+
+                            {% for job in jobs %}
+
+                            <tr>
+
+
+                                <td>
+                                    <strong>
+                                        {{ job.title }}
+                                    </strong>
+                                </td>
+
+
+                                <td>
+                                    {{ job.company }}
+                                </td>
+
+
+                                <td>
+                                    {{ job.location }}
+                                </td>
+
+
+                                <td>
+
+                                    {% if job.is_active %}
+
+                                        <span class="status-badge status-active">
+                                            Active
+                                        </span>
+
+                                    {% else %}
+
+                                        <span class="status-badge status-closed">
+                                            Closed
+                                        </span>
+
+                                    {% endif %}
+
+                                </td>
+
+
+                                <td>
+                                    {{ job.deadline }}
+                                </td>
+
+
+                                <td>
+
+                                    <a href="{% url 'edit_job' job.id %}"
+                                       class="action-btn edit-btn">
+
+                                        Edit
+
+                                    </a>
+
+
+                                    <a href="{% url 'delete_job' job.id %}"
+                                       class="action-btn delete-btn">
+
+                                        Delete
+
+                                    </a>
+
+                                </td>
+
+
+                            </tr>
+
+
+                            {% empty %}
+
+                            <tr>
+
+                                <td colspan="6"
+                                    class="text-center py-4">
+
+                                    No jobs posted yet.
+
+                                </td>
+
+                            </tr>
+
+                            {% endfor %}
+
+
+                        </tbody>
+
+
+                    </table>
+
+                </div>
+
+
+            </div>
+
+
         </div>
-    </div>
-</div>
 
-<!-- Job Listings -->
-<div class="table-card mt-5">
 
-<div class="p-3">
-
-<h5 class="mb-3">My Job Listings</h5>
-
-<table class="table table-hover align-middle">
-
-<thead>
-
-<tr>
-
-<th>Job Title</th>
-
-<th>Company</th>
-
-<th>Location</th>
-
-<th>Status</th>
-
-<th>Deadline</th>
-
-<th>Action</th>
-
-</tr>
-
-</thead>
-
-<tbody>
-
-{% for job in jobs %}
-
-<tr>
-
-    <td>{{ job.title }}</td>
-
-    <td>{{ job.company }}</td>
-
-    <td>{{ job.location }}</td>
-
-    <td>
-
-        {% if job.is_active %}
-
-            <span class="badge bg-success">
-                Active
-            </span>
-
-        {% else %}
-
-            <span class="badge bg-danger">
-                Closed
-            </span>
-
-        {% endif %}
-
-    </td>
-
-    <td>
-
-        {{ job.deadline }}
-
-    </td>
-
-    <td>
-
-        <a
-href="{% url 'edit_job' job.id %}"
-class="btn btn-warning btn-sm">
-
-Edit
-
-</a>
-
-        <a
-href="{% url 'delete_job' job.id %}"
-class="btn btn-danger btn-sm">
-
-Delete
-
-</a>
-
-    </td>
-
-</tr>
-
-{% empty %}
-
-<tr>
-
-    <td colspan="6" class="text-center">
-
-        No jobs posted yet.
-
-    </td>
-
-</tr>
-
-{% endfor %}
-
-</tbody>
-
-</table>
-
-</div>
-
-</div>
-
-</div>
+    </main>
 
 
 </div>
+
+
 {% endblock %}

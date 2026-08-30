@@ -109,4 +109,17 @@ urlpatterns = [
     views.update_application_status,
     name="update_application_status",
 ),
+
+path(
+    "job-listings/",
+    views.job_listings,
+    name="job_listings"
+),
+
+path(
+    "settings/",
+    views.recruiter_settings,
+
+    name="recruiter_settings"
+),
 ]

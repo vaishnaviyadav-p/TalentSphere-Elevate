@@ -45,7 +45,7 @@ class ResumeData(models.Model):
         CandidateProfile,
         on_delete=models.CASCADE,
         related_name='resume_data'
-    )
+    ) 
 
     resume_file = models.FileField(
         upload_to='resumes/'
