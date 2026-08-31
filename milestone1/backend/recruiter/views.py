@@ -18,8 +18,12 @@ from django.utils import timezone
 
 from django.contrib import messages
 from django.db.models import Count
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.auth.decorators import login_required
+from django.contrib import messages
+from django.contrib.auth.models import User
 
-from accounts.models import UserProfile
+from django_ratelimit.decorators import ratelimit
 
 from candidate.models import (
     JobApplication,
@@ -143,25 +147,33 @@ def recruiter_settings(request):
             "password_form": password_form,
         }
     )
+from .models import Job
 
 
 # ============================================================
-# RECRUITER AUTHENTICATION / ROLE CHECK
+# RECRUITER DASHBOARD
 # ============================================================
 
-def _is_recruiter(user):
+@login_required
+@ratelimit(
+    key="user",
+    rate="30/m",
+    method="GET",
+    block=True
+)
+def recruiter_dashboard(request):
 
-    if not user.is_authenticated:
-        return False
+    jobs = Job.objects.filter(
+        recruiter=request.user
+    ).order_by("-id")
 
-    if user.is_superuser:
-        return True
-
-    try:
-        return user.userprofile.role == "recruiter"
-
-    except UserProfile.DoesNotExist:
-        return False
+    return render(
+        request,
+        "recruiter/dashboard.html",
+        {
+            "jobs": jobs
+        }
+    )
 
 
 # ============================================================
@@ -171,51 +183,33 @@ def _is_recruiter(user):
 @login_required
 def recruiter_profile(request):
 
-    profile, created = RecruiterProfile.objects.get_or_create(
-        user=request.user,
-        defaults={
-            "recruiter_name": request.user.get_full_name() or request.user.username,
-            "company_name": "My Company",
-            "email": request.user.email or "recruiter@example.com",
-            "phone": "",
-            "location": "",
-            "company_description": ""
-        }
-    )
-
     return render(
         request,
-        "recruiter/profile.html",
-        {
-            "profile": profile
-        }
+        "recruiter/profile.html"
     )
 
+
+# ============================================================
+# CREATE JOB
+# ============================================================
 
 @login_required
-def edit_recruiter_profile(request):
-
-    profile, created = RecruiterProfile.objects.get_or_create(
-        user=request.user,
-        defaults={
-            "recruiter_name": request.user.get_full_name() or request.user.username,
-            "company_name": "My Company",
-            "email": request.user.email or "recruiter@example.com",
-            "phone": "",
-            "location": "",
-            "company_description": ""
-        }
-    )
+@ratelimit(
+    key="user",
+    rate="10/m",
+    method="POST",
+    block=True
+)
+def create_job(request):
 
     if request.method == "POST":
 
-        form = RecruiterProfileForm(
-            request.POST,
-            request.FILES,
-            instance=profile
-        )
+        title = request.POST.get("title")
+        description = request.POST.get("description")
+        skills = request.POST.get("skills")
+        location = request.POST.get("location")
 
-        if form.is_valid():
+        if not title or not description:
 
             form.save()
 
@@ -488,300 +482,59 @@ def post_job(request):
             job.save()
 
             messages.success(
+            messages.error(
                 request,
-                "Job posted successfully!"
+                "Job title and description are required."
             )
 
-            return redirect(
-                "recruiter_dashboard"
-            )
+            return redirect("create_job")
 
-    else:
+        Job.objects.create(
+            recruiter=request.user,
+            title=title,
+            description=description,
+            skills=skills,
+            location=location
+        )
 
-        form = JobForm()
+        messages.success(
+            request,
+            "Job posted successfully."
+        )
+
+        return redirect("recruiter_dashboard")
 
     return render(
         request,
-        "recruiter/post_job.html",
-        {
-            "form": form
-        }
+        "recruiter/create_job.html"
     )
 
 
 # ============================================================
-# PRIORITY CANDIDATES
+# JOB DETAIL
 # ============================================================
 
 @login_required
-def priority_candidates(request):
+@ratelimit(
+    key="user",
+    rate="30/m",
+    method="GET",
+    block=True
+)
+def recruiter_job_detail(request, job_id):
 
-    if not _is_recruiter(request.user):
-        raise PermissionDenied
-
-    recruiter_jobs = Job.objects.filter(
+    job = get_object_or_404(
+        Job,
+        id=job_id,
         recruiter=request.user
-    ).order_by(
-        "-created_at"
     )
-
-    applications = JobApplication.objects.filter(
-        job__recruiter=request.user
-    ).select_related(
-        "candidate",
-        "candidate__candidateprofile",
-        "candidate__candidateprofile__resume_data",
-        "job",
-        "job__recruiter",
-    )
-
-    selected_job = request.GET.get(
-        "job",
-        ""
-    ).strip()
-
-    selected_status = request.GET.get(
-        "status",
-        ""
-    ).strip()
-
-    selected_skill = request.GET.get(
-        "skill",
-        ""
-    ).strip()
-
-    selected_experience = request.GET.get(
-        "experience",
-        ""
-    ).strip()
-
-    selected_score = request.GET.get(
-        "score",
-        ""
-    ).strip()
-
-
-    # --------------------------------------------------------
-    # Score filter
-    # --------------------------------------------------------
-
-    score_threshold = None
-
-    if selected_score:
-
-        try:
-
-            score_threshold = int(
-                selected_score
-            )
-
-        except ValueError:
-
-            score_threshold = None
-
-        else:
-
-            if (
-                score_threshold < 0
-                or
-                score_threshold > 100
-            ):
-                score_threshold = None
-
-
-    # --------------------------------------------------------
-    # Job filter
-    # --------------------------------------------------------
-
-    accessible_job_ids = set(
-        recruiter_jobs.values_list(
-            "id",
-            flat=True
-        )
-    )
-
-    selected_job_id = None
-
-    invalid_job_filter = False
-
-    if selected_job:
-
-        try:
-
-            selected_job_id = int(
-                selected_job
-            )
-
-        except ValueError:
-
-            invalid_job_filter = True
-
-        else:
-
-            if selected_job_id not in accessible_job_ids:
-
-                invalid_job_filter = True
-
-
-    # --------------------------------------------------------
-    # Ranking
-    # --------------------------------------------------------
-
-    available_skills = collect_available_skills(
-        applications
-    )
-
-    ranked_rows = build_priority_candidate_rows(
-        applications
-    )
-
-
-    # --------------------------------------------------------
-    # Apply filters
-    # --------------------------------------------------------
-
-    filtered_rows = []
-
-    if not invalid_job_filter:
-
-        selected_skill_key = (
-            selected_skill
-            .lower()
-            .strip()
-        )
-
-        for row in ranked_rows:
-
-            application = row[
-                "application"
-            ]
-
-
-            # Job filter
-
-            if (
-                selected_job_id
-                and
-                application.job_id != selected_job_id
-            ):
-                continue
-
-
-            # Status filter
-
-            if (
-                selected_status
-                and
-                application.status != selected_status
-            ):
-                continue
-
-
-            # Score filter
-
-            if (
-                score_threshold is not None
-                and
-                row["score"] < score_threshold
-            ):
-                continue
-
-
-            # Skill filter
-
-            if (
-                selected_skill_key
-                and
-                selected_skill_key
-                not in row["candidate_skills_key"]
-            ):
-                continue
-
-
-            # Experience filter
-
-            if (
-                selected_experience
-                and
-                row["experience_bucket"]
-                != selected_experience
-            ):
-                continue
-
-
-            filtered_rows.append(
-                row
-            )
-
-
-    # --------------------------------------------------------
-    # Filter options
-    # --------------------------------------------------------
-
-    job_filter_options = list(
-        recruiter_jobs.values(
-            "id",
-            "title"
-        )
-    )
-
-
-    context = {
-
-        "applications": filtered_rows,
-
-        "jobs": recruiter_jobs,
-
-        "job_filter_options":
-            job_filter_options,
-
-        "skill_filter_options":
-            available_skills,
-
-        "status_filter_options":
-            JobApplication.STATUS_CHOICES,
-
-        "score_filter_options": [
-            ("", "All Scores"),
-            ("90", "90%+"),
-            ("80", "80%+"),
-            ("70", "70%+"),
-            ("60", "60%+"),
-        ],
-
-        "experience_filter_options": [
-            ("", "All Experience"),
-            ("0-2", "0–2 years"),
-            ("2-5", "2–5 years"),
-            ("5+", "5+ years"),
-        ],
-
-        "selected_job":
-            selected_job,
-
-        "selected_status":
-            selected_status,
-
-        "selected_skill":
-            selected_skill,
-
-        "selected_experience":
-            selected_experience,
-
-        "selected_score":
-            selected_score,
-
-        "invalid_job_filter":
-            invalid_job_filter,
-
-        "total_candidates":
-            len(filtered_rows),
-    }
 
     return render(
         request,
-        "recruiter/priority_candidates.html",
-        context
+        "recruiter/job_detail.html",
+        {
+            "job": job
+        }
     )
 
 
@@ -790,47 +543,58 @@ def priority_candidates(request):
 # ============================================================
 
 @login_required
-def edit_job(
-    request,
-    job_id
-):
+@ratelimit(
+    key="user",
+    rate="10/m",
+    method="POST",
+    block=True
+)
+def edit_job(request, job_id):
 
-    job = Job.objects.get(
+    job = get_object_or_404(
+        Job,
         id=job_id,
         recruiter=request.user
     )
 
     if request.method == "POST":
 
-        form = JobForm(
-            request.POST,
-            instance=job
+        job.title = request.POST.get(
+            "title",
+            job.title
         )
 
-        if form.is_valid():
+        job.description = request.POST.get(
+            "description",
+            job.description
+        )
 
-            form.save()
+        job.skills = request.POST.get(
+            "skills",
+            job.skills
+        )
 
-            messages.success(
-                request,
-                "Job updated successfully!"
-            )
+        job.location = request.POST.get(
+            "location",
+            job.location
+        )
 
-            return redirect(
-                "recruiter_dashboard"
-            )
+        job.save()
 
-    else:
+        messages.success(
+            request,
+            "Job updated successfully."
+        )
 
-        form = JobForm(
-            instance=job
+        return redirect(
+            "recruiter_dashboard"
         )
 
     return render(
         request,
-        "recruiter/post_job.html",
+        "recruiter/edit_job.html",
         {
-            "form": form
+            "job": job
         }
     )
 
@@ -840,22 +604,28 @@ def edit_job(
 # ============================================================
 
 @login_required
-def delete_job(
-    request,
-    job_id
-):
+@ratelimit(
+    key="user",
+    rate="10/m",
+    method="POST",
+    block=True
+)
+def delete_job(request, job_id):
 
-    job = Job.objects.get(
+    job = get_object_or_404(
+        Job,
         id=job_id,
         recruiter=request.user
     )
 
-    job.delete()
+    if request.method == "POST":
 
-    messages.success(
-        request,
-        "Job deleted successfully!"
-    )
+        job.delete()
+
+        messages.success(
+            request,
+            "Job deleted successfully."
+        )
 
     return redirect(
         "recruiter_dashboard"
@@ -863,278 +633,72 @@ def delete_job(
 
 
 # ============================================================
-# VIEW CANDIDATE DETAILS
+# VIEW APPLICANTS
 # ============================================================
 
 @login_required
-def view_candidate_detail(
-    request,
-    candidate_id
-):
+@ratelimit(
+    key="user",
+    rate="30/m",
+    method="GET",
+    block=True
+)
+def view_applicants(request, job_id):
 
-    recruiter_profile_obj = (
-        RecruiterProfile.objects.filter(
-            user=request.user
-        ).first()
+    job = get_object_or_404(
+        Job,
+        id=job_id,
+        recruiter=request.user
     )
 
-    candidate = get_object_or_404(
-        CandidateProfile,
-        id=candidate_id
+    applications = job.applications.all().order_by(
+        "-id"
     )
-
-    resume_data = ResumeData.objects.filter(
-        candidate=candidate
-    ).first()
 
     return render(
         request,
-        "recruiter/candidate_detail.html",
+        "recruiter/applicants.html",
         {
-            "recruiter_profile":
-                recruiter_profile_obj,
-
-            "candidate":
-                candidate,
-
-            "resume_data":
-                resume_data,
+            "job": job,
+            "applications": applications
         }
     )
 
 
 # ============================================================
-# MILESTONE 3 - MODULE 1
-# INTERVIEW SCHEDULING
+# RECRUITER ANALYTICS
 # ============================================================
 
-
-# ------------------------------------------------------------
-# Schedule Interview
-# ------------------------------------------------------------
-
 @login_required
-def schedule_interview(request):
+@ratelimit(
+    key="user",
+    rate="30/m",
+    method="GET",
+    block=True
+)
+def analytics_dashboard(request):
 
-    recruiter = RecruiterProfile.objects.filter(
-        user=request.user
-    ).first()
+    jobs = Job.objects.filter(
+        recruiter=request.user
+    )
 
-    if not recruiter:
+    total_jobs = jobs.count()
 
-        messages.error(
-            request,
-            "Recruiter profile not found. "
-            "Please create a recruiter profile first."
-        )
+    total_applications = 0
 
-        return redirect(
-            "recruiter_profile"
-        )
+    for job in jobs:
 
-
-    if request.method == "POST":
-
-        form = InterviewForm(
-            request.POST
-        )
-
-        if form.is_valid():
-
-            interview = form.save(
-                commit=False
-            )
-
-            interview.recruiter = recruiter
-
-            interview.status = "Scheduled"
-
-            interview.save()
-
-            try:
-                from .email_services import send_interview_scheduled_email
-                send_interview_scheduled_email(interview)
-            except Exception as e:
-                import logging
-                logging.getLogger(__name__).error(f"Error sending interview scheduled email: {e}")
-
-            messages.success(
-                request,
-                "Interview scheduled successfully!"
-            )
-
-            return redirect(
-                "interview_list"
-            )
-
-    else:
-
-        form = InterviewForm()
-
+        try:
+            total_applications += job.applications.count()
+        except Exception:
+            pass
 
     return render(
         request,
-        "recruiter/schedule_interview.html",
+        "recruiter/analytics_dashboard.html",
         {
-            "form": form
-        }
-    )
-
-
-# ------------------------------------------------------------
-# Interview List
-# ------------------------------------------------------------
-
-@login_required
-def interview_list(request):
-
-    recruiter = RecruiterProfile.objects.filter(
-        user=request.user
-    ).first()
-
-    interviews = Interview.objects.filter(
-        recruiter=recruiter
-    ).select_related(
-        "candidate"
-    ).order_by(
-        "interview_date",
-        "interview_time"
-    )
-
-    return render(
-        request,
-        "recruiter/interviews.html",
-        {
-            "interviews": interviews
-        }
-    )
-
-
-# ------------------------------------------------------------
-# Update Interview Status
-# ------------------------------------------------------------
-
-@login_required
-def update_interview_status(
-    request,
-    interview_id
-):
-
-    recruiter = RecruiterProfile.objects.filter(
-        user=request.user
-    ).first()
-
-    interview = get_object_or_404(
-        Interview,
-        id=interview_id,
-        recruiter=recruiter
-    )
-
-
-    if request.method == "POST":
-
-        new_status = request.POST.get(
-            "status"
-        )
-
-        valid_statuses = [
-            "Scheduled",
-            "Completed",
-            "Cancelled",
-            "Rescheduled"
-        ]
-
-        if new_status in valid_statuses:
-            previous_status = interview.status
-            interview.status = new_status
-            interview.save()
-
-            try:
-                from .email_services import send_interview_status_update_email
-                send_interview_status_update_email(interview, previous_status)
-            except Exception as e:
-                import logging
-                logging.getLogger(__name__).error(f"Error sending interview status update email: {e}")
-
-            messages.success(
-                request,
-                "Interview status updated successfully!"
-            )
-
-
-    return redirect(
-        "interview_list"
-    )
-
-
-# ------------------------------------------------------------
-# Reschedule Interview
-# ------------------------------------------------------------
-
-@login_required
-def edit_interview(
-    request,
-    interview_id
-):
-
-    recruiter = RecruiterProfile.objects.filter(
-        user=request.user
-    ).first()
-
-    interview = get_object_or_404(
-        Interview,
-        id=interview_id,
-        recruiter=recruiter
-    )
-
-
-    if request.method == "POST":
-
-        form = EditInterviewForm(
-            request.POST,
-            instance=interview
-        )
-
-        if form.is_valid():
-
-            updated_interview = form.save(
-                commit=False
-            )
-
-            updated_interview.status = (
-                "Rescheduled"
-            )
-
-            updated_interview.save()
-
-            try:
-                from .email_services import send_interview_rescheduled_email
-                send_interview_rescheduled_email(updated_interview)
-            except Exception as e:
-                import logging
-                logging.getLogger(__name__).error(f"Error sending interview rescheduled email: {e}")
-
-            messages.success(
-                request,
-                "Interview rescheduled successfully!"
-            )
-
-            return redirect(
-                "interview_list"
-            )
-
-    else:
-
-        form = EditInterviewForm(
-            instance=interview
-        )
-
-
-    return render(
-        request,
-        "recruiter/edit_interview.html",
-        {
-            "form": form,
-            "interview": interview
+            "jobs": jobs,
+            "total_jobs": total_jobs,
+            "total_applications": total_applications
         }
     )
