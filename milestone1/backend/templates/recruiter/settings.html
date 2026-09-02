@@ -1,0 +1,457 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<style>
+    .settings-page {
+        padding: 30px;
+        max-width: 1100px;
+        margin: auto;
+    }
+
+    .settings-header {
+        margin-bottom: 25px;
+    }
+
+    .settings-header h2 {
+        margin: 0 0 8px;
+        color: #17365d;
+        font-weight: 700;
+    }
+
+    .settings-header p {
+        margin: 0;
+        color: #777;
+    }
+
+    .settings-card {
+        background: white;
+        border-radius: 15px;
+        padding: 25px;
+        margin-bottom: 20px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+        border: 1px solid #e8edf5;
+    }
+
+    .settings-card h4 {
+        margin: 0 0 8px;
+        color: #17365d;
+        font-weight: 700;
+    }
+
+    .settings-card-description {
+        color: #777;
+        font-size: 14px;
+        margin-bottom: 22px;
+    }
+
+    .account-row,
+    .notification-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 17px 0;
+        border-bottom: 1px solid #eeeeee;
+    }
+
+    .account-row:last-child,
+    .notification-row:last-child {
+        border-bottom: none;
+    }
+
+    .account-label,
+    .notification-title {
+        font-weight: 600;
+        color: #333;
+    }
+
+    .account-value {
+        color: #555;
+    }
+
+    .notification-description {
+        font-size: 13px;
+        color: #888;
+        margin-top: 4px;
+    }
+
+    /* SWITCH */
+
+    .switch {
+        position: relative;
+        display: inline-block;
+        width: 50px;
+        height: 26px;
+    }
+
+    .switch input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+    }
+
+    .slider {
+        position: absolute;
+        cursor: pointer;
+        inset: 0;
+        background-color: #ccc;
+        transition: .3s;
+        border-radius: 30px;
+    }
+
+    .slider:before {
+        position: absolute;
+        content: "";
+        height: 20px;
+        width: 20px;
+        left: 3px;
+        bottom: 3px;
+        background-color: white;
+        transition: .3s;
+        border-radius: 50%;
+    }
+
+    input:checked + .slider {
+        background-color: #0d6efd;
+    }
+
+    input:checked + .slider:before {
+        transform: translateX(24px);
+    }
+
+    /* FORM */
+
+    .form-group {
+        margin-bottom: 18px;
+    }
+
+    .form-group label {
+        display: block;
+        font-weight: 600;
+        margin-bottom: 7px;
+        color: #444;
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 11px 13px;
+        border: 1px solid #d9dfe8;
+        border-radius: 8px;
+        box-sizing: border-box;
+    }
+
+    .btn-primary-custom {
+        background: #0d6efd;
+        color: white;
+        border: none;
+        padding: 11px 20px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: 600;
+        text-decoration: none;
+        display: inline-block;
+    }
+
+    .btn-primary-custom:hover {
+        background: #084298;
+    }
+
+    .btn-danger-custom {
+        background: #dc3545;
+        color: white;
+        border: none;
+        padding: 11px 20px;
+        border-radius: 8px;
+        text-decoration: none;
+        display: inline-block;
+        font-weight: 600;
+    }
+
+    .settings-actions {
+        margin-top: 20px;
+    }
+
+    .alert {
+        padding: 12px 16px;
+        border-radius: 8px;
+        margin-bottom: 10px;
+    }
+
+    .alert-success {
+        background: #d1e7dd;
+        color: #0f5132;
+    }
+
+    .alert-error {
+        background: #f8d7da;
+        color: #842029;
+    }
+
+    .errorlist {
+        color: #dc3545;
+        padding-left: 18px;
+        font-size: 13px;
+    }
+
+    @media (max-width: 768px) {
+        .settings-page {
+            padding: 20px;
+        }
+
+        .account-row,
+        .notification-row {
+            gap: 15px;
+        }
+    }
+</style>
+
+
+<div class="settings-page">
+
+    <!-- HEADER -->
+
+    <div class="settings-header">
+        <h2>Settings ⚙️</h2>
+        <p>Manage your recruiter account and notification preferences.</p>
+    </div>
+
+
+    <!-- MESSAGES -->
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert
+                {% if message.tags == 'success' %}
+                    alert-success
+                {% else %}
+                    alert-error
+                {% endif %}
+            ">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+
+
+    <!-- ACCOUNT SETTINGS -->
+
+    <div class="settings-card">
+
+        <h4>👤 Account Information</h4>
+
+        <p class="settings-card-description">
+            Manage your recruiter account information.
+        </p>
+
+        <div class="account-row">
+            <span class="account-label">
+                Username
+            </span>
+
+            <span class="account-value">
+                {{ request.user.username }}
+            </span>
+        </div>
+
+        <div class="account-row">
+            <span class="account-label">
+                Email Address
+            </span>
+
+            <span class="account-value">
+                {{ request.user.email|default:"Not provided" }}
+            </span>
+        </div>
+
+        <div class="account-row">
+            <span class="account-label">
+                Name
+            </span>
+
+            <span class="account-value">
+                {{ request.user.get_full_name|default:"Recruiter" }}
+            </span>
+        </div>
+
+        <div class="settings-actions">
+            <a href="{% url 'recruiter_profile' %}"
+               class="btn-primary-custom">
+                Edit Profile
+            </a>
+        </div>
+
+    </div>
+
+
+    <!-- CHANGE PASSWORD -->
+
+    <div class="settings-card">
+
+        <h4>🔐 Change Password</h4>
+
+        <p class="settings-card-description">
+            Keep your account secure by using a strong password.
+        </p>
+
+        <form method="POST">
+
+            {% csrf_token %}
+
+            {% for field in password_form %}
+
+                <div class="form-group">
+
+                    {{ field.label_tag }}
+
+                    {{ field }}
+
+                    {% if field.errors %}
+                        {{ field.errors }}
+                    {% endif %}
+
+                </div>
+
+            {% endfor %}
+
+            <button type="submit"
+                    name="change_password"
+                    class="btn-primary-custom">
+                Change Password
+            </button>
+
+        </form>
+
+    </div>
+
+
+    <!-- NOTIFICATIONS -->
+
+    <div class="settings-card">
+
+        <h4>🔔 Notifications</h4>
+
+        <p class="settings-card-description">
+            Choose which notifications you want to receive.
+        </p>
+
+        <form method="POST">
+
+            {% csrf_token %}
+
+            <div class="notification-row">
+
+                <div>
+                    <div class="notification-title">
+                        Email Notifications
+                    </div>
+
+                    <div class="notification-description">
+                        Receive important updates by email.
+                    </div>
+                </div>
+
+                <label class="switch">
+
+                    {{ settings_form.email_notifications }}
+
+                    <span class="slider"></span>
+
+                </label>
+
+            </div>
+
+
+            <div class="notification-row">
+
+                <div>
+                    <div class="notification-title">
+                        Application Notifications
+                    </div>
+
+                    <div class="notification-description">
+                        Get notified when candidates apply.
+                    </div>
+                </div>
+
+                <label class="switch">
+
+                    {{ settings_form.application_notifications }}
+
+                    <span class="slider"></span>
+
+                </label>
+
+            </div>
+
+
+            <div class="notification-row">
+
+                <div>
+                    <div class="notification-title">
+                        Interview Notifications
+                    </div>
+
+                    <div class="notification-description">
+                        Receive interview-related notifications.
+                    </div>
+                </div>
+
+                <label class="switch">
+
+                    {{ settings_form.interview_notifications }}
+
+                    <span class="slider"></span>
+
+                </label>
+
+            </div>
+
+
+            <div class="settings-actions">
+
+                <button type="submit"
+                        name="save_notifications"
+                        class="btn-primary-custom">
+                    Save Notification Settings
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+
+    <!-- ACCOUNT ACTIONS -->
+
+    <div class="settings-card">
+
+        <h4>⚡ Account Actions</h4>
+
+        <p class="settings-card-description">
+            Manage your current session.
+        </p>
+
+        <div class="settings-actions">
+
+            <a href="{% url 'recruiter_dashboard' %}"
+               class="btn-primary-custom">
+                ← Back to Dashboard
+            </a>
+
+        </div>
+
+        <div class="settings-actions">
+
+            <a href="{% url 'logout' %}"
+               class="btn-danger-custom">
+                Logout
+            </a>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

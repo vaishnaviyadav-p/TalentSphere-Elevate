@@ -103,12 +103,13 @@ class ResumeData(models.Model):
 
 class JobApplication(models.Model):
 
-    STATUS_CHOICES = (
+    STATUS_CHOICES = [
         ("Applied", "Applied"),
         ("Shortlisted", "Shortlisted"),
         ("Interview", "Interview"),
         ("Rejected", "Rejected"),
-    )
+        ("Selected", "Selected"),
+    ]
 
     candidate = models.ForeignKey(
         User,

@@ -9,14 +9,21 @@ from datetime import timedelta
 from django.shortcuts import render, redirect
 from django.core.exceptions import PermissionDenied
 
+from django.contrib.auth import update_session_auth_hash
+from django.contrib.auth.forms import PasswordChangeForm
+
 from django.contrib.auth.decorators import login_required
 from django.db.models import Count, Q
 from django.utils import timezone
 
 from django.contrib import messages
 from django.db.models import Count
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.auth.decorators import login_required
+from django.contrib import messages
+from django.contrib.auth.models import User
 
-from accounts.models import UserProfile
+from django_ratelimit.decorators import ratelimit
 
 from candidate.models import (
     JobApplication,
@@ -27,7 +34,8 @@ from candidate.models import (
 from .models import (
     RecruiterProfile,
     Job,
-    Interview
+    Interview,
+    RecruiterSettings
 )
 
 from .forms import (
@@ -61,88 +69,138 @@ def _is_recruiter(user):
         return False
 
 
-@login_required
-def recruiter_profile(request):
-
-    profile, created = RecruiterProfile.objects.get_or_create(
-        user=request.user,
-        defaults={
-            "recruiter_name": request.user.get_full_name() or request.user.username,
-            "company_name": "My Company",
-            "email": request.user.email or "recruiter@example.com",
-            "phone": "",
-            "location": "",
-            "company_description": ""
-        }
-    )
-
-    return render(
-        request,
-        "recruiter/profile.html",
-        {
-            "profile": profile
-        }
-    )
-
+# ============================================================
+# RECRUITER SETTINGS
+# ============================================================
 
 @login_required
-def edit_recruiter_profile(request):
-
-    profile, created = RecruiterProfile.objects.get_or_create(
-        user=request.user,
-        defaults={
-            "recruiter_name": request.user.get_full_name() or request.user.username,
-            "company_name": "My Company",
-            "email": request.user.email or "recruiter@example.com",
-            "phone": "",
-            "location": "",
-            "company_description": ""
-        }
+def recruiter_settings(request):
+    settings_obj, created = RecruiterSettings.objects.get_or_create(
+        user=request.user
     )
 
     if request.method == "POST":
 
-        form = RecruiterProfileForm(
-            request.POST,
-            request.FILES,
-            instance=profile
-        )
+        # ------------------------------------------
+        # CHANGE PASSWORD
+        # ------------------------------------------
 
-        if form.is_valid():
+        if "change_password" in request.POST:
 
-            form.save()
-
-            return redirect(
-                "recruiter_profile"
+            password_form = PasswordChangeForm(
+                request.user,
+                request.POST
             )
+
+            settings_form = RecruiterSettingsForm(
+                instance=settings_obj
+            )
+
+            if password_form.is_valid():
+
+                user = password_form.save()
+
+                # Keep user logged in after password change
+                update_session_auth_hash(
+                    request,
+                    user
+                )
+
+                messages.success(
+                    request,
+                    "Password changed successfully!"
+                )
+
+                return redirect(
+                    "recruiter_settings"
+                )
+
+        # ------------------------------------------
+        # SAVE NOTIFICATION SETTINGS
+        # ------------------------------------------
+
+        elif "save_notifications" in request.POST:
+
+            settings_form = RecruiterSettingsForm(
+                request.POST,
+                instance=settings_obj
+            )
+
+            password_form = PasswordChangeForm(
+                request.user
+            )
+
+            if settings_form.is_valid():
+
+                settings_form.save()
+
+                messages.success(
+                    request,
+                    "Notification settings updated successfully!"
+                )
+
+                return redirect(
+                    "recruiter_settings"
+                )
 
     else:
 
-        form = RecruiterProfileForm(
-            instance=profile
+        settings_form = RecruiterSettingsForm(
+            instance=settings_obj
+        )
+
+        password_form = PasswordChangeForm(
+            request.user
         )
 
     return render(
         request,
-        "recruiter/edit_profile.html",
+        "recruiter/settings.html",
         {
-            "form": form
+            "settings_form": settings_form,
+            "password_form": password_form,
         }
     )
 
-def update_application_status(request, application_id):
-    application = get_object_or_404(JobApplication, id=application_id)
 
-    if request.method == "POST":
-        new_status = request.POST.get("status")
+# ============================================================
+# RECRUITER DASHBOARD
+# ============================================================
 
-        if new_status in dict(JobApplication.STATUS_CHOICES):
-            application.status = new_status
-            application.save()
-            messages.success(request, "Application status updated successfully.")
+@login_required
+@ratelimit(
+    key="user",
+    rate="30/m",
+    method="GET",
+    block=True
+)
+def recruiter_dashboard(request):
 
-    return redirect("priority_candidates")
+    jobs = Job.objects.filter(
+        recruiter=request.user
+    ).order_by("-id")
 
+    return render(
+        request,
+        "recruiter/dashboard.html",
+        {
+            "jobs": jobs
+        }
+    )
+
+
+@login_required
+def recruiter_profile(request):
+
+    return render(
+        request,
+        "recruiter/profile.html"
+    )
+
+
+# ============================================================
+# DETAILED RECRUITER DASHBOARD (with metrics)
+# ============================================================
 
 @login_required
 def dashboard(request):
@@ -204,106 +262,220 @@ def dashboard(request):
     )
 
 
+# ============================================================
+# CREATE JOB
+# ============================================================
+
 @login_required
-def analytics_dashboard(request):
+@ratelimit(
+    key="user",
+    rate="10/m",
+    method="POST",
+    block=True
+)
+def create_job(request):
 
-    recruiter = request.user
+    if request.method == "POST":
 
-    jobs = Job.objects.filter(recruiter=recruiter)
+        title = request.POST.get("title")
+        description = request.POST.get("description")
+        skills = request.POST.get("skills")
+        location = request.POST.get("location")
 
-    total_jobs = jobs.count()
+        if not title or not description:
+            messages.error(
+                request,
+                "Job title and description are required."
+            )
 
-    applications = JobApplication.objects.filter(
-        job__recruiter=recruiter
-    )
+            return redirect("create_job")
 
-    total_applications = applications.count()
-
-    shortlisted = applications.filter(
-        status="Shortlisted"
-    ).count()
-
-    interviews = applications.filter(
-        status="Interview"
-    ).count()
-
-    jobs_by_month = (
-        jobs
-        .annotate(month=TruncMonth("created_at"))
-        .values("month")
-        .annotate(total=Count("id"))
-        .order_by("month")
-    )
-
-    month_labels = []
-    month_data = []
-
-    for item in jobs_by_month:
-        month_labels.append(
-            item["month"].strftime("%b %Y")
+        Job.objects.create(
+            recruiter=request.user,
+            title=title,
+            description=description,
+            skills=skills,
+            location=location
         )
-        month_data.append(item["total"])
 
-    jobs_by_week = (
-        jobs
-        .annotate(week=TruncWeek("created_at"))
-        .values("week")
-        .annotate(total=Count("id"))
-        .order_by("week")
-    )
-
-    week_labels = []
-    week_data = []
-
-    for item in jobs_by_week:
-        week_labels.append(
-            item["week"].strftime("%d %b")
+        messages.success(
+            request,
+            "Job posted successfully."
         )
-        week_data.append(item["total"])
 
-    applications_by_month = (
-        applications
-        .annotate(month=TruncMonth("applied_at"))
-        .values("month")
-        .annotate(total=Count("id"))
-        .order_by("month")
-    )
-
-    trend_labels = []
-    trend_data = []
-
-    for item in applications_by_month:
-        trend_labels.append(
-            item["month"].strftime("%b %Y")
-        )
-        trend_data.append(item["total"])
-
-    context = {
-
-        "total_jobs": total_jobs,
-
-        "total_applications": total_applications,
-
-        "shortlisted": shortlisted,
-
-        "interviews": interviews,
-
-        "month_labels": month_labels,
-        "month_data": month_data,
-
-        "week_labels": week_labels,
-        "week_data": week_data,
-
-        "trend_labels": trend_labels,
-        "trend_data": trend_data,
-    }
+        return redirect("recruiter_dashboard")
 
     return render(
         request,
-        "recruiter/analytics_dashboard.html",
-        context
-    )   
+        "recruiter/create_job.html"
+    )
 
+
+# ============================================================
+# UPDATE APPLICATION STATUS
+# ============================================================
+
+def update_application_status(request, application_id):
+    application = get_object_or_404(JobApplication, id=application_id)
+
+    if request.method == "POST":
+        new_status = request.POST.get("status")
+
+        if new_status in dict(JobApplication.STATUS_CHOICES):
+            application.status = new_status
+            application.save()
+            messages.success(request, "Application status updated successfully.")
+
+    return redirect("priority_candidates")
+
+
+# ============================================================
+# ANALYTICS DASHBOARD
+# ============================================================
+
+import json
+import calendar
+from datetime import date, datetime, timedelta
+
+from django.shortcuts import render
+from django.contrib.auth.decorators import login_required
+from django.db.models import Count
+from django.db.models.functions import TruncMonth, TruncWeek
+from django.utils import timezone
+
+from .models import Job
+from candidate.models import JobApplication
+
+
+@login_required
+@ratelimit(
+    key="user",
+    rate="30/m",
+    method="GET",
+    block=True
+)
+def analytics_dashboard(request):
+    recruiter = request.user
+
+    # 1. JOBS & APPLICATIONS BASE QUERYSETS
+    jobs = Job.objects.filter(recruiter=recruiter)
+    applications = JobApplication.objects.filter(job__recruiter=recruiter)
+
+    # 2. COUNTER METRICS (Total Jobs, Applications, Shortlisted, Interviews)
+    total_jobs = jobs.count()
+    total_applications = applications.count()
+    shortlisted = applications.filter(status="Shortlisted").count()
+    interviews = applications.filter(status="Interview").count()
+
+    today = timezone.now().date()
+
+    from django.db.models.functions import ExtractMonth, ExtractYear
+
+    # ==========================================
+    # 3. MONTH-WISE DATA (EXACT MATCH LIKE WEEK-WISE)
+    # ==========================================
+    month_labels = []
+    month_keys = []
+
+    for i in range(11, -1, -1):
+        year = today.year - ((today.month - 1 - i) // -12 if (today.month - 1 - i) < 0 else 0)
+        month = (today.month - 1 - i) % 12 + 1
+        
+        # Unique key formatted as "YYYY-M" (e.g., "2026-8")
+        month_keys.append(f"{year}-{month}")
+        
+        # Display label (e.g., "Aug 2026")
+        dt = date(year, month, 1)
+        month_labels.append(dt.strftime("%b %Y"))
+
+    # Query DB and extract exact integer Year and Month
+    jobs_by_month_qs = (
+        jobs
+        .annotate(
+            y=ExtractYear("created_at"),
+            m=ExtractMonth("created_at")
+        )
+        .values("y", "m")
+        .annotate(total=Count("id"))
+    )
+
+    # Build dictionary lookup: {"2026-8": 5, "2026-7": 2, ...}
+    month_counts = {
+        f"{item['y']}-{item['m']}": item["total"]
+        for item in jobs_by_month_qs if item["y"] and item["m"]
+    }
+
+    # Match counts to month keys (defaults to 0 if no jobs posted that month)
+    month_data = [month_counts.get(key, 0) for key in month_keys]
+    
+    # 4. WEEK-WISE DATA (LAST 12 WEEKS)
+    current_monday = today - timedelta(days=today.weekday())
+    
+    week_labels = []
+    week_keys = []
+
+    for i in range(11, -1, -1):
+        week_monday = current_monday - timedelta(weeks=i)
+        week_keys.append(week_monday.strftime("%Y-%W"))
+        week_labels.append(week_monday.strftime("%d %b"))
+
+    naive_week_start = datetime.combine(current_monday - timedelta(weeks=11), datetime.min.time())
+    week_start_date = timezone.make_aware(naive_week_start)
+
+    jobs_by_week_qs = (
+        jobs
+        .filter(created_at__gte=week_start_date)
+        .annotate(week=TruncWeek("created_at"))
+        .values("week")
+        .annotate(total=Count("id"))
+    )
+
+    week_counts = {
+        item["week"].strftime("%Y-%W"): item["total"]
+        for item in jobs_by_week_qs if item["week"]
+    }
+
+    week_data = [week_counts.get(key, 0) for key in week_keys]
+
+    # 5. CONTEXT DICTIONARY (Includes Counter Metrics AND Chart JSON Data)
+    context = {
+        "total_jobs": total_jobs,
+        "total_applications": total_applications,
+        "shortlisted": shortlisted,
+        "interviews": interviews,
+
+        "month_labels_json": json.dumps(month_labels),
+        "month_data_json": json.dumps(month_data),
+        "week_labels_json": json.dumps(week_labels),
+        "week_data_json": json.dumps(week_data),
+    }
+
+    return render(request, "recruiter/analytics_dashboard.html", context)
+
+
+# ============================================================
+# RECRUITER JOB LISTINGS
+# ============================================================
+
+@login_required
+def job_listings(request):
+
+    jobs = Job.objects.filter(
+        recruiter=request.user
+    ).order_by("-created_at")
+
+    return render(
+        request,
+        "recruiter/job_listings.html",
+        {
+            "jobs": jobs
+        }
+    )
+
+
+# ============================================================
+# POST JOB
+# ============================================================
 
 @login_required
 def post_job(request):
@@ -320,6 +492,7 @@ def post_job(request):
                 commit=False
             )
 
+            # Assign logged-in recruiter
             job.recruiter = request.user
 
             job.save()
@@ -345,6 +518,126 @@ def post_job(request):
         }
     )
 
+
+# ============================================================
+# JOB DETAIL
+# ============================================================
+
+@login_required
+@ratelimit(
+    key="user",
+    rate="30/m",
+    method="GET",
+    block=True
+)
+def recruiter_job_detail(request, job_id):
+
+    job = get_object_or_404(
+        Job,
+        id=job_id,
+        recruiter=request.user
+    )
+
+    return render(
+        request,
+        "recruiter/job_detail.html",
+        {
+            "job": job
+        }
+    )
+
+
+# ============================================================
+# EDIT JOB
+# ============================================================
+
+@login_required
+@ratelimit(
+    key="user",
+    rate="10/m",
+    method="POST",
+    block=True
+)
+def edit_job(request, job_id):
+
+    job = get_object_or_404(
+        Job,
+        id=job_id,
+        recruiter=request.user
+    )
+
+    if request.method == "POST":
+
+        form = JobForm(
+            request.POST,
+            instance=job
+        )
+
+        if form.is_valid():
+
+            form.save()
+
+            messages.success(
+                request,
+                "Job updated successfully!"
+            )
+
+            return redirect(
+                "recruiter_dashboard"
+            )
+
+    else:
+
+        form = JobForm(
+            instance=job
+        )
+
+    return render(
+        request,
+        "recruiter/edit_job.html",
+        {
+            "form": form,
+            "job": job
+        }
+    )
+
+
+# ============================================================
+# DELETE JOB
+# ============================================================
+
+@login_required
+@ratelimit(
+    key="user",
+    rate="10/m",
+    method="POST",
+    block=True
+)
+def delete_job(request, job_id):
+
+    job = get_object_or_404(
+        Job,
+        id=job_id,
+        recruiter=request.user
+    )
+
+    if request.method == "POST":
+
+        job.delete()
+
+        messages.success(
+            request,
+            "Job deleted successfully."
+        )
+
+    return redirect(
+        "recruiter_dashboard"
+    )
+
+
+# ============================================================
+# CANDIDATE RANKING (Priority Candidates)
+# ============================================================
 
 @login_required
 def priority_candidates(request):
@@ -470,14 +763,12 @@ def priority_candidates(request):
             ]
 
 
-
             if (
                 selected_job_id
                 and
                 application.job_id != selected_job_id
             ):
                 continue
-
 
 
             if (
@@ -488,14 +779,12 @@ def priority_candidates(request):
                 continue
 
 
-
             if (
                 score_threshold is not None
                 and
                 row["score"] < score_threshold
             ):
                 continue
-
 
 
             if (
@@ -505,7 +794,6 @@ def priority_candidates(request):
                 not in row["candidate_skills_key"]
             ):
                 continue
-
 
 
             if (
@@ -588,74 +876,9 @@ def priority_candidates(request):
     )
 
 
-@login_required
-def edit_job(
-    request,
-    job_id
-):
-
-    job = Job.objects.get(
-        id=job_id,
-        recruiter=request.user
-    )
-
-    if request.method == "POST":
-
-        form = JobForm(
-            request.POST,
-            instance=job
-        )
-
-        if form.is_valid():
-
-            form.save()
-
-            messages.success(
-                request,
-                "Job updated successfully!"
-            )
-
-            return redirect(
-                "recruiter_dashboard"
-            )
-
-    else:
-
-        form = JobForm(
-            instance=job
-        )
-
-    return render(
-        request,
-        "recruiter/post_job.html",
-        {
-            "form": form
-        }
-    )
-
-
-@login_required
-def delete_job(
-    request,
-    job_id
-):
-
-    job = Job.objects.get(
-        id=job_id,
-        recruiter=request.user
-    )
-
-    job.delete()
-
-    messages.success(
-        request,
-        "Job deleted successfully!"
-    )
-
-    return redirect(
-        "recruiter_dashboard"
-    )
-
+# ============================================================
+# VIEW CANDIDATE DETAIL
+# ============================================================
 
 @login_required
 def view_candidate_detail(
@@ -719,6 +942,10 @@ def view_candidate_detail(
     )
 
 
+# ============================================================
+# SCHEDULE INTERVIEW
+# ============================================================
+
 @login_required
 def schedule_interview(request):
 
@@ -777,7 +1004,6 @@ def schedule_interview(request):
 
         form = InterviewForm()
 
-
     return render(
         request,
         "recruiter/schedule_interview.html",
@@ -786,6 +1012,10 @@ def schedule_interview(request):
         }
     )
 
+
+# ============================================================
+# INTERVIEW LIST
+# ============================================================
 
 @login_required
 def interview_list(request):
@@ -811,6 +1041,10 @@ def interview_list(request):
         }
     )
 
+
+# ============================================================
+# UPDATE INTERVIEW STATUS
+# ============================================================
 
 @login_required
 def update_interview_status(
@@ -864,6 +1098,10 @@ def update_interview_status(
         "interview_list"
     )
 
+
+# ============================================================
+# EDIT INTERVIEW
+# ============================================================
 
 @login_required
 def edit_interview(
@@ -930,5 +1168,41 @@ def edit_interview(
         {
             "form": form,
             "interview": interview
+        }
+    )
+
+
+# ============================================================
+# VIEW APPLICANTS
+# ============================================================
+
+@login_required
+@ratelimit(
+    key="user",
+    rate="30/m",
+    method="GET",
+    block=True
+)
+def view_applicants(request, job_id):
+
+    if not _is_recruiter(request.user):
+        raise PermissionDenied
+
+    job = get_object_or_404(
+        Job,
+        id=job_id,
+        recruiter=request.user
+    )
+
+    applications = job.applications.all().order_by(
+        "-id"
+    )
+
+    return render(
+        request,
+        "recruiter/applicants.html",
+        {
+            "job": job,
+            "applications": applications
         }
     )

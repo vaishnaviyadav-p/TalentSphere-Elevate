@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Interviews</title>
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f5f7fb;
+            color: #172554;
+        }
+
+        .page {
+            padding: 35px;
+        }
+
+        .page h1 {
+            margin-bottom: 8px;
+            font-size: 30px;
+        }
+
+        .subtitle {
+            color: #64748b;
+            margin-bottom: 30px;
+        }
+
+        .interview-card {
+            background: white;
+            border-radius: 14px;
+            padding: 25px;
+            margin-bottom: 18px;
+            border: 1px solid #e5e7eb;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .card-header h2 {
+            margin: 0;
+            font-size: 20px;
+        }
+
+        .status {
+            background: #dcfce7;
+            color: #15803d;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: bold;
+        }
+
+        .details {
+            display: flex;
+            gap: 50px;
+            margin-top: 22px;
+            flex-wrap: wrap;
+        }
+
+        .detail span {
+            display: block;
+            color: #64748b;
+            font-size: 13px;
+            margin-bottom: 6px;
+        }
+
+        .detail strong {
+            color: #1e293b;
+            font-size: 15px;
+        }
+
+        .empty {
+            background: white;
+            padding: 50px;
+            text-align: center;
+            border-radius: 14px;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="page">
+
+    <h1>My Interviews</h1>
+    <p class="subtitle">
+        View your scheduled and upcoming interviews.
+    </p>
+
+    {% if interviews %}
+
+        {% for interview in interviews %}
+
+        <div class="interview-card">
+
+            <div class="card-header">
+
+                <h2>Interview</h2>
+
+                <span class="status">
+                    Scheduled
+                </span>
+
+            </div>
+
+            <div class="details">
+
+                <div class="detail">
+                    <span>Date</span>
+                    <strong>{{ interview.interview_date }}</strong>
+                </div>
+
+                <div class="detail">
+                    <span>Time</span>
+                    <strong>{{ interview.interview_time }}</strong>
+                </div>
+
+                <div class="detail">
+                    <span>Recruiter</span>
+                    <strong>{{ interview.recruiter }}</strong>
+                </div>
+
+            </div>
+
+        </div>
+
+        {% endfor %}
+
+    {% else %}
+
+        <div class="empty">
+            <h2>No Interviews Scheduled</h2>
+            <p>You don't have any interviews scheduled yet.</p>
+        </div>
+
+    {% endif %}
+
+</div>
+
+</body>
+</html>

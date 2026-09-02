@@ -241,3 +241,83 @@ def calculate_skill_match(candidate_skills, required_skills):
         "missing_skills": sorted(missing_skills),
         "score": round(score, 2),
     }
+
+
+def generate_learning_path(missing_skills):
+    """
+    Generate a recommended learning path for missing skills.
+    Returns a list of dicts with skill, level, and description.
+    """
+    learning_resources = {
+        "python": {
+            "level": "Beginner to Advanced",
+            "description": "Start with Python basics, then move to OOP, data structures, and popular frameworks like Django/FastAPI."
+        },
+        "java": {
+            "level": "Beginner to Advanced",
+            "description": "Learn core Java, collections, multithreading, and Spring Boot for enterprise development."
+        },
+        "javascript": {
+            "level": "Beginner to Advanced",
+            "description": "Master ES6+, async/await, DOM manipulation, and modern frameworks like React/Vue."
+        },
+        "typescript": {
+            "level": "Intermediate",
+            "description": "Learn static typing, interfaces, generics, and integration with React/Node.js projects."
+        },
+        "react": {
+            "level": "Intermediate",
+            "description": "Components, hooks, state management (Redux/Zustand), and Next.js for full-stack apps."
+        },
+        "node.js": {
+            "level": "Intermediate",
+            "description": "Express.js, async patterns, REST APIs, and database integration with MongoDB/PostgreSQL."
+        },
+        "django": {
+            "level": "Intermediate",
+            "description": "Django ORM, authentication, DRF for APIs, and deployment with Docker/Gunicorn."
+        },
+        "sql": {
+            "level": "Beginner to Intermediate",
+            "description": "Queries, joins, indexing, normalization, and advanced topics like window functions."
+        },
+        "aws": {
+            "level": "Intermediate to Advanced",
+            "description": "EC2, S3, RDS, Lambda, CloudFormation, and CI/CD pipelines."
+        },
+        "docker": {
+            "level": "Intermediate",
+            "description": "Containerization, Dockerfile best practices, docker-compose, and multi-stage builds."
+        },
+        "kubernetes": {
+            "level": "Advanced",
+            "description": "Pods, services, deployments, Helm charts, and cluster management."
+        },
+        "machine learning": {
+            "level": "Intermediate to Advanced",
+            "description": "Supervised/unsupervised learning, scikit-learn, model evaluation, and deployment."
+        },
+        "deep learning": {
+            "level": "Advanced",
+            "description": "Neural networks, TensorFlow/PyTorch, CNNs, RNNs, and transformers."
+        },
+        "git": {
+            "level": "Beginner",
+            "description": "Version control basics, branching strategies, merge vs rebase, and GitHub workflows."
+        },
+    }
+
+    path = []
+    for i, skill in enumerate(missing_skills, 1):
+        skill_lower = skill.lower().strip()
+        resource = learning_resources.get(skill_lower, {
+            "level": "Beginner to Intermediate",
+            "description": f"Learn {skill} through online courses, documentation, and hands-on projects."
+        })
+        path.append({
+            "skill": skill,
+            "level": resource["level"],
+            "description": resource["description"]
+        })
+
+    return path

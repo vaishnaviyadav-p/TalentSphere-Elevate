@@ -1,11 +1,14 @@
 from django.urls import path
-
 from . import views
 
 
 urlpatterns = [
 
-    # Recruiter Profile
+    path(
+        "dashboard/",
+        views.recruiter_dashboard,
+        name="recruiter_dashboard"
+    ),
 
     path(
         "profile/",
@@ -15,17 +18,17 @@ urlpatterns = [
 
     path(
         "edit-profile/",
-        views.edit_recruiter_profile,
+        views.recruiter_profile,
         name="edit_recruiter_profile"
     ),
 
 
-    # Recruiter Dashboard
+    # Recruiter Dashboard (detailed)
 
     path(
-        "dashboard/",
+        "dashboard/detailed/",
         views.dashboard,
-        name="recruiter_dashboard"
+        name="recruiter_dashboard_detailed"
     ),
 
 
@@ -108,5 +111,18 @@ urlpatterns = [
     "update-application-status/<int:application_id>/",
     views.update_application_status,
     name="update_application_status",
+),
+
+path(
+    "job-listings/",
+    views.job_listings,
+    name="job_listings"
+),
+
+path(
+    "settings/",
+    views.recruiter_settings,
+
+    name="recruiter_settings"
 ),
 ]

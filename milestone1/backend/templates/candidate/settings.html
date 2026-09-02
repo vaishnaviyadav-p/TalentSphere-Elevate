@@ -1,0 +1,1009 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Settings | Infosys Talent Management Platform</title>
+
+    <style>
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Segoe UI", Arial, sans-serif;
+        }
+
+        body {
+            background: #f5f8fc;
+            color: #172033;
+        }
+
+
+        /* ================= SIDEBAR ================= */
+
+        .sidebar {
+
+            position: fixed;
+
+            left: 0;
+            top: 0;
+
+            width: 235px;
+            height: 100vh;
+
+            background: linear-gradient(
+                180deg,
+                #0b2d63,
+                #123f82
+            );
+
+            color: white;
+
+            padding: 25px 15px;
+
+            display: flex;
+            flex-direction: column;
+        }
+
+
+        .logo {
+            padding: 5px 15px 30px;
+        }
+
+
+        .logo h1 {
+            font-size: 28px;
+            color: white;
+        }
+
+
+        .logo p {
+            font-size: 12px;
+            opacity: .8;
+            margin-top: 5px;
+        }
+
+
+        .menu {
+            list-style: none;
+            flex: 1;
+        }
+
+
+        .menu li {
+            margin: 7px 0;
+        }
+
+
+        .menu a {
+
+            display: flex;
+            align-items: center;
+
+            gap: 13px;
+
+            padding: 13px 15px;
+
+            color: #e8f0ff;
+
+            text-decoration: none;
+
+            border-radius: 10px;
+
+            font-size: 14px;
+
+            transition: .2s;
+        }
+
+
+        .menu a:hover {
+            background: rgba(255,255,255,.14);
+        }
+
+
+        .menu a.active {
+
+            background: #1769e0;
+
+            color: white;
+
+            font-weight: 600;
+
+            box-shadow:
+                0 4px 12px rgba(0,0,0,.15);
+        }
+
+
+        .menu-icon {
+            width: 22px;
+            text-align: center;
+            font-size: 17px;
+        }
+
+
+        /* ================= MAIN ================= */
+
+        .main {
+            margin-left: 235px;
+            min-height: 100vh;
+        }
+
+
+        /* ================= TOPBAR ================= */
+
+        .topbar {
+
+            height: 75px;
+
+            background: white;
+
+            border-bottom: 1px solid #e5eaf1;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            padding: 0 35px;
+        }
+
+
+        .search {
+
+            width: 430px;
+
+            height: 42px;
+
+            border: 1px solid #dce3ed;
+
+            border-radius: 9px;
+
+            display: flex;
+
+            align-items: center;
+
+            padding: 0 15px;
+
+            color: #8793a7;
+        }
+
+
+        .search input {
+
+            border: none;
+            outline: none;
+
+            width: 100%;
+
+            margin-left: 10px;
+
+            font-size: 14px;
+        }
+
+
+        .profile {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 10px;
+
+            font-size: 14px;
+
+            font-weight: 600;
+        }
+
+
+        .avatar {
+
+            width: 38px;
+            height: 38px;
+
+            border-radius: 50%;
+
+            background: #dbe7ff;
+
+            color: #1769e0;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            font-weight: bold;
+        }
+
+
+        /* ================= CONTENT ================= */
+
+        .content {
+            padding: 30px 35px;
+        }
+
+
+        .page-header {
+            margin-bottom: 25px;
+        }
+
+
+        .page-header h2 {
+            font-size: 25px;
+            margin-bottom: 6px;
+        }
+
+
+        .page-header p {
+            color: #7a879a;
+            font-size: 14px;
+        }
+
+
+        /* ================= SETTINGS CARD ================= */
+
+        .settings-container {
+
+            max-width: 900px;
+
+            display: flex;
+
+            flex-direction: column;
+
+            gap: 20px;
+        }
+
+
+        .settings-card {
+
+            background: white;
+
+            border: 1px solid #e7ebf2;
+
+            border-radius: 13px;
+
+            padding: 25px;
+
+            box-shadow:
+                0 3px 12px
+                rgba(20,40,80,.04);
+        }
+
+
+        .settings-card h3 {
+
+            font-size: 17px;
+
+            margin-bottom: 6px;
+        }
+
+
+        .settings-card > p {
+
+            color: #7a879a;
+
+            font-size: 13px;
+
+            margin-bottom: 20px;
+        }
+
+
+        /* ================= SETTING ROW ================= */
+
+        .setting-row {
+
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: center;
+
+            padding: 17px 0;
+
+            border-bottom: 1px solid #edf0f4;
+        }
+
+
+        .setting-row:last-child {
+            border-bottom: none;
+        }
+
+
+        .setting-info h4 {
+
+            font-size: 14px;
+
+            margin-bottom: 4px;
+        }
+
+
+        .setting-info p {
+
+            font-size: 12px;
+
+            color: #7a879a;
+        }
+
+
+        /* ================= TOGGLE ================= */
+
+        .switch {
+
+            position: relative;
+
+            width: 45px;
+            height: 24px;
+        }
+
+
+        .switch input {
+            display: none;
+        }
+
+
+        .slider {
+
+            position: absolute;
+
+            cursor: pointer;
+
+            inset: 0;
+
+            background: #d9e0ea;
+
+            border-radius: 20px;
+
+            transition: .3s;
+        }
+
+
+        .slider:before {
+
+            content: "";
+
+            position: absolute;
+
+            width: 18px;
+            height: 18px;
+
+            left: 3px;
+            top: 3px;
+
+            background: white;
+
+            border-radius: 50%;
+
+            transition: .3s;
+
+            box-shadow: 0 1px 4px rgba(0,0,0,.2);
+        }
+
+
+        input:checked + .slider {
+            background: #1769e0;
+        }
+
+
+        input:checked + .slider:before {
+            transform: translateX(21px);
+        }
+
+
+        /* ================= BUTTON ================= */
+
+        .button {
+
+            display: inline-block;
+
+            padding: 9px 17px;
+
+            border-radius: 8px;
+
+            border: none;
+
+            background: #1769e0;
+
+            color: white;
+
+            text-decoration: none;
+
+            font-size: 13px;
+
+            cursor: pointer;
+        }
+
+
+        .button:hover {
+            background: #1258bd;
+        }
+
+
+        .danger-button {
+
+            background: #fff0f1;
+
+            color: #d7283a;
+
+            border: 1px solid #ffd3d7;
+        }
+
+
+        .danger-button:hover {
+
+            background: #ffe3e6;
+
+        }
+
+
+        /* ================= FOOTER ================= */
+
+        footer {
+
+            max-width: 900px;
+
+            padding: 25px 0 10px;
+
+            color: #8290a5;
+
+            font-size: 11px;
+
+            display: flex;
+
+            justify-content: space-between;
+        }
+
+
+        /* ================= RESPONSIVE ================= */
+
+        @media(max-width: 750px) {
+
+            .sidebar {
+
+                width: 70px;
+
+                padding: 20px 8px;
+            }
+
+
+            .logo {
+                padding: 5px 5px 25px;
+            }
+
+
+            .logo h1 {
+                font-size: 18px;
+            }
+
+
+            .logo p {
+                display: none;
+            }
+
+
+            .menu a {
+                justify-content: center;
+                padding: 13px 5px;
+            }
+
+
+            .menu a span:not(.menu-icon) {
+                display: none;
+            }
+
+
+            .main {
+                margin-left: 70px;
+            }
+
+
+            .topbar {
+                padding: 0 15px;
+            }
+
+
+            .search {
+                width: 200px;
+            }
+
+
+            .content {
+                padding: 20px 15px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<!-- =====================================================
+     SIDEBAR
+===================================================== -->
+
+<aside class="sidebar">
+
+    <div class="logo">
+
+        <h1>Infosys</h1>
+
+        <p>Talent Management Platform</p>
+
+    </div>
+
+
+    <ul class="menu">
+
+
+        <li>
+
+            <a href="{% url 'candidate_dashboard' %}">
+
+                <span class="menu-icon">⌂</span>
+
+                <span>Dashboard</span>
+
+            </a>
+
+        </li>
+
+
+        <li>
+
+            <a href="{% url 'browse_jobs' %}">
+
+                <span class="menu-icon">◉</span>
+
+                <span>Browse Jobs</span>
+
+            </a>
+
+        </li>
+
+
+        <li>
+
+            <a href="{% url 'my_applications' %}">
+
+                <span class="menu-icon">✓</span>
+
+                <span>My Applications</span>
+
+            </a>
+
+        </li>
+
+
+        <li>
+
+            <a href="{% url 'candidate_interviews' %}">
+
+                <span class="menu-icon">▣</span>
+
+                <span>Interviews</span>
+
+            </a>
+
+        </li>
+
+
+        <!-- ANALYTICS -->
+
+        <li>
+
+            <a href="{% url 'candidate_analytics' %}">
+
+                <span class="menu-icon">📊</span>
+
+                <span>Analytics</span>
+
+            </a>
+
+        </li>
+
+
+        <li>
+
+            <a href="{% url 'candidate_profile' %}">
+
+                <span class="menu-icon">♙</span>
+
+                <span>Profile</span>
+
+            </a>
+
+        </li>
+
+
+        <li>
+
+            <a href="{% url 'upload_resume' %}">
+
+                <span class="menu-icon">▤</span>
+
+                <span>Resume</span>
+
+            </a>
+
+        </li>
+
+
+        <li>
+
+            <a href="#">
+
+                <span class="menu-icon">♧</span>
+
+                <span>Notifications</span>
+
+            </a>
+
+        </li>
+
+
+        <!-- SETTINGS -->
+
+        <li>
+
+            <a href="{% url 'candidate_settings' %}"
+               class="active">
+
+                <span class="menu-icon">⚙</span>
+
+                <span>Settings</span>
+
+            </a>
+
+        </li>
+
+    </ul>
+
+
+    <div class="sidebar-bottom">
+
+        <a href="{% url 'logout' %}">
+            ↪ Logout
+        </a>
+
+    </div>
+
+</aside>
+
+
+
+<!-- =====================================================
+     MAIN
+===================================================== -->
+
+<main class="main">
+
+
+    <!-- TOP BAR -->
+
+    <header class="topbar">
+
+        <div class="search">
+
+            🔍
+
+            <input
+                type="text"
+                placeholder="Search for jobs, skills, companies..."
+            >
+
+        </div>
+
+
+        <div class="profile">
+
+            <div class="avatar">
+
+                {{ request.user.first_name|first|default:"C" }}
+
+            </div>
+
+            <span>
+
+                {{ request.user.first_name|default:"Candidate" }}
+
+            </span>
+
+        </div>
+
+    </header>
+
+
+
+    <!-- CONTENT -->
+
+    <section class="content">
+
+
+        <div class="page-header">
+
+            <h2>Settings</h2>
+
+            <p>
+                Manage your account and notification preferences.
+            </p>
+
+        </div>
+
+
+
+        <div class="settings-container">
+
+
+            <!-- ACCOUNT SETTINGS -->
+
+            <div class="settings-card">
+
+                <h3>Account Settings</h3>
+
+                <p>
+                    Manage your account information.
+                </p>
+
+
+                <div class="setting-row">
+
+                    <div class="setting-info">
+
+                        <h4>Email Address</h4>
+
+                        <p>
+                            {{ request.user.email }}
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="setting-row">
+
+                    <div class="setting-info">
+
+                        <h4>Username</h4>
+
+                        <p>
+                            {{ request.user.username }}
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="setting-row">
+
+                    <div class="setting-info">
+
+                        <h4>Password</h4>
+
+                        <p>
+                            Keep your account secure by using a strong password.
+                        </p>
+
+                    </div>
+
+                    <a href="{% url 'change_password' %}"
+                       class="button">
+                        Change Password
+                    </a>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- NOTIFICATION SETTINGS -->
+
+            <div class="settings-card">
+
+                <h3>Notifications</h3>
+
+                <p>
+                    Choose which notifications you want to receive.
+                </p>
+
+
+                <div class="setting-row">
+
+                    <div class="setting-info">
+
+                        <h4>Job Notifications</h4>
+
+                        <p>
+                            Receive notifications about new job opportunities.
+                        </p>
+
+                    </div>
+
+
+                    <label class="switch">
+
+                        <input
+                            type="checkbox"
+                            checked
+                        >
+
+                        <span class="slider"></span>
+
+                    </label>
+
+                </div>
+
+
+                <div class="setting-row">
+
+                    <div class="setting-info">
+
+                        <h4>Interview Notifications</h4>
+
+                        <p>
+                            Get notified about interview schedules and updates.
+                        </p>
+
+                    </div>
+
+
+                    <label class="switch">
+
+                        <input
+                            type="checkbox"
+                            checked
+                        >
+
+                        <span class="slider"></span>
+
+                    </label>
+
+                </div>
+
+
+                <div class="setting-row">
+
+                    <div class="setting-info">
+
+                        <h4>Application Updates</h4>
+
+                        <p>
+                            Receive updates about your job applications.
+                        </p>
+
+                    </div>
+
+
+                    <label class="switch">
+
+                        <input
+                            type="checkbox"
+                            checked
+                        >
+
+                        <span class="slider"></span>
+
+                    </label>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- PRIVACY -->
+
+            <div class="settings-card">
+
+                <h3>Privacy</h3>
+
+                <p>
+                    Manage your profile visibility and privacy.
+                </p>
+
+
+                <div class="setting-row">
+
+                    <div class="setting-info">
+
+                        <h4>Profile Visibility</h4>
+
+                        <p>
+                            Allow recruiters to view your candidate profile.
+                        </p>
+
+                    </div>
+
+
+                    <label class="switch">
+
+                        <input
+                            type="checkbox"
+                            checked
+                        >
+
+                        <span class="slider"></span>
+
+                    </label>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- LOGOUT -->
+
+            <div class="settings-card">
+
+                <h3>Account Actions</h3>
+
+                <p>
+                    Manage your current session.
+                </p>
+
+
+                <div class="setting-row">
+
+                    <div class="setting-info">
+
+                        <h4>Logout</h4>
+
+                        <p>
+                            Sign out from your candidate account.
+                        </p>
+
+                    </div>
+
+
+                    <a href="{% url 'logout' %}"
+                       class="button danger-button">
+
+                        Logout
+
+                    </a>
+
+                </div>
+
+            </div>
+
+
+        </div>
+
+
+
+        <footer>
+
+            <span>
+                © 2026 Infosys Talent Management Platform
+            </span>
+
+            <span>
+                Candidate Portal
+            </span>
+
+        </footer>
+
+
+    </section>
+
+</main>
+
+
+</body>
+
+</html>

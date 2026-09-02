@@ -81,4 +81,22 @@ urlpatterns = [
         views.upload_resume,
         name="upload_resume"
     ),
+
+    path(
+    "analytics/",
+    views.candidate_analytics,
+    name="candidate_analytics"
+),
+
+   path(
+    "settings/",
+    views.candidate_settings,
+    name="candidate_settings"
+),
+
+   path(
+    "change-password/",
+    views.change_password,
+    name="change_password"
+),
 ]
