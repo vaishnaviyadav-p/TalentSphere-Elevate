@@ -75,7 +75,34 @@
 
 <hr>
 
-<h4>ATS / Fit Score</h4>
+<h4>AI Match Analysis</h4>
+
+<div class="row mb-4">
+    <div class="col-md-4">
+        <div class="card bg-light border-0">
+            <div class="card-body text-center">
+                <h2 class="text-success mb-1">{{ fit_score|floatformat:1 }}%</h2>
+                <small class="text-muted">Overall Match</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card bg-light border-0">
+            <div class="card-body text-center">
+                <h2 class="text-primary mb-1">{{ skill_match_score|floatformat:1 }}%</h2>
+                <small class="text-muted">Skill Match</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card bg-light border-0">
+            <div class="card-body text-center">
+                <h2 class="text-info mb-1">{{ experience_match_score|floatformat:1 }}%</h2>
+                <small class="text-muted">Experience Match</small>
+            </div>
+        </div>
+    </div>
+</div>
 
 <div class="progress mb-3" style="height: 30px;">
 
@@ -86,59 +113,64 @@
         aria-valuenow="{{ fit_score }}"
         aria-valuemin="0"
         aria-valuemax="100">
-        {{ fit_score }}%
+        {{ fit_score|floatformat:1 }}%
     </div>
 
 </div>
 
-<p>
-    <strong>Matching Percentage:</strong>
-    {{ fit_score }}%
-</p>
+<p class="text-muted small">{{ match_reason }}</p>
 
-<h5 class="mt-4">
-    Matched Skills
-</h5>
+<hr>
 
-{% if matched_skills %}
+<div class="row">
+    <div class="col-md-6">
+        <h5 class="mt-4">
+            Matched Skills
+        </h5>
 
-    {% for skill in matched_skills %}
+        {% if matched_skills %}
 
-        <span class="badge bg-success me-1 mb-1">
-            ✓ {{ skill|title }}
-        </span>
+            {% for skill in matched_skills %}
 
-    {% endfor %}
+                <span class="badge bg-success-subtle text-success me-1 mb-1">
+                    ✓ {{ skill }}
+                </span>
 
-{% else %}
+            {% endfor %}
 
-    <p class="text-muted">
-        No matching skills found.
-    </p>
+        {% else %}
 
-{% endif %}
+            <p class="text-muted">
+                No matching skills found.
+            </p>
 
-<h5 class="mt-4">
-    Missing Skills
-</h5>
-
-{% if missing_skills %}
-
-    {% for skill in missing_skills %}
-
-        <span class="badge bg-danger me-1 mb-1">
-            ✗ {{ skill|title }}
-        </span>
-
-    {% endfor %}
-
-{% else %}
-
-    <div class="alert alert-success">
-        You have all the required skills for this job!
+        {% endif %}
     </div>
+    
+    <div class="col-md-6">
+        <h5 class="mt-4">
+            Skills to Develop
+        </h5>
 
-{% endif %}
+        {% if missing_skills %}
+
+            {% for skill in missing_skills %}
+
+                <span class="badge bg-warning-subtle text-warning me-1 mb-1">
+                    ✗ {{ skill }}
+                </span>
+
+            {% endfor %}
+
+        {% else %}
+
+            <div class="alert alert-success">
+                You have all the required skills for this job!
+            </div>
+
+        {% endif %}
+    </div>
+</div>
 
 <div class="mt-4">
 

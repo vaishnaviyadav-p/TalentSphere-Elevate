@@ -9,8 +9,6 @@ body{
     font-family: 'Segoe UI', sans-serif;
 }
 
-/* Header */
-
 .dashboard-header{
     background:linear-gradient(135deg,#2563eb,#1e40af);
     color:white;
@@ -28,8 +26,6 @@ body{
     opacity:.9;
     margin:0;
 }
-
-/* Cards */
 
 .stats-card{
     background:white;
@@ -57,8 +53,6 @@ body{
 .stats-card h6{
     color:#64748b;
 }
-
-/* Metric Cards */
 
 .metric-card{
     background:white;
@@ -133,8 +127,6 @@ body{
     letter-spacing:.05em;
 }
 
-/* Section Cards */
-
 .section-card{
     background:white;
     border:none;
@@ -203,8 +195,6 @@ body{
     color:#1e293b;
 }
 
-/* Tab Navigation */
-
 .metric-tabs{
     display:flex;
     gap:8px;
@@ -234,8 +224,6 @@ body{
     color:#2563eb;
     background:#dbeafe;
 }
-
-/* Quick Buttons */
 
 .quick-btn{
     border-radius:12px;
@@ -301,8 +289,6 @@ body{
     color:#fff;
 }
 
-/* Table */
-
 .table-card{
     background:white;
     border-radius:18px;
@@ -330,8 +316,6 @@ body{
     background:#d1fae5;
     color:#047857;
 }
-
-/* Responsive */
 
 @media (max-width: 768px) {
     .dashboard-header{
@@ -386,12 +370,18 @@ body{
     <a href="{% url 'schedule_interview' %}" class="btn quick-btn schedule-interview-btn">
     Schedule Interview
     </a>
+    <a href="{% url 'recruiter_all_recommendations' %}" class="btn quick-btn candidate-ranking-btn">
+        <svg class="quick-btn-icon" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+            <path d="M10 15.5c-3.04 0-5.5-2.46-5.5-5.5S6.96 4.5 10 4.5s5.5 2.46 5.5 5.5-2.46 5.5-5.5 5.5zm0-2.5c1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3 1.34 3 3 3zm0-7c-.55 0-1 .45-1 1v3c0 .55.45 1 1 1s1-.45 1-1V7c0-.55-.45-1-1-1z" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M4 16c0-3.04 2.46-5.5 5.5-5.5s5.5 2.46 5.5 5.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        AI Candidate Recommendations
+    </a>
 
 </div>
 
 </div>
 
-<!-- Recruitment Overview -->
 <div class="row g-4 mb-4">
     <div class="col-md-3">
         <div class="card metric-card">
@@ -459,7 +449,6 @@ body{
     </div>
 </div>
 
-<!-- Recruitment Activity -->
 <div class="row g-4 mb-4">
     <div class="col-lg-6">
         <div class="card section-card h-100">
@@ -524,7 +513,6 @@ body{
     </div>
 </div>
 
-<!-- Recruiter Statistics -->
 <div class="row g-4 mb-4">
     <div class="col-12">
         <div class="card section-card">
@@ -566,7 +554,6 @@ body{
     </div>
 </div>
 
-<!-- Job Listings -->
 <div class="table-card mt-5">
 
 <div class="p-3">
@@ -646,6 +633,13 @@ href="{% url 'delete_job' job.id %}"
 class="btn btn-danger btn-sm">
 
 Delete
+
+</a>
+        <a
+href="{% url 'recruiter_candidate_recommendations' job.id %}"
+class="btn btn-info btn-sm text-white">
+
+<i class="bi bi-lightning-charge me-1"></i>AI Candidates
 
 </a>
 

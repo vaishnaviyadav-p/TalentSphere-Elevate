@@ -46,10 +46,6 @@ from django.db.models.functions import TruncMonth, TruncWeek
 from django.db.models import Count
 
 
-# ============================================================
-# RECRUITER AUTHENTICATION / ROLE CHECK
-# ============================================================
-
 def _is_recruiter(user):
 
     if not user.is_authenticated:
@@ -64,10 +60,6 @@ def _is_recruiter(user):
     except UserProfile.DoesNotExist:
         return False
 
-
-# ============================================================
-# RECRUITER PROFILE
-# ============================================================
 
 @login_required
 def recruiter_profile(request):
@@ -152,10 +144,6 @@ def update_application_status(request, application_id):
     return redirect("priority_candidates")
 
 
-# ============================================================
-# RECRUITER DASHBOARD
-# ============================================================
-
 @login_required
 def dashboard(request):
     now = timezone.now()
@@ -216,27 +204,14 @@ def dashboard(request):
     )
 
 
-# ============================================================
-# ANALYTICS DASHBOARD
-# ============================================================
-
 @login_required
 def analytics_dashboard(request):
 
     recruiter = request.user
 
-    # ==========================================
-    # JOBS POSTED BY THIS RECRUITER
-    # ==========================================
-
     jobs = Job.objects.filter(recruiter=recruiter)
 
-    # Total jobs
     total_jobs = jobs.count()
-
-    # ==========================================
-    # APPLICATIONS FOR RECRUITER'S JOBS
-    # ==========================================
 
     applications = JobApplication.objects.filter(
         job__recruiter=recruiter
@@ -251,10 +226,6 @@ def analytics_dashboard(request):
     interviews = applications.filter(
         status="Interview"
     ).count()
-
-    # ==========================================
-    # MONTH-WISE JOB POSTING DATA
-    # ==========================================
 
     jobs_by_month = (
         jobs
@@ -273,10 +244,6 @@ def analytics_dashboard(request):
         )
         month_data.append(item["total"])
 
-    # ==========================================
-    # WEEK-WISE JOB POSTING DATA
-    # ==========================================
-
     jobs_by_week = (
         jobs
         .annotate(week=TruncWeek("created_at"))
@@ -293,10 +260,6 @@ def analytics_dashboard(request):
             item["week"].strftime("%d %b")
         )
         week_data.append(item["total"])
-
-    # ==========================================
-    # APPLICATION TREND BY MONTH
-    # ==========================================
 
     applications_by_month = (
         applications
@@ -342,10 +305,6 @@ def analytics_dashboard(request):
     )   
 
 
-# ============================================================
-# POST JOB
-# ============================================================
-
 @login_required
 def post_job(request):
 
@@ -361,7 +320,6 @@ def post_job(request):
                 commit=False
             )
 
-            # Assign logged-in recruiter
             job.recruiter = request.user
 
             job.save()
@@ -387,10 +345,6 @@ def post_job(request):
         }
     )
 
-
-# ============================================================
-# PRIORITY CANDIDATES
-# ============================================================
 
 @login_required
 def priority_candidates(request):
@@ -439,11 +393,6 @@ def priority_candidates(request):
         ""
     ).strip()
 
-
-    # --------------------------------------------------------
-    # Score filter
-    # --------------------------------------------------------
-
     score_threshold = None
 
     if selected_score:
@@ -466,11 +415,6 @@ def priority_candidates(request):
                 score_threshold > 100
             ):
                 score_threshold = None
-
-
-    # --------------------------------------------------------
-    # Job filter
-    # --------------------------------------------------------
 
     accessible_job_ids = set(
         recruiter_jobs.values_list(
@@ -501,11 +445,6 @@ def priority_candidates(request):
 
                 invalid_job_filter = True
 
-
-    # --------------------------------------------------------
-    # Ranking
-    # --------------------------------------------------------
-
     available_skills = collect_available_skills(
         applications
     )
@@ -513,11 +452,6 @@ def priority_candidates(request):
     ranked_rows = build_priority_candidate_rows(
         applications
     )
-
-
-    # --------------------------------------------------------
-    # Apply filters
-    # --------------------------------------------------------
 
     filtered_rows = []
 
@@ -536,7 +470,6 @@ def priority_candidates(request):
             ]
 
 
-            # Job filter
 
             if (
                 selected_job_id
@@ -546,7 +479,6 @@ def priority_candidates(request):
                 continue
 
 
-            # Status filter
 
             if (
                 selected_status
@@ -556,7 +488,6 @@ def priority_candidates(request):
                 continue
 
 
-            # Score filter
 
             if (
                 score_threshold is not None
@@ -566,7 +497,6 @@ def priority_candidates(request):
                 continue
 
 
-            # Skill filter
 
             if (
                 selected_skill_key
@@ -577,7 +507,6 @@ def priority_candidates(request):
                 continue
 
 
-            # Experience filter
 
             if (
                 selected_experience
@@ -591,11 +520,6 @@ def priority_candidates(request):
             filtered_rows.append(
                 row
             )
-
-
-    # --------------------------------------------------------
-    # Filter options
-    # --------------------------------------------------------
 
     job_filter_options = list(
         recruiter_jobs.values(
@@ -664,10 +588,6 @@ def priority_candidates(request):
     )
 
 
-# ============================================================
-# EDIT JOB
-# ============================================================
-
 @login_required
 def edit_job(
     request,
@@ -714,10 +634,6 @@ def edit_job(
     )
 
 
-# ============================================================
-# DELETE JOB
-# ============================================================
-
 @login_required
 def delete_job(
     request,
@@ -741,15 +657,14 @@ def delete_job(
     )
 
 
-# ============================================================
-# VIEW CANDIDATE DETAILS
-# ============================================================
-
 @login_required
 def view_candidate_detail(
     request,
     candidate_id
 ):
+
+    if not _is_recruiter(request.user):
+        raise PermissionDenied
 
     recruiter_profile_obj = (
         RecruiterProfile.objects.filter(
@@ -766,6 +681,20 @@ def view_candidate_detail(
         candidate=candidate
     ).first()
 
+    match_score = request.GET.get("match_score")
+    skill_match_score = request.GET.get("skill_match_score")
+    experience_match_score = request.GET.get("experience_match_score")
+    matched_skills = request.GET.get("matched_skills")
+    missing_skills = request.GET.get("missing_skills")
+    reason = request.GET.get("reason")
+
+    if matched_skills:
+        matched_skills = [s.strip() for s in matched_skills.split(",") if s.strip()]
+    if missing_skills:
+        missing_skills = [s.strip() for s in missing_skills.split(",") if s.strip()]
+
+    back_url = request.GET.get("next", "recruiter_all_recommendations")
+
     return render(
         request,
         "recruiter/candidate_detail.html",
@@ -778,19 +707,17 @@ def view_candidate_detail(
 
             "resume_data":
                 resume_data,
+
+            "match_score": match_score,
+            "skill_match_score": skill_match_score,
+            "experience_match_score": experience_match_score,
+            "matched_skills": matched_skills,
+            "missing_skills": missing_skills,
+            "reason": reason,
+            "back_url": back_url,
         }
     )
 
-
-# ============================================================
-# MILESTONE 3 - MODULE 1
-# INTERVIEW SCHEDULING
-# ============================================================
-
-
-# ------------------------------------------------------------
-# Schedule Interview
-# ------------------------------------------------------------
 
 @login_required
 def schedule_interview(request):
@@ -860,10 +787,6 @@ def schedule_interview(request):
     )
 
 
-# ------------------------------------------------------------
-# Interview List
-# ------------------------------------------------------------
-
 @login_required
 def interview_list(request):
 
@@ -888,10 +811,6 @@ def interview_list(request):
         }
     )
 
-
-# ------------------------------------------------------------
-# Update Interview Status
-# ------------------------------------------------------------
 
 @login_required
 def update_interview_status(
@@ -945,10 +864,6 @@ def update_interview_status(
         "interview_list"
     )
 
-
-# ------------------------------------------------------------
-# Reschedule Interview
-# ------------------------------------------------------------
 
 @login_required
 def edit_interview(

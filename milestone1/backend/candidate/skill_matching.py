@@ -1,6 +1,7 @@
 import PyPDF2
 import docx
 import pdfplumber
+import re
 
 
 def extract_text_from_pdf(file):
@@ -72,8 +73,21 @@ def extract_text_from_file(file):
     return text
 
 
+def _build_skill_pattern(skill: str) -> str:
+    """
+    Build a regex pattern that matches a skill at word boundaries.
+    Handles special characters in skills like c++, c#, node.js.
+    """
+
+    escaped = re.escape(skill)
+
+    escaped = escaped.replace(r"\ ", r"\s+")
+
+    return r"(^|\s|[^\w])" + escaped + r"($|\s|[^\w])"
+
+
 def extract_skills(text):
-    """Extract known skills from text."""
+    """Extract known skills from text using word-boundary matching."""
 
     skills_db = [
         "python",
@@ -148,13 +162,14 @@ def extract_skills(text):
         "mobile development",
     ]
 
-    text_lower = text.lower()
+    skills_sorted = sorted(skills_db, key=len, reverse=True)
 
+    text_lower = text.lower()
     found_skills = []
 
-    for skill in skills_db:
-
-        if skill in text_lower:
+    for skill in skills_sorted:
+        pattern = _build_skill_pattern(skill)
+        if re.search(pattern, text_lower):
             found_skills.append(skill)
 
     return sorted(set(found_skills))

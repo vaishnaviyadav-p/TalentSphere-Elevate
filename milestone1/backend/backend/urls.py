@@ -8,20 +8,21 @@ from django.conf.urls.static import static
 urlpatterns = [
     path("admin/", admin.site.urls),
 
-    # Accounts
     path("", include("accounts.urls")),
 
-    # Candidate
     path(
         "candidate/",
         include("candidate.urls")
     ),
 
-
-    # Recruiter
     path(
         "recruiter/",
         include("recruiter.urls")
+    ),
+
+    path(
+        "recommendations/",
+        include("recommendations.urls")
     ),
 ]
 

@@ -18,8 +18,6 @@ def candidate_dashboard(request):
         candidate=request.user
     )
 
-    # ---------------- Basic Application Metrics ----------------
-
     total = applications.count()
 
     applied = applications.filter(
@@ -42,13 +40,9 @@ def candidate_dashboard(request):
         status="Selected"
     ).count()
 
-    # ---------------- Candidate Profile ----------------
-
     candidate_profile = CandidateProfile.objects.filter(
         user=request.user
     ).first()
-
-    # ---------------- Interviews ----------------
 
     interviews = Interview.objects.none()
 
@@ -66,8 +60,6 @@ def candidate_dashboard(request):
 
     interview_count = interviews.count()
 
-    # ---------------- Candidate Metrics ----------------
-
     if total > 0:
         success_rate = round(
             ((shortlisted + selected) / total) * 100,
@@ -84,8 +76,6 @@ def candidate_dashboard(request):
     else:
         interview_rate = 0
 
-    # ---------------- Recent Applications ----------------
-
     recent_applications = applications.select_related(
         "job"
     ).order_by("-id")[:5]
@@ -97,7 +87,6 @@ def candidate_dashboard(request):
         "under_review": under_review,
         "shortlisted": shortlisted,
 
-        # Important
         "interview": interview_count,
 
         "rejected": rejected,
@@ -108,7 +97,6 @@ def candidate_dashboard(request):
 
         "recent_applications": recent_applications,
 
-        # Interview details
         "interviews": interviews,
     }
 
@@ -148,10 +136,6 @@ def candidate_interviews(request):
     )
 
 
-# ============================================================
-# Browse Jobs
-# ============================================================
-
 def browse_jobs(request):
 
     jobs = Job.objects.filter(
@@ -167,10 +151,6 @@ def browse_jobs(request):
     )
 
 
-# ============================================================
-# Job Detail
-# ============================================================
-
 def job_detail(request, job_id):
 
     job = get_object_or_404(
@@ -179,52 +159,25 @@ def job_detail(request, job_id):
         is_active=True
     )
 
-    profile = CandidateProfile.objects.filter(
-        user=request.user
-    ).first()
+    from recommendations.services import calculate_job_match_for_candidate
 
-    candidate_skills = []
-
-    if profile:
-
-        resume = ResumeData.objects.filter(
-            candidate=profile
-        ).first()
-
-        if resume and resume.parsed_skills:
-
-            candidate_skills = [
-                skill.strip()
-                for skill in resume.parsed_skills
-                if skill.strip()
-            ]
-
-    # Extract required skills from job requirements
-    required_skills = extract_required_skills(
-        job.requirements
-    )
-
-    # Calculate ATS / Fit Score
-    result = calculate_skill_match(
-        candidate_skills,
-        required_skills
-    )
+    match_data = calculate_job_match_for_candidate(request.user, job)
 
     return render(
         request,
         "candidate/job_detail.html",
         {
             "job": job,
-            "fit_score": result["score"],
-            "matched_skills": result["matched_skills"],
-            "missing_skills": result["missing_skills"],
+            "fit_score": match_data["match_score"],
+            "skill_match_score": match_data["skill_match_score"],
+            "experience_match_score": match_data["experience_match_score"],
+            "matched_skills": match_data["matched_skills"],
+            "missing_skills": match_data["missing_skills"],
+            "experience_match": match_data["experience_match"],
+            "match_reason": match_data["reason"],
         }
     )
 
-
-# ============================================================
-# Apply Job
-# ============================================================
 
 def apply_job(request, job_id):
 
@@ -254,10 +207,6 @@ def apply_job(request, job_id):
 
     return redirect("my_applications")
 
-
-# ============================================================
-# My Applications
-# ============================================================
 
 def my_applications(request):
 
@@ -331,10 +280,6 @@ def my_applications(request):
     )
 
 
-# ============================================================
-# Candidate Profile
-# ============================================================
-
 def candidate_profile(request):
 
     profile, created = CandidateProfile.objects.get_or_create(
@@ -365,10 +310,6 @@ def candidate_profile(request):
         }
     )
 
-
-# ============================================================
-# Edit Candidate Profile
-# ============================================================
 
 def edit_candidate_profile(request):
 
@@ -423,17 +364,12 @@ def edit_candidate_profile(request):
     )
 
 
-# ============================================================
-# Upload Resume
-# ============================================================
-
 def upload_resume(request):
 
     profile = CandidateProfile.objects.filter(
         user=request.user
     ).first()
 
-    # Make sure a candidate profile exists
     if not profile:
 
         messages.error(
@@ -466,7 +402,6 @@ def upload_resume(request):
 
             try:
 
-                # Parse uploaded resume
                 parsed_data = parse_resume(
                     resume_data.resume_file.path
                 )
@@ -483,7 +418,6 @@ def upload_resume(request):
                     "================================="
                 )
 
-                # Save extracted information
                 resume_data.extracted_text = (
                     parsed_data["extracted_text"]
                 )

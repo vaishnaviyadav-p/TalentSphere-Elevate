@@ -1,0 +1,187 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}AI Job Recommendations - TalentSphere{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+        <h1 class="h3 mb-0">
+            <i class="bi bi-lightning-charge-fill text-warning me-2"></i>
+            AI Job Recommendations
+        </h1>
+        <a href="?refresh=1" class="btn btn-outline-primary">
+            <i class="bi bi-arrow-clockwise me-1"></i> Refresh
+        </a>
+    </div>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    {% if not has_resume %}
+        <div class="alert alert-info d-flex align-items-center">
+            <i class="bi bi-info-circle me-2 fs-4"></i>
+            <div>
+                <strong>Tip:</strong> Upload your resume to get more accurate skill-based recommendations!
+                <a href="{% url 'upload_resume' %}" class="alert-link ms-2">Upload Resume</a>
+            </div>
+        </div>
+    {% endif %}
+
+    {% if recommendations %}
+        <div class="row g-4">
+            {% for rec in recommendations %}
+                <div class="col-md-6 col-lg-4" data-rec-id="{{ rec.id }}">
+                    <div class="card h-100 shadow-sm border-0 recommendation-card {% if rec.is_viewed %}bg-light{% endif %}">
+                        <div class="card-header d-flex justify-content-between align-items-center bg-white border-0">
+                            <div class="d-flex align-items-center gap-2">
+                                <span class="badge bg-success fs-6 px-3 py-2">{{ rec.match_score|floatformat:1 }}% Match</span>
+                                {% if rec.experience_match %}
+                                    <span class="badge bg-info text-dark"><i class="bi bi-check-circle me-1"></i>Exp. Match</span>
+                                {% endif %}
+                            </div>
+                            <div class="dropdown">
+                                <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-label="More options">
+                                    <i class="bi bi-three-dots"></i>
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-end">
+                                    <li>
+                                        <a class="dropdown-item mark-viewed" href="#" data-rec-id="{{ rec.id }}" data-type="job">
+                                            <i class="bi bi-eye me-2"></i> Mark as viewed
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item text-danger dismiss-rec" href="#" data-rec-id="{{ rec.id }}" data-type="job">
+                                            <i class="bi bi-x-circle me-2"></i> Dismiss
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="card-body d-flex flex-column">
+                            <div class="mb-3">
+                                <h5 class="card-title mb-1">{{ rec.job.title }}</h5>
+                                <p class="text-muted mb-1 small">
+                                    <i class="bi bi-building me-1"></i>{{ rec.job.company }}
+                                    <span class="mx-2">•</span>
+                                    <i class="bi bi-geo-alt me-1"></i>{{ rec.job.location }}
+                                </p>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <span class="badge bg-light text-dark border me-1">{{ rec.job.job_type }}</span>
+                                <span class="badge bg-light text-dark border me-1">{{ rec.job.experience }}</span>
+                                <span class="badge bg-primary-subtle text-primary">{{ rec.job.salary }}</span>
+                            </div>
+
+                            {% if rec.matched_skills %}
+                                <div class="mb-3">
+                                    <small class="text-success fw-bold d-block">
+                                        <i class="bi bi-check-circle me-1"></i>Matched Skills:
+                                    </small>
+                                    <div class="mt-1">
+                                        {% for skill in rec.matched_skills|slice:":6" %}
+                                            <span class="badge bg-success-subtle text-success me-1 mb-1">{{ skill }}</span>
+                                        {% endfor %}
+                                        {% if rec.matched_skills|length > 6 %}
+                                            <span class="badge bg-light text-muted border">+{{ rec.matched_skills|length|add:"-6" }} more</span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            {% endif %}
+
+                            {% if rec.missing_skills %}
+                                <div class="mb-3">
+                                    <small class="text-warning fw-bold d-block">
+                                        <i class="bi bi-exclamation-triangle me-1"></i>Skills to Develop:
+                                    </small>
+                                    <div class="mt-1">
+                                        {% for skill in rec.missing_skills|slice:":4" %}
+                                            <span class="badge bg-warning-subtle text-warning me-1 mb-1">{{ skill }}</span>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            {% endif %}
+
+                            <p class="text-muted small mb-3 flex-grow-1">{{ rec.reason }}</p>
+                        </div>
+                        <div class="card-footer bg-white border-0 pt-0">
+                            <a href="{% url 'job_detail' rec.job.id %}" class="btn btn-primary w-100 fw-medium">
+                                <i class="bi bi-arrow-right me-1"></i> View Job Details
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="text-center py-5">
+            <i class="bi bi-search display-1 text-muted"></i>
+            <h4 class="mt-3 text-muted">No recommendations yet</h4>
+            <p class="text-muted">Complete your profile and upload your resume to get personalized job recommendations.</p>
+            <a href="{% url 'edit_candidate_profile' %}" class="btn btn-primary me-2">Complete Profile</a>
+            <a href="{% url 'upload_resume' %}" class="btn btn-outline-primary">Upload Resume</a>
+        </div>
+    {% endif %}
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Mark as viewed
+    document.querySelectorAll('.mark-viewed').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            const recId = this.dataset.recId;
+            const type = this.dataset.type;
+            
+            fetch('{% url "mark_recommendation_viewed" %}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                },
+                body: `recommendation_id=${recId}&model_type=${type}`
+            }).then(response => response.json()).then(data => {
+                if (data.success) {
+                    const card = document.querySelector(`[data-rec-id="${recId}"]`);
+                    if (card) card.classList.add('bg-light');
+                    this.textContent = ' Viewed';
+                    this.classList.add('disabled');
+                }
+            });
+        });
+    });
+
+    // Dismiss
+    document.querySelectorAll('.dismiss-rec').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            if (!confirm('Dismiss this recommendation?')) return;
+            
+            const recId = this.dataset.recId;
+            const type = this.dataset.type;
+            
+            fetch('{% url "dismiss_recommendation" %}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                },
+                body: `recommendation_id=${recId}&model_type=${type}`
+            }).then(response => response.json()).then(data => {
+                if (data.success) {
+                    const card = document.querySelector(`[data-rec-id="${recId}"]`);
+                    if (card) card.remove();
+                }
+            });
+        });
+    });
+});
+</script>
+{% endblock %}
