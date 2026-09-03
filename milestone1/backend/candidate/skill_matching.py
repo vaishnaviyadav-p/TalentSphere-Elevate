@@ -226,3 +226,162 @@ def calculate_skill_match(candidate_skills, required_skills):
         "missing_skills": sorted(missing_skills),
         "score": round(score, 2),
     }
+
+
+def generate_learning_path(missing_skills):
+    """
+    Generate a learning path for missing skills.
+    """
+
+    learning_resources = {
+
+        "python": {
+            "level": "Beginner",
+            "description": "Learn Python syntax, functions, OOP, and basic problem solving."
+        },
+
+        "java": {
+            "level": "Beginner",
+            "description": "Learn Java fundamentals, OOP, collections, and exception handling."
+        },
+
+        "javascript": {
+            "level": "Beginner",
+            "description": "Learn JavaScript fundamentals, DOM manipulation, ES6, and asynchronous programming."
+        },
+
+        "html": {
+            "level": "Beginner",
+            "description": "Learn HTML structure, semantic elements, forms, and accessibility."
+        },
+
+        "css": {
+            "level": "Beginner",
+            "description": "Learn CSS layouts, Flexbox, Grid, responsive design, and styling."
+        },
+
+        "react": {
+            "level": "Intermediate",
+            "description": "Learn React components, props, state, hooks, and API integration."
+        },
+
+        "django": {
+            "level": "Intermediate",
+            "description": "Learn Django models, views, templates, URLs, forms, and REST APIs."
+        },
+
+        "flask": {
+            "level": "Intermediate",
+            "description": "Learn Flask routing, templates, forms, APIs, and database integration."
+        },
+
+        "sql": {
+            "level": "Beginner",
+            "description": "Learn SQL queries, joins, aggregation, subqueries, and database design."
+        },
+
+        "mysql": {
+            "level": "Beginner",
+            "description": "Learn MySQL databases, tables, queries, joins, and database management."
+        },
+
+        "mongodb": {
+            "level": "Intermediate",
+            "description": "Learn NoSQL concepts, MongoDB collections, queries, and CRUD operations."
+        },
+
+        "git": {
+            "level": "Beginner",
+            "description": "Learn Git commands, branching, merging, commits, and version control."
+        },
+
+        "github": {
+            "level": "Beginner",
+            "description": "Learn GitHub repositories, pull requests, branches, and collaboration."
+        },
+
+        "rest api": {
+            "level": "Intermediate",
+            "description": "Learn REST principles, HTTP methods, status codes, JSON, and API development."
+        },
+
+        "node.js": {
+            "level": "Intermediate",
+            "description": "Learn Node.js, npm, modules, asynchronous programming, and backend APIs."
+        },
+
+        "express": {
+            "level": "Intermediate",
+            "description": "Learn Express routing, middleware, REST APIs, and backend development."
+        },
+
+        "machine learning": {
+            "level": "Intermediate",
+            "description": "Learn supervised learning, preprocessing, model training, evaluation, and prediction."
+        },
+
+        "tensorflow": {
+            "level": "Advanced",
+            "description": "Learn neural networks, model creation, training, and deployment using TensorFlow."
+        },
+
+        "pytorch": {
+            "level": "Advanced",
+            "description": "Learn tensors, neural networks, training loops, and deep learning using PyTorch."
+        },
+
+        "docker": {
+            "level": "Intermediate",
+            "description": "Learn containers, Dockerfiles, images, containers, and Docker Compose."
+        },
+
+        "aws": {
+            "level": "Intermediate",
+            "description": "Learn AWS core services, deployment, storage, networking, and cloud fundamentals."
+        },
+
+        "linux": {
+            "level": "Beginner",
+            "description": "Learn Linux commands, file management, permissions, processes, and shell basics."
+        },
+
+        "communication": {
+            "level": "Beginner",
+            "description": "Improve professional communication, presentation, and workplace communication skills."
+        },
+
+        "problem solving": {
+            "level": "Beginner",
+            "description": "Practice logical reasoning, algorithms, data structures, and coding problems."
+        },
+
+        "teamwork": {
+            "level": "Beginner",
+            "description": "Develop collaboration, communication, and team-based problem-solving skills."
+        },
+
+    }
+
+    learning_path = []
+
+    for skill in missing_skills:
+
+        skill_lower = skill.lower().strip()
+
+        if skill_lower in learning_resources:
+
+            learning_path.append({
+                "skill": skill.title(),
+                "level": learning_resources[skill_lower]["level"],
+                "description": learning_resources[skill_lower]["description"]
+            })
+
+        else:
+
+            learning_path.append({
+                "skill": skill.title(),
+                "level": "Beginner",
+                "description": f"Learn the fundamentals and practical applications of {skill.title()}."
+            })
+
+    return learning_path

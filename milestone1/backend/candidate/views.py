@@ -18,6 +18,7 @@ from recruiter.models import Job,Interview
 from .skill_matching import (
     extract_required_skills,
     calculate_skill_match,
+    generate_learning_path,
 )
 
 
@@ -328,6 +329,11 @@ def job_detail(request, job_id):
         required_skills
     )
 
+    learning_path = generate_learning_path(
+    result["missing_skills"]
+    )
+
+    
     return render(
         request,
         "candidate/job_detail.html",
@@ -336,6 +342,7 @@ def job_detail(request, job_id):
             "fit_score": result["score"],
             "matched_skills": result["matched_skills"],
             "missing_skills": result["missing_skills"],
+            "learning_path": learning_path
         }
     )
 
