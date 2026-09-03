@@ -1,0 +1,231 @@
+{% extends "base.html" %}
+
+{% block title %}{{ candidate.full_name }} - Candidate Details - TalentSphere{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <!-- Breadcrumb / Back Navigation -->
+    <div class="d-flex align-items-center mb-4">
+        <a href="{% if request.GET.next %}{{ request.GET.next }}{% else %}{% url 'recruiter_all_recommendations' %}{% endif %}" class="btn btn-outline-secondary me-3">
+            <i class="bi bi-arrow-left me-1"></i> Back to Recommendations
+        </a>
+        <div>
+            <h1 class="h3 mb-0">{{ candidate.full_name }}</h1>
+            <p class="text-muted mb-0">{{ candidate.email }}</p>
+        </div>
+    </div>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <!-- AI Recommendation Context Banner (if coming from recommendations) -->
+    {% if match_score %}
+        <div class="alert alert-info border-0 shadow-sm mb-4 d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+            <div>
+                <h5 class="mb-1"><i class="bi bi-lightning-charge-fill text-warning me-2"></i>AI Recommendation Match</h5>
+                <p class="mb-0 small text-muted">This candidate was recommended for a job based on skill and experience matching.</p>
+            </div>
+            <div class="d-flex gap-3">
+                <div class="text-center">
+                    <div class="fw-bold fs-4 text-success">{{ match_score }}%</div>
+                    <small class="text-muted">Overall Match</small>
+                </div>
+                <div class="text-center">
+                    <div class="fw-bold fs-4 text-primary">{{ skill_match_score }}%</div>
+                    <small class="text-muted">Skill Match</small>
+                </div>
+                <div class="text-center">
+                    <div class="fw-bold fs-4 text-info">{{ experience_match_score }}%</div>
+                    <small class="text-muted">Experience Match</small>
+                </div>
+            </div>
+        </div>
+
+        {% if matched_skills or missing_skills %}
+            <div class="row mb-4">
+                {% if matched_skills %}
+                    <div class="col-md-6">
+                        <div class="card border-0 shadow-sm">
+                            <div class="card-header bg-success bg-opacity-10">
+                                <h6 class="mb-0 text-success"><i class="bi bi-check-circle me-1"></i>Matched Skills</h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="d-flex flex-wrap gap-2">
+                                    {% for skill in matched_skills %}
+                                        <span class="badge bg-success-subtle text-success">{{ skill }}</span>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+                {% if missing_skills %}
+                    <div class="col-md-6">
+                        <div class="card border-0 shadow-sm">
+                            <div class="card-header bg-warning bg-opacity-10">
+                                <h6 class="mb-0 text-warning"><i class="bi bi-exclamation-triangle me-1"></i>Missing Skills</h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="d-flex flex-wrap gap-2">
+                                    {% for skill in missing_skills %}
+                                        <span class="badge bg-warning-subtle text-warning">{{ skill }}</span>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+
+            {% if reason %}
+                <div class="alert alert-light border mb-4">
+                    <small class="text-muted">{{ reason }}</small>
+                </div>
+            {% endif %}
+        {% endif %}
+    {% endif %}
+
+    <!-- Candidate Profile Card -->
+    <div class="row g-4">
+        <div class="col-lg-4">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body text-center py-5">
+                    {% if candidate.profile_image %}
+                        <img src="{{ candidate.profile_image.url }}" alt="{{ candidate.full_name }}" class="rounded-circle mb-3" width="120" height="120" style="object-fit: cover;">
+                    {% else %}
+                        <div class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 120px; height: 120px;">
+                            <span class="fw-bold fs-1">{{ candidate.full_name|first|upper }}</span>
+                        </div>
+                    {% endif %}
+                    <h4 class="mb-1">{{ candidate.full_name }}</h4>
+                    <p class="text-muted mb-2">{{ candidate.email }}</p>
+                    {% if candidate.phone %}
+                        <p class="text-muted mb-1"><i class="bi bi-phone me-1"></i>{{ candidate.phone }}</p>
+                    {% endif %}
+                    {% if candidate.location %}
+                        <p class="text-muted mb-1"><i class="bi bi-geo-alt me-1"></i>{{ candidate.location }}</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-8">
+            <!-- Profile Info Card -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-white border-0">
+                    <h5 class="mb-0"><i class="bi bi-person-lines-fill text-primary me-2"></i>Profile Information</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <strong>Education:</strong>
+                            <p class="mb-0 mt-1">{{ candidate.education|default:"Not provided" }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <strong>Experience:</strong>
+                            <p class="mb-0 mt-1">{{ candidate.experience|default:"Not provided" }}</p>
+                        </div>
+                    </div>
+                    {% if candidate.bio %}
+                        <div class="mb-3">
+                            <strong>Bio:</strong>
+                            <p class="mb-0 mt-1">{{ candidate.bio }}</p>
+                        </div>
+                    {% endif %}
+                    {% if candidate.skills %}
+                        <div>
+                            <strong>Skills (from profile):</strong>
+                            <div class="d-flex flex-wrap gap-2 mt-2">
+                                {% for skill in candidate.get_skills_list %}
+                                    {% if skill %}
+                                        <span class="badge bg-light text-dark border">{{ skill }}</span>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Resume Data Card -->
+            {% if resume_data %}
+                <div class="card border-0 shadow-sm mb-4">
+                    <div class="card-header bg-white border-0 d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0"><i class="bi bi-file-earmark-text-fill text-primary me-2"></i>Resume Information</h5>
+                        {% if resume_data.resume_file %}
+                            <a href="{{ resume_data.resume_file.url }}" target="_blank" class="btn btn-sm btn-outline-primary">
+                                <i class="bi bi-download me-1"></i> Download Resume
+                            </a>
+                        {% endif %}
+                    </div>
+                    <div class="card-body">
+                        {% if resume_data.parsed_skills %}
+                            <div class="mb-3">
+                                <strong>Extracted Skills:</strong>
+                                <div class="d-flex flex-wrap gap-2 mt-2">
+                                    {% for skill in resume_data.parsed_skills %}
+                                        <span class="badge bg-primary-subtle text-primary">{{ skill }}</span>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        {% endif %}
+                        {% if resume_data.parsed_experience %}
+                            <div class="mb-3">
+                                <strong>Experience Details:</strong>
+                                <div class="mt-2">
+                                    {% for exp in resume_data.parsed_experience %}
+                                        <p class="mb-1 small text-muted">{{ exp }}</p>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        {% endif %}
+                        {% if resume_data.parsed_projects %}
+                            <div class="mb-3">
+                                <strong>Projects:</strong>
+                                <div class="mt-2">
+                                    {% for project in resume_data.parsed_projects %}
+                                        <p class="mb-1 small text-muted">{{ project }}</p>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        {% endif %}
+                        {% if resume_data.parsed_keywords %}
+                            <div>
+                                <strong>Keywords:</strong>
+                                <div class="d-flex flex-wrap gap-2 mt-2">
+                                    {% for keyword in resume_data.parsed_keywords %}
+                                        <span class="badge bg-secondary">{{ keyword }}</span>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endif %}
+
+            <!-- Actions Card -->
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white border-0">
+                    <h5 class="mb-0"><i class="bi bi-lightning-charge text-warning me-2"></i>Actions</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex flex-wrap gap-2">
+                        <a href="{% url 'schedule_interview' %}?candidate_id={{ candidate.id }}" class="btn btn-success">
+                            <i class="bi bi-calendar-plus me-1"></i> Schedule Interview
+                        </a>
+                        <a href="{% url 'recruiter_all_recommendations' %}" class="btn btn-outline-secondary">
+                            <i class="bi bi-arrow-left me-1"></i> Back to Recommendations
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

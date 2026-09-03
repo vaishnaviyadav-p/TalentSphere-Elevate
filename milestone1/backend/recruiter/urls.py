@@ -7,11 +7,31 @@ urlpatterns = [
     # ============================================================
     # DASHBOARD
     # ============================================================
-
     path(
         "dashboard/",
         views.dashboard,
         name="recruiter_dashboard"
+    ),
+
+    path(
+        "profile/",
+        views.recruiter_profile,
+        name="recruiter_profile"
+    ),
+
+    path(
+        "edit-profile/",
+        views.recruiter_profile,
+        name="edit_recruiter_profile"
+    ),
+
+
+    # Recruiter Dashboard (detailed)
+
+    path(
+        "dashboard/detailed/",
+        views.dashboard,
+        name="recruiter_dashboard_detailed"
     ),
 
     # ============================================================
@@ -173,4 +193,22 @@ urlpatterns = [
         views.edit_interview,
         name="edit_interview"
     ),
+    path(
+    "update-application-status/<int:application_id>/",
+    views.update_application_status,
+    name="update_application_status",
+),
+
+path(
+    "job-listings/",
+    views.job_listings,
+    name="job_listings"
+),
+
+path(
+    "settings/",
+    views.recruiter_settings,
+
+    name="recruiter_settings"
+),
 ]

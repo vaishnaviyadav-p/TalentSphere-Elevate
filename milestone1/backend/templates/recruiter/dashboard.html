@@ -16,10 +16,9 @@ body {
 
 .recruiter-dashboard {
     min-height: 100vh;
-    margin-left: 280px;
-    width: calc(100% - 280px);
+    width: 100%;
+    margin:0;
 }
-
 
 /* =========================================
    LEFT SIDEBAR
@@ -29,7 +28,7 @@ body {
     position: fixed;
     top: 0;
     left: 0;
-    width: 280px;
+    width: 200px;
     height: 100vh;
     z-index: 1000;
     overflow-y: auto;
@@ -148,15 +147,16 @@ body {
    ========================================= */
 
 .recruiter-main {
-    margin-left: 235px;
+    margin-left: 100px;
     min-height: 100vh;
     padding: 0;
+    
 }
 
 
 /* =========================================
    TOP BLUE BAR
-   ========================================= */
+   =========================================
 
 .recruiter-topbar {
     height: 72px;
@@ -175,81 +175,7 @@ body {
 
 /* Top buttons */
 
-.topbar-links {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.topbar-link {
-    text-decoration: none;
-
-    padding: 9px 16px;
-
-    border-radius: 8px;
-
-    font-size: 13px;
-    font-weight: 600;
-
-    transition: all 0.2s ease;
-}
-
-
-/* Dashboard */
-
-.top-dashboard {
-    background: white;
-    color: #2563eb;
-}
-
-.top-dashboard:hover {
-    background: #dbeafe;
-    color: #1d4ed8;
-}
-
-
-/* Analytics */
-
-.top-analytics {
-    background: white;
-    color: #2563eb;
-}
-
-.top-analytics:hover {
-    background: #dbeafe;
-    color: #1d4ed8;
-}
-
-
-/* Profile */
-
-.top-profile {
-    background: #fbbf24;
-    color: #1e293b;
-}
-
-.top-profile:hover {
-    background: #f59e0b;
-    color: #1e293b;
-}
-
-
-/* Logout */
-
-.top-logout {
-    background: #dc2626;
-    color: white;
-}
-
-.top-logout:hover {
-    background: #b91c1c;
-    color: white;
-}
-
-
-/* =========================================
-   CONTENT WRAPPER
-   ========================================= */
+===================== */
 
 .dashboard-content {
     padding: 30px;
@@ -753,6 +679,16 @@ body {
     color: #991b1b;
 }
 
+.ai-candidates-btn {
+    background: #dbeafe;
+    color: #2563eb;
+}
+
+.ai-candidates-btn:hover {
+    background: #bfdbfe;
+    color: #1d4ed8;
+}
+
 
 /* =========================================
    RESPONSIVE
@@ -766,13 +702,14 @@ body {
 
     .recruiter-main {
         margin-left: 200px;
+        min-height:100vh;
+        padding:0;
     }
 
     .dashboard-content {
-        padding: 20px;
+        padding: 20px 15px 30px 15px;
     }
 }
-
 
 @media (max-width: 768px) {
 
@@ -1122,7 +1059,7 @@ body {
                             cy="12"
                             r="3"></circle>
 
-                    <path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1-1.8 1.8-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.5V20h-2.5v-.1a1.7 1.7 0 0 0-1-1.5 1.7 1.7 0 0 0-1.9.3l-.1.1-1.8-1.8.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.5-1H6v-2.5h.1a1.7 1.7 0 0 0 1.5-1 1.7 1.7 0 0 0-.3-1.9l-.1-.1L9 6.7l.1.1a1.7 1.7 0 0 0 1.9.3 1.7 1.7 0 0 0 1-1.5V5h2.5v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.9-.3l.1-.1 1.8 1.8-.1.1a1.7 1.7 0 0 0-.3 1.9 1.7 1.7 0 0 0 1.5 1h.1v2.5h-.1a1.7 1.7 0 0 0-1.5 1z"></path>
+                    <path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1-1.8 1.8-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.5V20h-2.5v-.1a1.7 1.7 0 0 0-1-1.5 1.7 1.7 0 0 0-1.9.3l-.1.1-1.8-1.8.1-.1a1.7 1.7 0 0 0 1.9.3 1.7 1.7 0 0 0 1-1.5V5h2.5v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.9-.3l.1-.1 1.8 1.8-.1.1a1.7 1.7 0 0 0-.3 1.9 1.7 1.7 0 0 0 1.5 1h.1v2.5h-.1a1.7 1.7 0 0 0-1.5 1z"></path>
 
                 </svg>
 
@@ -1169,11 +1106,46 @@ body {
     </aside>
 
 
+    <!-- DASHBOARD CONTENT -->
 
-    
+    <div class="recruiter-main">
+
+        <!-- =====================================
+             TOP BAR
+             ===================================== 
+
+        <header class="recruiter-topbar">
+
+            <div class="topbar-links">
+
+                <a href="{% url 'recruiter_dashboard' %}"
+                   class="topbar-link top-dashboard">
+                    Dashboard
+                </a>
+
+                <a href="{% url 'analytics_dashboard' %}"
+                   class="topbar-link top-analytics">
+                    Analytics
+                </a>
+
+                <a href="{% url 'recruiter_profile' %}"
+                   class="topbar-link top-profile">
+                    Profile
+                </a>
+
+                <a href="{% url 'logout' %}"
+                   class="topbar-link top-logout">
+                    Logout
+                </a>
+
+            </div>
+
+        </header>/* 
 
 
-        <!-- DASHBOARD CONTENT -->
+         =====================================
+             CONTENT WRAPPER
+             ===================================== -->
 
         <div class="dashboard-content">
 
@@ -1231,7 +1203,6 @@ body {
             </div>
 
 
-
             <!-- =====================================
                  MAIN RECRUITMENT METRICS
                  ===================================== -->
@@ -1276,7 +1247,7 @@ body {
 
 
                             <div class="metric-value">
-                                {{ total_jobs_posted }}
+                                {{ jobs|default:jobs|length }}
                             </div>
 
                             <div class="metric-label">
@@ -1288,7 +1259,6 @@ body {
                     </div>
 
                 </div>
-
 
 
                 <!-- Applications -->
@@ -1318,7 +1288,7 @@ body {
 
 
                             <div class="metric-value">
-                                {{ total_applications }}
+                                {{ total_applications|default:0 }}
                             </div>
 
                             <div class="metric-label">
@@ -1330,7 +1300,6 @@ body {
                     </div>
 
                 </div>
-
 
 
                 <!-- Interviews -->
@@ -1362,7 +1331,7 @@ body {
 
 
                             <div class="metric-value">
-                                {{ candidates_interviewed }}
+                                {{ candidates_interviewed|default:0 }}
                             </div>
 
                             <div class="metric-label">
@@ -1374,7 +1343,6 @@ body {
                     </div>
 
                 </div>
-
 
 
                 <!-- Shortlisted -->
@@ -1406,7 +1374,7 @@ body {
 
 
                             <div class="metric-value">
-                                {{ candidates_shortlisted }}
+                                {{ candidates_shortlisted|default:0 }}
                             </div>
 
                             <div class="metric-label">
@@ -1421,7 +1389,6 @@ body {
 
 
             </div>
-
 
 
             <!-- =====================================
@@ -1453,7 +1420,7 @@ body {
                                 </div>
 
                                 <div class="stat-box-value">
-                                    {{ active_jobs }}
+                                    {{ active_jobs|default:0 }}
                                 </div>
 
                                 <div class="stat-box-info">
@@ -1474,7 +1441,7 @@ body {
                                 </div>
 
                                 <div class="stat-box-value">
-                                    {{ candidates_shortlisted }}
+                                    {{ candidates_shortlisted|default:0 }}
                                 </div>
 
                                 <div class="stat-box-info">
@@ -1495,7 +1462,7 @@ body {
                                 </div>
 
                                 <div class="stat-box-value">
-                                    {{ candidates_interviewed }}
+                                    {{ candidates_interviewed|default:0 }}
                                 </div>
 
                                 <div class="stat-box-info">
@@ -1516,7 +1483,7 @@ body {
                                 </div>
 
                                 <div class="stat-box-value">
-                                    {{ inactive_jobs }}
+                                    {{ inactive_jobs|default:0 }}
                                 </div>
 
                                 <div class="stat-box-info">
@@ -1533,7 +1500,6 @@ body {
                 </div>
 
             </div>
-
 
 
             <!-- =====================================
@@ -1574,7 +1540,7 @@ body {
                                 </div>
 
                                 <span class="metric-count">
-                                    {{ jobs_posted_this_week }}
+                                    {{ jobs_posted_this_week|default:0 }}
                                 </span>
 
                             </div>
@@ -1593,7 +1559,7 @@ body {
                                 </div>
 
                                 <span class="metric-count">
-                                    {{ applications_this_week }}
+                                    {{ applications_this_week|default:0 }}
                                 </span>
 
                             </div>
@@ -1612,18 +1578,16 @@ body {
                                 </div>
 
                                 <span class="metric-count">
-                                    {{ interviews_this_week }}
+                                    {{ interviews_this_week|default:0 }}
                                 </span>
 
                             </div>
-
 
                         </div>
 
                     </div>
 
                 </div>
-
 
 
                 <!-- Monthly -->
@@ -1657,7 +1621,7 @@ body {
                                 </div>
 
                                 <span class="metric-count">
-                                    {{ jobs_posted_this_month }}
+                                    {{ jobs_posted_this_month|default:0 }}
                                 </span>
 
                             </div>
@@ -1676,7 +1640,7 @@ body {
                                 </div>
 
                                 <span class="metric-count">
-                                    {{ applications_this_month }}
+                                    {{ applications_this_month|default:0 }}
                                 </span>
 
                             </div>
@@ -1695,11 +1659,10 @@ body {
                                 </div>
 
                                 <span class="metric-count">
-                                    {{ interviews_this_month }}
+                                    {{ interviews_this_month|default:0 }}
                                 </span>
 
                             </div>
-
 
                         </div>
 
@@ -1709,7 +1672,6 @@ body {
 
 
             </div>
-
 
 
             <!-- =====================================
@@ -1832,6 +1794,13 @@ body {
 
                                     </a>
 
+                                    <a href="{% url 'recruiter_candidate_recommendations' job.id %}"
+                                       class="action-btn ai-candidates-btn">
+
+                                        <i class="bi bi-lightning-charge me-1"></i>AI Candidates
+
+                                    </a>
+
                                 </td>
 
 
@@ -1845,7 +1814,7 @@ body {
                                 <td colspan="6"
                                     class="text-center py-4">
 
-                                    No jobs posted yet.
+                                No jobs posted yet.
 
                                 </td>
 
@@ -1867,11 +1836,8 @@ body {
 
         </div>
 
-
-    </main>
-
+    </div>
 
 </div>
-
 
 {% endblock %}

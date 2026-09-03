@@ -5,7 +5,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title>Candidate Dashboard | Infosys Talent Management Platform</title>
 
     <style>
@@ -561,168 +560,11 @@
             .actions {
                 grid-template-columns: 1fr;
             }
-
-            /* ================= SIDEBAR ================= */
-
-.sidebar {
-    position: fixed;
-    left: 0;
-    top: 0;
-
-    width: 240px;
-    height: 100vh;
-
-    background: linear-gradient(180deg, #071a75, #1236c5);
-
-    color: white;
-
-    display: flex;
-    flex-direction: column;
-
-    z-index: 1000;
-
-    overflow-y: auto;
-}
-
-
-/* LOGO */
-
-.logo {
-    padding: 28px 24px 25px;
-}
-
-.logo h1 {
-    margin: 0;
-    font-size: 28px;
-    font-weight: 700;
-}
-
-.logo p {
-    margin: 4px 0 0;
-    font-size: 13px;
-    opacity: 0.85;
-}
-
-
-/* MENU */
-
-.menu {
-    list-style: none;
-
-    padding: 10px 16px;
-    margin: 0;
-
-    flex: 1;
-}
-
-.menu li {
-    margin-bottom: 8px;
-}
-
-.menu li a {
-    display: flex;
-    align-items: center;
-
-    gap: 14px;
-
-    padding: 13px 16px;
-
-    color: white;
-    text-decoration: none;
-
-    border-radius: 10px;
-
-    font-size: 15px;
-
-    transition: 0.2s ease;
-}
-
-
-/* ICON */
-
-.menu-icon {
-    width: 22px;
-
-    text-align: center;
-
-    font-size: 18px;
-}
-
-
-/* HOVER */
-
-.menu li a:hover {
-    background: rgba(255, 255, 255, 0.15);
-}
-
-
-/* ACTIVE PAGE */
-
-.menu li a.active {
-    background: #1683f7;
-
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-
-    font-weight: 600;
-}
-
-
-/* LOGOUT */
-
-.sidebar-bottom {
-    padding: 22px 24px;
-}
-
-.sidebar-bottom a {
-    color: white;
-
-    text-decoration: none;
-
-    font-size: 14px;
-
-    display: block;
-}
-
-.sidebar-bottom a:hover {
-    opacity: 0.8;
-}
-
-
-/* ================= MAIN CONTENT ================= */
-
-.main-content {
-    margin-left: 240px;
-
-    min-height: 100vh;
-
-    padding: 30px;
-
-    box-sizing: border-box;
-
-    background: #f7f9fc;
-}
-
-
-/* ================= MOBILE ================= */
-
-@media (max-width: 768px) {
-
-    .sidebar {
-        width: 210px;
-    }
-
-    .main-content {
-        margin-left: 210px;
-        padding: 20px;
-    }
-}
         }
     </style>
 </head>
 
 <body>
-
-<!-- ================= SIDEBAR ================= -->
 
 <!-- ================= SIDEBAR ================= -->
 
@@ -777,9 +619,9 @@
         <li>
     <a href="{% url 'candidate_analytics' %}"
        class="{% if request.resolver_match.url_name == 'candidate_analytics' %}active{% endif %}">
-        <span class="menu-icon"><i class="fas fa-chart-bar"></i></span>
-        <span>Analytics</span>
-    </a>
+         <span class="menu-icon"><i class="fas fa-chart-bar"></i></span>
+         <span>Analytics</span>
+     </a>
 </li>
 
         <!-- Profile -->
@@ -829,17 +671,6 @@
 </aside>
 
 
-<!-- ================= MAIN CONTENT ================= -->
-
-<main class="main-content">
-
-    {% block content %}
-    {% endblock %}
-
-</main>
-
-
-
 <!-- ================= MAIN ================= -->
 
 <main class="main">
@@ -878,9 +709,6 @@
 
     </header>
 
-
-    <!-- CONTENT -->
-
     <section class="content">
 
         <!-- WELCOME -->
@@ -904,114 +732,112 @@
 
         <!-- ================= STATISTICS ================= -->
 
-        <!-- ================= STATISTICS ================= -->
+        <div class="stats">
 
-<div class="stats">
+            <!-- Applications -->
+            <div class="stat-card">
 
-    <!-- Applications -->
-    <div class="stat-card">
+                <div class="stat-top">
 
-        <div class="stat-top">
+                    <div>
+                        <h4>Applications</h4>
 
-            <div>
-                <h4>Applications</h4>
+                        <div class="stat-number">
+                            {{ total }}
+                        </div>
+                    </div>
 
-                <div class="stat-number">
-                    {{ total }}
+                    <div class="stat-icon blue">
+                        📄
+                    </div>
+
                 </div>
-            </div>
 
-            <div class="stat-icon blue">
-                📄
-            </div>
-
-        </div>
-
-        <div class="stat-description">
-            Total Applications
-        </div>
-
-    </div>
-
-
-    <!-- Under Review -->
-    <div class="stat-card">
-
-        <div class="stat-top">
-
-            <div>
-                <h4>Under Review</h4>
-
-                <div class="stat-number">
-                    {{ under_review }}
+                <div class="stat-description">
+                    Total Applications
                 </div>
+
             </div>
 
-            <div class="stat-icon orange">
-                ⏳
-            </div>
 
-        </div>
+            <!-- Under Review -->
+            <div class="stat-card">
 
-        <div class="stat-description">
-            Applications in progress
-        </div>
+                <div class="stat-top">
 
-    </div>
+                    <div>
+                        <h4>Under Review</h4>
 
+                        <div class="stat-number">
+                            {{ under_review }}
+                        </div>
+                    </div>
 
-    <!-- Interviews -->
-    <div class="stat-card">
+                    <div class="stat-icon orange">
+                        ⏳
+                    </div>
 
-        <div class="stat-top">
-
-            <div>
-                <h4>Interviews</h4>
-
-                <div class="stat-number">
-                    {{ interviews.count }}
                 </div>
-            </div>
 
-            <div class="stat-icon green">
-                📅
-            </div>
-
-        </div>
-
-        <div class="stat-description">
-            Scheduled Interviews
-        </div>
-
-    </div>
-
-
-    <!-- Rejected -->
-    <div class="stat-card">
-
-        <div class="stat-top">
-
-            <div>
-                <h4>Rejected</h4>
-
-                <div class="stat-number">
-                    {{ rejected }}
+                <div class="stat-description">
+                    Applications in progress
                 </div>
+
             </div>
 
-            <div class="stat-icon red">
-                ✕
+
+            <!-- Interviews -->
+            <div class="stat-card">
+
+                <div class="stat-top">
+
+                    <div>
+                        <h4>Interviews</h4>
+
+                        <div class="stat-number">
+                            {{ interview }}
+                        </div>
+                    </div>
+
+                    <div class="stat-icon green">
+                        📅
+                    </div>
+
+                </div>
+
+                <div class="stat-description">
+                    Scheduled Interviews
+                </div>
+
+            </div>
+
+
+            <!-- Rejected -->
+            <div class="stat-card">
+
+                <div class="stat-top">
+
+                    <div>
+                        <h4>Rejected</h4>
+
+                        <div class="stat-number">
+                            {{ rejected }}
+                        </div>
+                    </div>
+
+                    <div class="stat-icon red">
+                        ✕
+                    </div>
+
+                </div>
+
+                <div class="stat-description">
+                    Unsuccessful applications
+                </div>
+
             </div>
 
         </div>
-
-        <div class="stat-description">
-            Unsuccessful applications
-        </div>
-
-    </div>
-
-</div>
 
         <!-- ================= CANDIDATE METRICS ================= -->
 
@@ -1079,149 +905,253 @@
         </div>
 
 
-        <!-- ================= WEEKLY / MONTHLY ================= -->
-
         <!-- ================= WEEKLY / MONTHLY ACTIVITY ================= -->
 
-<div class="activity-grid">
+        <div class="activity-grid">
 
-    <!-- ================= WEEKLY ACTIVITY ================= -->
+            <!-- ================= WEEKLY ACTIVITY ================= -->
 
-    <div class="section-card">
+            <div class="section-card">
 
-        <div class="section-title">
-            Weekly Activity
+                <div class="section-title">
+                    Weekly Activity
+                </div>
+
+                <!-- Applications Submitted -->
+                <div class="activity-row">
+
+                    <div class="activity-name">
+                        <span class="dot dot-blue"></span>
+                        Applications Submitted
+                    </div>
+
+                    <div class="activity-number">
+                        {{ weekly_applications }}
+                    </div>
+
+                </div>
+
+
+                <!-- Applications Shortlisted -->
+                <div class="activity-row">
+
+                    <div class="activity-name">
+                        <span class="dot dot-green"></span>
+                        Applications Shortlisted
+                    </div>
+
+                    <div class="activity-number">
+                        {{ weekly_shortlisted }}
+                    </div>
+
+                </div>
+
+
+                <!-- Interviews Conducted -->
+                <div class="activity-row">
+
+                    <div class="activity-name">
+                        <span class="dot dot-orange"></span>
+                        Interviews Conducted
+                    </div>
+
+                    <div class="activity-number">
+                        {{ weekly_interviews }}
+                    </div>
+
+                </div>
+
+
+                <!-- Applications Rejected -->
+                <div class="activity-row">
+
+                    <div class="activity-name">
+                        <span class="dot dot-red"></span>
+                        Applications Rejected
+                    </div>
+
+                    <div class="activity-number">
+                        {{ weekly_rejected }}
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- ================= MONTHLY ACTIVITY ================= -->
+
+            <div class="section-card">
+
+                <div class="section-title">
+                    Monthly Activity
+                </div>
+
+                <!-- Applications Submitted -->
+                <div class="activity-row">
+
+                    <div class="activity-name">
+                        <span class="dot dot-blue"></span>
+                        Applications Submitted
+                    </div>
+
+                    <div class="activity-number">
+                        {{ monthly_applications }}
+                    </div>
+
+                </div>
+
+
+                <!-- Applications Shortlisted -->
+                <div class="activity-row">
+
+                    <div class="activity-name">
+                        <span class="dot dot-green"></span>
+                        Applications Shortlisted
+                    </div>
+
+                    <div class="activity-number">
+                        {{ monthly_shortlisted }}
+                    </div>
+
+                </div>
+
+
+                <!-- Interviews Conducted -->
+                <div class="activity-row">
+
+                    <div class="activity-name">
+                        <span class="dot dot-orange"></span>
+                        Interviews Conducted
+                    </div>
+
+                    <div class="activity-number">
+                        {{ monthly_interviews }}
+                    </div>
+
+                </div>
+
+
+                <!-- Applications Rejected -->
+                <div class="activity-row">
+
+                    <div class="activity-name">
+                        <span class="dot dot-red"></span>
+                        Applications Rejected
+                    </div>
+
+                    <div class="activity-number">
+                        {{ monthly_rejected }}
+                    </div>
+
+                </div>
+
+            </div>
+
         </div>
 
-        <!-- Applications Submitted -->
-        <div class="activity-row">
+        <!-- ================= QUICK ACTIONS ================= -->
 
-            <div class="activity-name">
-                <span class="dot dot-blue"></span>
-                Applications Submitted
+        <h4 class="mt-5">
+            Quick Actions
+        </h4>
+
+        <div class="actions">
+            <div class="action">
+                <div class="action-icon">🔍</div>
+                <h4>Browse Jobs</h4>
+                <p>Discover new opportunities</p>
+                <a href="{% url 'browse_jobs' %}" class="action-link">Go to Jobs →</a>
             </div>
-
-            <div class="activity-number">
-                {{ weekly_applications }}
+            <div class="action">
+                <div class="action-icon">📋</div>
+                <h4>My Applications</h4>
+                <p>Track your applications</p>
+                <a href="{% url 'my_applications' %}" class="action-link">View Applications →</a>
             </div>
-
+            <div class="action">
+                <div class="action-icon">👤</div>
+                <h4>Update Profile</h4>
+                <p>Keep your profile current</p>
+                <a href="{% url 'candidate_profile' %}" class="action-link">Edit Profile →</a>
+            </div>
         </div>
 
+        <!-- ================= RECENT APPLICATIONS ================= -->
 
-        <!-- Applications Shortlisted -->
-        <div class="activity-row">
+        <h4 class="mt-5">
+            Recent Applications
+        </h4>
 
-            <div class="activity-name">
-                <span class="dot dot-green"></span>
-                Applications Shortlisted
+        <div class="section-card">
+            <div class="table-header">
+                <h5>Recent Applications</h5>
+                <a href="{% url 'my_applications' %}" class="view-all">View All →</a>
             </div>
 
-            <div class="activity-number">
-                {{ weekly_shortlisted }}
+            <div style="overflow-x: auto;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Job Title</th>
+                            <th>Company</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for application in recent_applications %}
+                        <tr>
+                            <td>{{ application.job.title }}</td>
+                            <td>{{ application.job.company }}</td>
+                            <td>
+                                {% if application.status == "Shortlisted" %}
+                                    <span class="badge badge-green">Shortlisted</span>
+                                {% elif application.status == "Interview" %}
+                                    <span class="badge badge-blue">Interview</span>
+                                {% elif application.status == "Rejected" %}
+                                    <span class="badge badge-red">Rejected</span>
+                                {% elif application.status == "Selected" %}
+                                    <span class="badge badge-green">Selected</span>
+                                {% elif application.status == "Under Review" %}
+                                    <span class="badge" style="background: #fff0db; color: #f28c00;">Under Review</span>
+                                {% else %}
+                                    <span class="badge" style="background: #e7ebf2; color: #65738a;">{{ application.status }}</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="3" style="text-align: center; padding: 30px;">No applications yet.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
             </div>
-
         </div>
 
-
-        <!-- Interviews Conducted -->
-        <div class="activity-row">
-
-            <div class="activity-name">
-                <span class="dot dot-orange"></span>
-                Interviews Conducted
+        <!-- ================= SCHEDULED INTERVIEWS ================= -->
+        {% if interviews %}
+        <div class="section-card mt-4">
+            <div class="section-title">
+                Upcoming Interviews
             </div>
-
-            <div class="activity-number">
-                {{ weekly_interviews }}
+            {% for interview in interviews %}
+            <div class="activity-row">
+                <div class="activity-name">
+                    <span class="dot dot-orange"></span>
+                    {{ interview.job.company }} - {{ interview.job.title }}
+                </div>
+                <div class="activity-number">
+                    {{ interview.interview_date }} at {{ interview.interview_time }}
+                </div>
             </div>
-
+            {% endfor %}
         </div>
+        {% endif %}
 
+    </section>
 
-        <!-- Applications Rejected -->
-        <div class="activity-row">
+</main>
 
-            <div class="activity-name">
-                <span class="dot dot-red"></span>
-                Applications Rejected
-            </div>
-
-            <div class="activity-number">
-                {{ weekly_rejected }}
-            </div>
-
-        </div>
-
-    </div>
-
-
-    <!-- ================= MONTHLY ACTIVITY ================= -->
-
-    <div class="section-card">
-
-        <div class="section-title">
-            Monthly Activity
-        </div>
-
-        <!-- Applications Submitted -->
-        <div class="activity-row">
-
-            <div class="activity-name">
-                <span class="dot dot-blue"></span>
-                Applications Submitted
-            </div>
-
-            <div class="activity-number">
-                {{ monthly_applications }}
-            </div>
-
-        </div>
-
-
-        <!-- Applications Shortlisted -->
-        <div class="activity-row">
-
-            <div class="activity-name">
-                <span class="dot dot-green"></span>
-                Applications Shortlisted
-            </div>
-
-            <div class="activity-number">
-                {{ monthly_shortlisted }}
-            </div>
-
-        </div>
-
-
-        <!-- Interviews Conducted -->
-        <div class="activity-row">
-
-            <div class="activity-name">
-                <span class="dot dot-orange"></span>
-                Interviews Conducted
-            </div>
-
-            <div class="activity-number">
-                {{ monthly_interviews }}
-            </div>
-
-        </div>
-
-
-        <!-- Applications Rejected -->
-        <div class="activity-row">
-
-            <div class="activity-name">
-                <span class="dot dot-red"></span>
-                Applications Rejected
-            </div>
-
-            <div class="activity-number">
-                {{ monthly_rejected }}
-            </div>
-
-        </div>
-
-    </div>
-
-</div>
+</body>
+</html>

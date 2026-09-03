@@ -41,22 +41,26 @@ urlpatterns = [
         admin.site.urls
     ),
 
-    # Accounts
+# Accounts
     path(
         "",
         include("accounts.urls")
     ),
 
-    # Candidate
     path(
         "candidate/",
         include("candidate.urls")
     ),
 
-    # Recruiter
+# Recruiter
     path(
         "recruiter/",
         include("recruiter.urls")
+    ),
+
+    path(
+        "recommendations/",
+        include("recommendations.urls")
     ),
 ]
 

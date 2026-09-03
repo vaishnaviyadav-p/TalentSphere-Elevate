@@ -45,7 +45,7 @@ class ResumeData(models.Model):
         CandidateProfile,
         on_delete=models.CASCADE,
         related_name='resume_data'
-    ) 
+    )
 
     resume_file = models.FileField(
         upload_to='resumes/'
@@ -148,9 +148,9 @@ class JobApplication(models.Model):
                 old_status = JobApplication.objects.get(pk=self.pk).status
             except JobApplication.DoesNotExist:
                 pass
-        
+
         super().save(*args, **kwargs)
-        
+
         if (not is_new and old_status != self.status) or (is_new and self.status != "Applied"):
             try:
                 from recruiter.email_services import send_application_status_update_email

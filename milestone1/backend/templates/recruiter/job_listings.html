@@ -1,850 +1,321 @@
-{% load static %}
+{% extends "base.html" %}
+
+{% block title %}Job Listings{% endblock %}
+
+{% block content %}
+
+<style>
+
+body {
+    background: #f4f7fb;
+    font-family: "Segoe UI", sans-serif;
+}
+
+/* Remove container spacing from base.html */
+.job-listings-page {
+    width: 100%;
+    padding: 25px 35px;
+}
+
+/* Header */
+.page-header {
+    margin-bottom: 30px;
+}
+
+.page-header h2 {
+    color: #1e293b;
+    font-weight: 700;
+    margin-bottom: 5px;
+}
+
+.page-header p {
+    color: #64748b;
+    margin: 0;
+}
+
+/* Card */
+.jobs-card {
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.06);
+    overflow: hidden;
+}
+
+/* Card Header */
+.jobs-card-header {
+    padding: 20px 25px;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.jobs-card-header h5 {
+    margin: 0;
+    color: #1e293b;
+    font-weight: 600;
+}
+
+/* Table */
+.jobs-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.jobs-table thead {
+    background: #2563eb;
+    color: white;
+}
+
+.jobs-table th {
+    padding: 15px;
+    font-size: 13px;
+    font-weight: 600;
+    text-align: left;
+}
+
+.jobs-table td {
+    padding: 15px;
+    font-size: 13px;
+    color: #334155;
+    border-bottom: 1px solid #f1f5f9;
+    vertical-align: middle;
+}
+
+.jobs-table tbody tr:hover {
+    background: #f8fafc;
+}
+
+/* Status */
+.status-badge {
+    display: inline-block;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.status-active {
+    background: #d1fae5;
+    color: #047857;
+}
+
+.status-closed {
+    background: #fee2e2;
+    color: #b91c1c;
+}
 
-<!DOCTYPE html>
-<html lang="en">
+/* Buttons */
+.action-btn {
+    display: inline-block;
+    padding: 7px 12px;
+    border-radius: 7px;
+    text-decoration: none;
+    font-size: 12px;
+    font-weight: 600;
+    margin-right: 5px;
+}
 
-<head>
+.edit-btn {
+    background: #fef3c7;
+    color: #92400e;
+}
 
-    <meta charset="UTF-8">
+.edit-btn:hover {
+    background: #fde68a;
+    color: #78350f;
+}
 
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1.0">
+.delete-btn {
+    background: #fee2e2;
+    color: #b91c1c;
+}
 
-    <title>Job Listings | TalentSphere</title>
+.delete-btn:hover {
+    background: #fecaca;
+    color: #991b1b;
+}
 
+.ai-candidates-btn {
+    background: #dbeafe;
+    color: #2563eb;
+}
 
-    <!-- Bootstrap -->
-    <link
-        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
-        rel="stylesheet"
-    >
+.ai-candidates-btn:hover {
+    background: #bfdbfe;
+    color: #1d4ed8;
+}
 
+/* Empty */
+.empty-message {
+    text-align: center;
+    padding: 50px;
+    color: #64748b;
+}
 
-    <style>
+/* Mobile */
+@media (max-width: 768px) {
 
-        /* =========================================================
-           GENERAL
-        ========================================================= */
+    .job-listings-page {
+        padding: 20px 15px;
+    }
 
-        * {
-            box-sizing: border-box;
-        }
+    .jobs-card {
+        overflow-x: auto;
+    }
 
-        body {
-            margin: 0;
-            font-family: Arial, Helvetica, sans-serif;
-            background: #f5f8fc;
-            color: #1f2937;
-        }
+    .jobs-table {
+        min-width: 850px;
+    }
+}
 
+</style>
 
-        /* =========================================================
-           RECRUITER DASHBOARD LAYOUT
-        ========================================================= */
 
-        .recruiter-dashboard {
-            display: flex;
-            min-height: 100vh;
-            background: #f5f8fc;
-        }
+<div class="job-listings-page">
 
+    <!-- PAGE HEADER -->
 
-        /* =========================================================
-           SIDEBAR
-        ========================================================= */
+    <div class="page-header">
 
-        .recruiter-sidebar {
-            width: 250px;
-            min-height: 100vh;
-            background: #ffffff;
-            border-right: 1px solid #e5e7eb;
-            padding: 25px 18px;
-            position: fixed;
-            left: 0;
-            top: 0;
-            bottom: 0;
-        }
+        <h2>Job Listings</h2>
 
+        <p>
+            Manage your posted jobs and recruitment opportunities.
+        </p>
 
-        /* Brand */
+    </div>
 
-        .sidebar-brand {
-            padding: 5px 12px 28px;
-            border-bottom: 1px solid #eeeeee;
-            margin-bottom: 25px;
-        }
 
-        .brand-name {
-            font-size: 23px;
-            font-weight: 700;
-            color: #2563eb;
-            margin-bottom: 5px;
-        }
+    <!-- JOBS CARD -->
 
-        .brand-subtitle {
-            font-size: 12px;
-            color: #7b8794;
-        }
+    <div class="jobs-card">
 
+        <div class="jobs-card-header">
 
-        /* Menu */
-
-        .sidebar-menu {
-            display: flex;
-            flex-direction: column;
-            gap: 7px;
-        }
-
-        .sidebar-link {
-            display: flex;
-            align-items: center;
-            gap: 13px;
-
-            padding: 12px 14px;
-
-            color: #4b5563;
-            text-decoration: none;
-
-            border-radius: 8px;
-
-            font-size: 14px;
-            font-weight: 500;
-
-            transition: 0.2s;
-        }
-
-        .sidebar-link:hover {
-            background: #eef5ff;
-            color: #2563eb;
-        }
-
-        .sidebar-link.active {
-            background: #eaf2ff;
-            color: #2563eb;
-            font-weight: 600;
-        }
-
-
-        /* Sidebar icon */
-
-        .sidebar-icon {
-            width: 20px;
-            height: 20px;
-            flex-shrink: 0;
-        }
-
-
-        /* =========================================================
-           MAIN CONTENT
-        ========================================================= */
-
-        .recruiter-main {
-            margin-left: 250px;
-            width: calc(100% - 250px);
-            min-height: 100vh;
-            padding: 35px 40px;
-        }
-
-
-        /* =========================================================
-           PAGE HEADER
-        ========================================================= */
-
-        .page-header {
-            margin-bottom: 25px;
-        }
-
-        .page-header h2 {
-            margin: 0;
-            font-size: 26px;
-            font-weight: 600;
-            color: #1f2937;
-        }
-
-        .page-header p {
-            margin-top: 7px;
-            margin-bottom: 0;
-            color: #7b8794;
-            font-size: 14px;
-        }
-
-
-        /* =========================================================
-           TABLE CARD
-        ========================================================= */
-
-        .table-card {
-            background: #ffffff;
-            border-radius: 12px;
-            border: 1px solid #edf0f4;
-            overflow: hidden;
-        }
-
-
-        .table-card-header {
-            padding: 22px 25px;
-            border-bottom: 1px solid #edf0f4;
-        }
-
-        .table-card-header h5 {
-            margin: 0;
-            font-size: 18px;
-            font-weight: 600;
-            color: #26364a;
-        }
-
-
-        /* =========================================================
-           JOB TABLE
-        ========================================================= */
-
-        .jobs-table {
-            margin-bottom: 0;
-        }
-
-        .jobs-table thead th {
-            padding: 17px 18px;
-            background: #ffffff;
-            color: #26364a;
-            font-size: 13px;
-            font-weight: 600;
-            border-bottom: 1px solid #edf0f4;
-            white-space: nowrap;
-        }
-
-        .jobs-table tbody td {
-            padding: 18px;
-            font-size: 13px;
-            color: #526174;
-            vertical-align: middle;
-            border-bottom: 1px solid #f0f2f5;
-        }
-
-        .jobs-table tbody tr:last-child td {
-            border-bottom: none;
-        }
-
-        .jobs-table tbody tr:hover {
-            background: #fafcff;
-        }
-
-
-        /* Job title */
-
-        .jobs-table td strong {
-            color: #243b64;
-            font-weight: 600;
-        }
-
-
-        /* =========================================================
-           ACTIVE / CLOSED BADGES
-        ========================================================= */
-
-        .status-badge {
-            display: inline-block;
-
-            padding: 6px 13px;
-
-            border-radius: 20px;
-
-            font-size: 12px;
-            font-weight: 500;
-
-            line-height: 1;
-        }
-
-
-        /* GREEN ACTIVE */
-
-        .status-active {
-            background: #d8f5e8;
-            color: #16865a;
-        }
-
-
-        /* RED CLOSED */
-
-        .status-closed {
-            background: #fde2e2;
-            color: #c0392b;
-        }
-
-
-        /* =========================================================
-           ACTION BUTTONS
-        ========================================================= */
-
-        .action-btn {
-            display: inline-block;
-
-            padding: 6px 11px;
-
-            margin-right: 7px;
-
-            border-radius: 5px;
-
-            text-decoration: none;
-
-            font-size: 12px;
-            font-weight: 500;
-
-            transition: 0.2s;
-        }
-
-
-        /* EDIT */
-
-        .edit-btn {
-            background: #fff4cc;
-            color: #9a7600;
-        }
-
-        .edit-btn:hover {
-            background: #ffeaa0;
-            color: #7a5c00;
-        }
-
-
-        /* DELETE */
-
-        .delete-btn {
-            background: #fde3e3;
-            color: #c43d3d;
-        }
-
-        .delete-btn:hover {
-            background: #facccc;
-            color: #a82c2c;
-        }
-
-
-        /* =========================================================
-           NO JOBS
-        ========================================================= */
-
-        .no-jobs {
-            padding: 35px !important;
-            text-align: center;
-            color: #8a94a3 !important;
-        }
-
-
-        /* =========================================================
-           MOBILE
-        ========================================================= */
-
-        @media (max-width: 900px) {
-
-            .recruiter-sidebar {
-                width: 210px;
-            }
-
-            .recruiter-main {
-                margin-left: 210px;
-                width: calc(100% - 210px);
-                padding: 25px;
-            }
-
-        }
-
-
-        @media (max-width: 700px) {
-
-            .recruiter-sidebar {
-                position: relative;
-                width: 100%;
-                min-height: auto;
-            }
-
-            .recruiter-dashboard {
-                display: block;
-            }
-
-            .recruiter-main {
-                margin-left: 0;
-                width: 100%;
-                padding: 20px;
-            }
-
-            .table-responsive {
-                overflow-x: auto;
-            }
-
-        }
-
-    </style>
-
-</head>
-
-
-<body>
-
-
-<div class="recruiter-dashboard">
-
-
-    <!-- =========================================================
-         SIDEBAR
-    ========================================================= -->
-
-    <aside class="recruiter-sidebar">
-
-
-        <!-- BRAND -->
-
-        <div class="sidebar-brand">
-
-            <div class="brand-name">
-                Infosys
-            </div>
-
-            <div class="brand-subtitle">
-                Talent Management Platform
-            </div>
+            <h5>My Job Listings</h5>
 
         </div>
 
 
-        <!-- MENU -->
+        {% if jobs %}
 
-        <div class="sidebar-menu">
+        <table class="jobs-table">
+
+            <thead>
+
+                <tr>
+
+                    <th>Job Title</th>
+
+                    <th>Company</th>
+
+                    <th>Location</th>
+
+                    <th>Status</th>
+
+                    <th>Deadline</th>
+
+                    <th>Action</th>
+
+                </tr>
+
+            </thead>
 
 
-            <!-- Dashboard -->
+            <tbody>
 
-            <a href="{% url 'recruiter_dashboard' %}"
-               class="sidebar-link">
+                {% for job in jobs %}
 
-                <svg class="sidebar-icon"
-                     viewBox="0 0 24 24"
-                     fill="none"
-                     stroke="currentColor"
-                     stroke-width="2">
+                <tr>
 
-                    <rect x="3"
-                          y="3"
-                          width="7"
-                          height="7">
-                    </rect>
+                    <td>
+                        <strong>{{ job.title }}</strong>
+                    </td>
 
-                    <rect x="14"
-                          y="3"
-                          width="7"
-                          height="7">
-                    </rect>
+                    <td>
+                        {{ job.company }}
+                    </td>
 
-                    <rect x="3"
-                          y="14"
-                          width="7"
-                          height="7">
-                    </rect>
+                    <td>
+                        {{ job.location }}
+                    </td>
 
-                    <rect x="14"
-                          y="14"
-                          width="7"
-                          height="7">
-                    </rect>
+                    <td>
 
-                </svg>
+                        {% if job.is_active %}
 
-                Dashboard
+                            <span class="status-badge status-active">
+                                Active
+                            </span>
 
+                        {% else %}
+
+                            <span class="status-badge status-closed">
+                                Closed
+                            </span>
+
+                        {% endif %}
+
+                    </td>
+
+                    <td>
+                        {{ job.deadline|date:"M d, Y" }}
+                    </td>
+
+
+                    <td>
+
+                        <!-- EDIT -->
+
+                        <a href="{% url 'edit_job' job.id %}"
+                           class="action-btn edit-btn">
+                            Edit
+                        </a>
+
+
+                        <!-- DELETE -->
+
+                        <a href="{% url 'delete_job' job.id %}"
+                           class="action-btn delete-btn">
+                            Delete
+                        </a>
+
+
+                        <!-- AI CANDIDATES -->
+
+                        <a href="{% url 'recruiter_all_recommendations' %}"
+                           class="action-btn ai-candidates-btn">
+                    
+                            🤖 AI Candidates
+                        </a>
+
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+        {% else %}
+
+        <div class="empty-message">
+
+            <h5>No jobs posted yet</h5>
+
+            <p>Create your first job posting to see it here.</p>
+
+            <a href="{% url 'post_job' %}"
+               class="btn btn-primary">
+                + Post Job
             </a>
-
-
-            <!-- Job Listings -->
-
-            <a href="{% url 'job_listings' %}"
-               class="sidebar-link active">
-
-                <svg class="sidebar-icon"
-                     viewBox="0 0 24 24"
-                     fill="none"
-                     stroke="currentColor"
-                     stroke-width="2">
-
-                    <rect x="3"
-                          y="4"
-                          width="18"
-                          height="16"
-                          rx="2">
-                    </rect>
-
-                    <line x1="7"
-                          y1="9"
-                          x2="17"
-                          y2="9">
-                    </line>
-
-                    <line x1="7"
-                          y1="13"
-                          x2="17"
-                          y2="13">
-                    </line>
-
-                    <line x1="7"
-                          y1="17"
-                          x2="13"
-                          y2="17">
-                    </line>
-
-                </svg>
-
-                Job Listings
-
-            </a>
-
-
-            <!-- Priority Candidates -->
-
-            <a href="{% url 'priority_candidates' %}"
-               class="sidebar-link">
-
-                <svg class="sidebar-icon"
-                     viewBox="0 0 24 24"
-                     fill="none"
-                     stroke="currentColor"
-                     stroke-width="2">
-
-                    <circle cx="9"
-                            cy="8"
-                            r="3">
-                    </circle>
-
-                    <circle cx="17"
-                            cy="9"
-                            r="2">
-                    </circle>
-
-                    <path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6">
-                    </path>
-
-                    <path d="M15 15c3 0 5 2 6 5">
-                    </path>
-
-                </svg>
-
-                Priority Candidates
-
-            </a>
-
-
-            <!-- Analytics -->
-
-            <a href="{% url 'analytics_dashboard' %}"
-               class="sidebar-link">
-
-                <svg class="sidebar-icon"
-                     viewBox="0 0 24 24"
-                     fill="none"
-                     stroke="currentColor"
-                     stroke-width="2">
-
-                    <line x1="4"
-                          y1="19"
-                          x2="4"
-                          y2="10">
-                    </line>
-
-                    <line x1="10"
-                          y1="19"
-                          x2="10"
-                          y2="5">
-                    </line>
-
-                    <line x1="16"
-                          y1="19"
-                          x2="16"
-                          y2="12">
-                    </line>
-
-                    <line x1="22"
-                          y1="19"
-                          x2="22"
-                          y2="8">
-                    </line>
-
-                </svg>
-
-                Analytics
-
-            </a>
-
-
-            <!-- Profile -->
-
-            <a href="{% url 'recruiter_profile' %}"
-               class="sidebar-link">
-
-                <svg class="sidebar-icon"
-                     viewBox="0 0 24 24"
-                     fill="none"
-                     stroke="currentColor"
-                     stroke-width="2">
-
-                    <circle cx="12"
-                            cy="8"
-                            r="4">
-                    </circle>
-
-                    <path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8">
-                    </path>
-
-                </svg>
-
-                Profile
-
-            </a>
-
-
-            <!-- Logout -->
-
-            <a href="{% url 'logout' %}"
-               class="sidebar-link">
-
-                <svg class="sidebar-icon"
-                     viewBox="0 0 24 24"
-                     fill="none"
-                     stroke="currentColor"
-                     stroke-width="2">
-
-                    <path d="M10 17l5-5-5-5">
-                    </path>
-
-                    <path d="M15 12H3">
-                    </path>
-
-                    <path d="M21 19V5a2 2 0 0 0-2-2h-6">
-                    </path>
-
-                </svg>
-
-                Logout
-
-            </a>
-
 
         </div>
 
-    </aside>
+        {% endif %}
 
-
-
-    <!-- =========================================================
-         MAIN CONTENT
-    ========================================================= -->
-
-    <main class="recruiter-main">
-
-
-        <!-- PAGE HEADER -->
-
-        <div class="page-header">
-
-            <h2>
-                Job Listings
-            </h2>
-
-            <p>
-                Manage your posted jobs and recruitment opportunities.
-            </p>
-
-        </div>
-
-
-
-        <!-- =====================================================
-             MY JOB LISTINGS
-        ===================================================== -->
-
-        <div class="table-card mt-4">
-
-
-            <div class="table-card-header">
-
-                <h5>
-                    My Job Listings
-                </h5>
-
-            </div>
-
-
-
-            <div class="table-responsive">
-
-
-                <table class="table jobs-table table-hover align-middle">
-
-
-                    <!-- TABLE HEADER -->
-
-                    <thead>
-
-                        <tr>
-
-                            <th>
-                                Job Title
-                            </th>
-
-                            <th>
-                                Company
-                            </th>
-
-                            <th>
-                                Location
-                            </th>
-
-                            <th>
-                                Status
-                            </th>
-
-                            <th>
-                                Deadline
-                            </th>
-
-                            <th>
-                                Action
-                            </th>
-
-                        </tr>
-
-                    </thead>
-
-
-
-                    <!-- TABLE BODY -->
-
-                    <tbody>
-
-
-                        {% for job in jobs %}
-
-
-                        <tr>
-
-
-                            <!-- JOB TITLE -->
-
-                            <td>
-
-                                <strong>
-                                    {{ job.title }}
-                                </strong>
-
-                            </td>
-
-
-
-                            <!-- COMPANY -->
-
-                            <td>
-                                {{ job.company }}
-                            </td>
-
-
-
-                            <!-- LOCATION -->
-
-                            <td>
-                                {{ job.location }}
-                            </td>
-
-
-
-                            <!-- STATUS -->
-
-                            <td>
-
-                                {% if job.is_active %}
-
-                                    <span class="status-badge status-active">
-                                        Active
-                                    </span>
-
-                                {% else %}
-
-                                    <span class="status-badge status-closed">
-                                        Closed
-                                    </span>
-
-                                {% endif %}
-
-                            </td>
-
-
-
-                            <!-- DEADLINE -->
-
-                            <td>
-                                {{ job.deadline }}
-                            </td>
-
-
-
-                            <!-- ACTION -->
-
-                            <td>
-
-
-                                <a href="{% url 'edit_job' job.id %}"
-                                   class="action-btn edit-btn">
-
-                                    Edit
-
-                                </a>
-
-
-                                <a href="{% url 'delete_job' job.id %}"
-                                   class="action-btn delete-btn">
-
-                                    Delete
-
-                                </a>
-
-
-                            </td>
-
-
-                        </tr>
-
-
-                        {% empty %}
-
-
-                        <tr>
-
-                            <td colspan="6"
-                                class="no-jobs">
-
-                                No jobs posted yet.
-
-                            </td>
-
-                        </tr>
-
-
-                        {% endfor %}
-
-
-                    </tbody>
-
-
-                </table>
-
-
-            </div>
-
-
-        </div>
-
-
-    </main>
-
+    </div>
 
 </div>
 
-
-</body>
-
-</html>
+{% endblock %}

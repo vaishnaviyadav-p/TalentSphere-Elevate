@@ -14,6 +14,7 @@ from .forms import CandidateProfileForm, ResumeUploadForm
 from .services.resume_parser import parse_resume
 
 from recruiter.models import Job,Interview
+from recruiter.models import Job, Interview
 
 from .skill_matching import (
     extract_required_skills,
@@ -21,6 +22,10 @@ from .skill_matching import (
     generate_learning_path,
 )
 
+
+# ============================================================
+# CANDIDATE DASHBOARD
+# ============================================================
 
 @login_required
 def candidate_dashboard(request):
@@ -30,7 +35,6 @@ def candidate_dashboard(request):
     )
 
     # ---------------- Basic Application Metrics ----------------
-
     total = applications.count()
 
     applied = applications.filter(
@@ -160,10 +164,10 @@ def candidate_dashboard(request):
         "interview": interview_count,
 
         "rejected": rejected,
+
         "selected": selected,
 
         "success_rate": success_rate,
-
         "interview_conversion": interview_rate,
 
         "recent_applications": recent_applications,
@@ -198,6 +202,8 @@ def candidate_dashboard(request):
         "candidate/dashboard.html",
         context
     )
+
+
 def candidate_interviews(request):
 
     candidate_profile = CandidateProfile.objects.filter(
@@ -288,64 +294,29 @@ def job_detail(request, job_id):
         is_active=True
     )
 
-    profile = CandidateProfile.objects.filter(
-        user=request.user
-    ).first()
+    # Use AI-based match calculation from recommendations app
+    from recommendations.services import calculate_job_match_for_candidate
 
-    candidate_skills = []
+    match_data = calculate_job_match_for_candidate(request.user, job)
 
-    # Prefer skills extracted from the uploaded resume
-    if profile:
+    # Also get learning path for missing skills
+    learning_path = generate_learning_path(match_data["missing_skills"])
 
-        resume = ResumeData.objects.filter(
-            candidate=profile
-        ).first()
-
-        if resume and resume.parsed_skills:
-
-            candidate_skills = [
-                skill.strip()
-                for skill in resume.parsed_skills
-                if skill.strip()
-            ]
-
-        # Fallback to manually entered profile skills
-        elif profile.skills:
-
-            candidate_skills = [
-                skill.strip()
-                for skill in profile.skills.split(",")
-                if skill.strip()
-            ]
-
-    # Extract required skills from job requirements
-    required_skills = extract_required_skills(
-        job.requirements
-    )
-
-    # Calculate ATS / Fit Score
-    result = calculate_skill_match(
-        candidate_skills,
-        required_skills
-    )
-
-    learning_path = generate_learning_path(
-    result["missing_skills"]
-    )
-
-    
     return render(
         request,
         "candidate/job_detail.html",
         {
             "job": job,
-            "fit_score": result["score"],
-            "matched_skills": result["matched_skills"],
-            "missing_skills": result["missing_skills"],
+            "fit_score": match_data["match_score"],
+            "skill_match_score": match_data["skill_match_score"],
+            "experience_match_score": match_data["experience_match_score"],
+            "matched_skills": match_data["matched_skills"],
+            "missing_skills": match_data["missing_skills"],
+            "experience_match": match_data["experience_match"],
+            "match_reason": match_data["reason"],
             "learning_path": learning_path
         }
     )
-
 
 
 @login_required
@@ -426,6 +397,7 @@ def candidate_settings(request):
         }
     )
 
+
 @login_required
 def change_password(request):
 
@@ -465,8 +437,6 @@ def change_password(request):
             "form": form
         }
     )
-
-
 
 
 # ============================================================
@@ -550,7 +520,6 @@ def my_applications(request):
                 for skill in resume.parsed_skills
                 if skill.strip()
             ]
-
         # Fallback to profile skills
         elif candidate_profile.skills:
 
@@ -700,6 +669,7 @@ def edit_candidate_profile(request):
             "form": form
         }
     )
+
 
 def candidate_analytics(request):
 

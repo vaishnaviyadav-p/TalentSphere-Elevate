@@ -105,45 +105,55 @@
             <hr>
 
 
-            <!-- ATS / FIT SCORE -->
+            <!-- AI MATCH ANALYSIS -->
             <h4 class="mb-3">
-                ATS / Fit Score
+                🤖 AI Match Analysis
             </h4>
 
-            <div class="card bg-light border-0 p-3 mb-4">
-
-                <div class="d-flex justify-content-between mb-2">
-
-                    <strong>
-                        Your Match Score
-                    </strong>
-
-                    <strong class="text-primary">
-                        {{ fit_score }}%
-                    </strong>
-
+            <div class="row mb-4">
+                <div class="col-md-4">
+                    <div class="card bg-light border-0">
+                        <div class="card-body text-center">
+                            <h2 class="text-success mb-1">{{ fit_score|floatformat:1 }}%</h2>
+                            <small class="text-muted">Overall Match</small>
+                        </div>
+                    </div>
                 </div>
+                <div class="col-md-4">
+                    <div class="card bg-light border-0">
+                        <div class="card-body text-center">
+                            <h2 class="text-primary mb-1">{{ skill_match_score|floatformat:1 }}%</h2>
+                            <small class="text-muted">Skill Match</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card bg-light border-0">
+                        <div class="card-body text-center">
+                            <h2 class="text-info mb-1">{{ experience_match_score|floatformat:1 }}%</h2>
+                            <small class="text-muted">Experience Match</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
+            <div class="progress mb-3" style="height: 30px;">
 
                 <div
-                    class="progress"
-                    style="height: 30px;"
-                >
-
-                    <div
-                        class="progress-bar bg-success"
-                        role="progressbar"
-                        style="width: {{ fit_score }}%;"
-                        aria-valuenow="{{ fit_score }}"
-                        aria-valuemin="0"
-                        aria-valuemax="100"
-                    >
-                        {{ fit_score }}%
-                    </div>
-
+                    class="progress-bar bg-success"
+                    role="progressbar"
+                    style="width: {{ fit_score }}%;"
+                    aria-valuenow="{{ fit_score }}"
+                    aria-valuemin="0"
+                    aria-valuemax="100">
+                    {{ fit_score|floatformat:1 }}%
                 </div>
 
             </div>
+
+            <p class="text-muted small">{{ match_reason }}</p>
+
+            <hr>
 
 
             <!-- MATCHED SKILLS -->
@@ -157,8 +167,8 @@
 
                     {% for skill in matched_skills %}
 
-                        <span class="badge bg-success me-2 mb-2 p-2">
-                            ✓ {{ skill|title }}
+                        <span class="badge bg-success-subtle text-success me-1 mb-1">
+                            ✓ {{ skill }}
                         </span>
 
                     {% endfor %}
@@ -185,8 +195,8 @@
 
                     {% for skill in missing_skills %}
 
-                        <span class="badge bg-danger me-2 mb-2 p-2">
-                            ✗ {{ skill|title }}
+                        <span class="badge bg-warning-subtle text-warning me-1 mb-1">
+                            ✗ {{ skill }}
                         </span>
 
                     {% endfor %}
