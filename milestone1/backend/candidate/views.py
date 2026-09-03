@@ -5,10 +5,14 @@ from datetime import timedelta
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.forms import PasswordChangeForm
+from django.core.paginator import Paginator
+from django_ratelimit.decorators import ratelimit
+
 
 from .models import CandidateProfile, ResumeData, JobApplication
 from .forms import CandidateProfileForm, ResumeUploadForm
 from .services.resume_parser import parse_resume
+
 from recruiter.models import Job,Interview
 
 from .skill_matching import (
@@ -17,6 +21,7 @@ from .skill_matching import (
 )
 
 
+@login_required
 def candidate_dashboard(request):
 
     applications = JobApplication.objects.filter(
@@ -224,14 +229,34 @@ def candidate_interviews(request):
 
 
 # ============================================================
-# Browse Jobs
+# BROWSE JOBS
+# RATE LIMITING: 60 GET REQUESTS / MINUTE / IP
 # ============================================================
 
+@login_required
+@ratelimit(
+    key="ip",
+    rate="60/m",
+    method="GET",
+    block=True
+)
 def browse_jobs(request):
 
-    jobs = Job.objects.filter(
+    jobs_list = Job.objects.filter(
         is_active=True
     ).order_by("-created_at")
+
+    # 10 jobs per page
+    paginator = Paginator(
+        jobs_list,
+        10
+    )
+
+    page_number = request.GET.get("page")
+
+    jobs = paginator.get_page(
+        page_number
+    )
 
     return render(
         request,
@@ -243,9 +268,17 @@ def browse_jobs(request):
 
 
 # ============================================================
-# Job Detail
+# JOB DETAIL
+# RATE LIMITING: 30 GET REQUESTS / MINUTE / IP
 # ============================================================
 
+@login_required
+@ratelimit(
+    key="ip",
+    rate="30/m",
+    method="GET",
+    block=True
+)
 def job_detail(request, job_id):
 
     job = get_object_or_404(
@@ -260,6 +293,7 @@ def job_detail(request, job_id):
 
     candidate_skills = []
 
+    # Prefer skills extracted from the uploaded resume
     if profile:
 
         resume = ResumeData.objects.filter(
@@ -271,6 +305,15 @@ def job_detail(request, job_id):
             candidate_skills = [
                 skill.strip()
                 for skill in resume.parsed_skills
+                if skill.strip()
+            ]
+
+        # Fallback to manually entered profile skills
+        elif profile.skills:
+
+            candidate_skills = [
+                skill.strip()
+                for skill in profile.skills.split(",")
                 if skill.strip()
             ]
 
@@ -420,9 +463,17 @@ def change_password(request):
 
 
 # ============================================================
-# Apply Job
+# APPLY FOR JOB
+# RATE LIMITING: 10 POST REQUESTS / MINUTE / IP
 # ============================================================
 
+@login_required
+@ratelimit(
+    key="ip",
+    rate="10/m",
+    method="POST",
+    block=True
+)
 def apply_job(request, job_id):
 
     job = get_object_or_404(
@@ -449,13 +500,23 @@ def apply_job(request, job_id):
             "You have already applied for this job."
         )
 
-    return redirect("my_applications")
+    return redirect(
+        "my_applications"
+    )
 
 
 # ============================================================
-# My Applications
+# MY APPLICATIONS
+# RATE LIMITING: 30 GET REQUESTS / MINUTE / IP
 # ============================================================
 
+@login_required
+@ratelimit(
+    key="ip",
+    rate="30/m",
+    method="GET",
+    block=True
+)
 def my_applications(request):
 
     applications = JobApplication.objects.filter(
@@ -468,6 +529,7 @@ def my_applications(request):
 
     candidate_skills = []
 
+    # Prefer resume-parsed skills
     if candidate_profile:
 
         resume = ResumeData.objects.filter(
@@ -482,11 +544,16 @@ def my_applications(request):
                 if skill.strip()
             ]
 
-            print(
-                "RESUME SKILLS:",
-                candidate_skills
-            )
+        # Fallback to profile skills
+        elif candidate_profile.skills:
 
+            candidate_skills = [
+                skill.strip()
+                for skill in candidate_profile.skills.split(",")
+                if skill.strip()
+            ]
+
+    # Calculate fit score for each application
     for application in applications:
 
         required_skills = extract_required_skills(
@@ -508,17 +575,6 @@ def my_applications(request):
             result["missing_skills"]
         )
 
-        print(
-            "JOB:",
-            application.job.title,
-            "REQUIRED:",
-            required_skills,
-            "CANDIDATE:",
-            candidate_skills,
-            "SCORE:",
-            application.fit_score
-        )
-
     return render(
         request,
         "candidate/my_applications.html",
@@ -529,17 +585,26 @@ def my_applications(request):
 
 
 # ============================================================
-# Candidate Profile
+# CANDIDATE PROFILE
+# RATE LIMITING: 30 GET REQUESTS / MINUTE / IP
 # ============================================================
 
+@login_required
+@ratelimit(
+    key="ip",
+    rate="30/m",
+    method="GET",
+    block=True
+)
 def candidate_profile(request):
 
     profile, created = CandidateProfile.objects.get_or_create(
         user=request.user,
         defaults={
-            "full_name": request.user.get_full_name()
-            or request.user.username,
-
+            "full_name": (
+                request.user.get_full_name()
+                or request.user.username
+            ),
             "phone": "",
             "location": "",
             "education": "",
@@ -549,6 +614,7 @@ def candidate_profile(request):
         }
     )
 
+    # Get the resume linked to this candidate
     resume_data = ResumeData.objects.filter(
         candidate=profile
     ).first()
@@ -558,23 +624,32 @@ def candidate_profile(request):
         "candidate/profile.html",
         {
             "profile": profile,
-            "resume_data": resume_data
+            "resume_data": resume_data,
         }
     )
 
 
 # ============================================================
-# Edit Candidate Profile
+# EDIT CANDIDATE PROFILE
+# RATE LIMITING: 5 POST REQUESTS / MINUTE / IP
 # ============================================================
 
+@login_required
+@ratelimit(
+    key="ip",
+    rate="5/m",
+    method="POST",
+    block=True
+)
 def edit_candidate_profile(request):
 
     profile, created = CandidateProfile.objects.get_or_create(
         user=request.user,
         defaults={
-            "full_name": request.user.get_full_name()
-            or request.user.username,
-
+            "full_name": (
+                request.user.get_full_name()
+                or request.user.username
+            ),
             "phone": "",
             "location": "",
             "education": "",
@@ -644,16 +719,25 @@ def candidate_analytics(request):
 
 
 # ============================================================
-# Upload Resume
+# UPLOAD RESUME + RESUME PARSING
+# RATE LIMITING: 5 POST REQUESTS / MINUTE / IP
 # ============================================================
 
+@login_required
+@ratelimit(
+    key="ip",
+    rate="5/m",
+    method="POST",
+    block=True
+)
 def upload_resume(request):
 
+    # Get the profile belonging to the logged-in user
     profile = CandidateProfile.objects.filter(
         user=request.user
     ).first()
 
-    # Make sure a candidate profile exists
+    # Make sure candidate profile exists
     if not profile:
 
         messages.error(
@@ -674,13 +758,15 @@ def upload_resume(request):
 
         if form.is_valid():
 
+            # Get existing resume or create a new one
             resume_data, created = ResumeData.objects.get_or_create(
                 candidate=profile
             )
 
-            resume_data.resume_file = (
-                form.cleaned_data["resume_file"]
-            )
+            # Save uploaded resume file
+            resume_data.resume_file = form.cleaned_data[
+                "resume_file"
+            ]
 
             resume_data.save()
 
@@ -689,18 +775,6 @@ def upload_resume(request):
                 # Parse uploaded resume
                 parsed_data = parse_resume(
                     resume_data.resume_file.path
-                )
-
-                print(
-                    "========== RESUME TEXT =========="
-                )
-
-                print(
-                    parsed_data["extracted_text"]
-                )
-
-                print(
-                    "================================="
                 )
 
                 # Save extracted information
