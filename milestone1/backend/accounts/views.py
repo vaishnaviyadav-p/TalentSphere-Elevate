@@ -99,6 +99,97 @@ def login_view(request):
         "accounts/login.html"
     )
 
+# ============================================================
+# CANDIDATE LOGIN
+# ============================================================
+
+@ratelimit(
+    key="ip",
+    rate="5/m",
+    method="POST",
+    block=True
+)
+def candidate_login(request):
+
+    if request.method == "POST":
+
+        username = request.POST.get("username")
+        password = request.POST.get("password")
+
+        user = authenticate(
+            request,
+            username=username,
+            password=password
+        )
+
+        if user is not None:
+
+            try:
+                profile = UserProfile.objects.get(user=user)
+
+                if profile.role == "candidate":
+                    login(request, user)
+                    return redirect("candidate_profile")
+
+            except UserProfile.DoesNotExist:
+                pass
+
+        messages.error(
+            request,
+            "Invalid candidate username or password."
+        )
+
+    return render(
+        request,
+        "accounts/candidate_login.html"
+    )
+
+
+# ============================================================
+# RECRUITER LOGIN
+# ============================================================
+
+@ratelimit(
+    key="ip",
+    rate="5/m",
+    method="POST",
+    block=True
+)
+def recruiter_login(request):
+
+    if request.method == "POST":
+
+        username = request.POST.get("username")
+        password = request.POST.get("password")
+
+        user = authenticate(
+            request,
+            username=username,
+            password=password
+        )
+
+        if user is not None:
+
+            try:
+                profile = UserProfile.objects.get(user=user)
+
+                if profile.role == "recruiter":
+                    login(request, user)
+                    return redirect("recruiter_profile")
+
+            except UserProfile.DoesNotExist:
+                pass
+
+        messages.error(
+            request,
+            "Invalid recruiter username or password."
+        )
+
+    return render(
+        request,
+        "accounts/recruiter_login.html"
+    )
+
 
 # ============================================================
 # REGISTER
